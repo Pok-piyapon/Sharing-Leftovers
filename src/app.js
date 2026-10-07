@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const morgan = require("morgan");
 const session = require("express-session");
@@ -18,6 +19,9 @@ const reportRoutes = require("./routes/report.routes");
 
 const app = express();
 
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "../frontend/views"));
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "http://localhost:3000",
@@ -26,6 +30,7 @@ app.use(
 );
 app.use(express.json({ limit: "5mb" }));
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+app.use("/assets", express.static(path.join(__dirname, "../frontend/public")));
 
 // Session-based authentication: เก็บ session ใน MongoDB (รอดจาก restart)
 app.use(
@@ -53,6 +58,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/health", (req, res) => {
   res.json({ success: true, status: "ok", uptime: process.uptime() });
+});
+
+app.get("/", (req, res) => {
+  res.render("home", { appName: "Sharing Leftovers" });
 });
 
 app.use("/api/v1/auth", authRoutes);
