@@ -1,0 +1,138 @@
+<%- include('../../partials/head', { title: 'แก้ไขประกาศ' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const area = (listing.pickup && listing.pickup.area) || {};
+  const expiresVal = listing.expiresAt ? new Date(listing.expiresAt).toISOString().slice(0, 10) : '';
+  const imagesJoined = (listing.images || []).join('|');
+  const dis = locked ? 'disabled' : '';
+%>
+
+<div class="ui container" style="max-width: 680px !important; padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-pen"></i> แก้ไขประกาศ</h1>
+
+  <% if (locked) { %>
+    <div class="ui warning message">
+      <i class="fa-solid fa-lock"></i> ประกาศนี้มีผู้ขอรับแล้ว จึงแก้ไขไม่ได้ หากต้องการเปลี่ยนแปลงให้ยกเลิกประกาศแล้วลงใหม่
+    </div>
+  <% } %>
+
+  <form id="listing-form" data-mode="edit" data-listing-id="<%= listing._id %>" data-initial-images="<%= imagesJoined %>" data-locked="<%= locked %>"
+    data-initial-province="<%= area.province || '' %>" data-initial-district="<%= area.district || '' %>" data-initial-subdistrict="<%= area.subdistrict || '' %>" class="ui form">
+    <div class="ui segment">
+      <h3 class="ui header">1. ข้อมูลสิ่งของ</h3>
+      <div class="field">
+        <label>ชื่อสิ่งของ <span style="color:var(--brand-terracotta);">*</span></label>
+        <input type="text" id="f-title" value="<%= listing.title %>" required maxlength="120" <%= dis %>>
+      </div>
+      <div class="field">
+        <label>รายละเอียด <span style="color:var(--brand-terracotta);">*</span></label>
+        <textarea id="f-description" rows="3" required <%= dis %>><%= listing.description || '' %></textarea>
+      </div>
+      <div class="two fields">
+        <div class="field">
+          <label>หมวดหมู่ <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-category" class="ui fluid dropdown" required <%= dis %>>
+            <% categories.forEach(function (c) { %>
+              <option value="<%= c.slug %>" <%= (listing.category && listing.category.slug === c.slug) ? 'selected' : '' %>><%= c.icon %> <%= c.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="field">
+          <label>สภาพ <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-condition" class="ui fluid dropdown" required <%= dis %>>
+            <% ['new','like_new','good','fair','poor'].forEach(function (v) { %>
+              <option value="<%= v %>" <%= listing.condition === v ? 'selected' : '' %>><%= ({new:'ใหม่',like_new:'เหมือนใหม่',good:'ดี',fair:'พอใช้',poor:'มีตำหนิ'})[v] %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="max-width: 140px;">
+        <label>จำนวน (ชิ้น) <span style="color:var(--brand-terracotta);">*</span></label>
+        <input type="number" id="f-quantity" min="1" value="<%= listing.quantity %>" required <%= dis %>>
+      </div>
+    </div>
+
+    <div class="ui segment">
+      <h3 class="ui header">2. รูปภาพ (1-5 รูป)</h3>
+      <div id="image-url-list"></div>
+      <% if (!locked) { %><button type="button" id="add-image-btn" class="ui basic button">+ เพิ่มรูป</button><% } %>
+    </div>
+
+    <div class="ui segment">
+      <h3 class="ui header">3. การนัดรับ</h3>
+      <div class="three fields">
+        <div class="field">
+          <label>จังหวัด <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-province" required <%= dis %>>
+            <option value="<%= area.province || '' %>"><%= area.province || 'กำลังโหลด...' %></option>
+          </select>
+        </div>
+        <div class="field">
+          <label>อำเภอ/เขต <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-district" required <%= dis %>>
+            <option value="<%= area.district || '' %>"><%= area.district || '— เลือกอำเภอ/เขต —' %></option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ตำบล/แขวง <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-subdistrict" required <%= dis %>>
+            <option value="<%= area.subdistrict || '' %>"><%= area.subdistrict || '— เลือกตำบล/แขวง —' %></option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>ที่อยู่ละเอียด</label>
+        <input type="text" id="f-address" value="<%= (listing.pickup && listing.pickup.address) || '' %>" <%= dis %>>
+      </div>
+    </div>
+
+    <div class="ui segment">
+      <h3 class="ui header">4. วันหมดอายุประกาศ</h3>
+      <div class="field" style="max-width: 220px;">
+        <label>ประกาศจะปิดอัตโนมัติวันที่</label>
+        <input type="date" id="f-expires" value="<%= expiresVal %>" <%= dis %>>
+      </div>
+    </div>
+
+    <% if (!locked) { %>
+      <button type="submit" class="ui fluid big green button">บันทึกการแก้ไข</button>
+    <% } %>
+  </form>
+
+  <% if (locked && !['cancelled','completed'].includes(listing.status)) { %>
+    <button type="button" id="cancel-listing-btn-edit" class="ui fluid red button" style="margin-top: 1em;">ยกเลิกประกาศนี้</button>
+  <% } %>
+</div>
+
+<script src="/assets/js/thai-geo-select.js" defer></script>
+<script src="/assets/js/pages/image-url-repeater.js" defer></script>
+<script src="/assets/js/pages/listing-form.js" defer></script>
+<% if (locked) { %>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('cancel-listing-btn-edit');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      window.ConfirmDialog.show({
+        title: 'ยืนยันยกเลิกประกาศนี้?',
+        message: 'คำขอที่ค้างอยู่ทั้งหมดจะถูกยกเลิกไปด้วย และไม่สามารถกู้คืนได้',
+        isDanger: true,
+        confirmText: 'ยืนยันยกเลิก',
+        onConfirm: async function () {
+          try {
+            await window.ApiService.listings.cancel('<%= listing._id %>');
+            window.Toast.show('ยกเลิกประกาศเรียบร้อยแล้ว', 'success');
+            setTimeout(function () { window.location.href = '/listings/<%= listing._id %>'; }, 600);
+          } catch (err) {
+            window.Toast.show((err && err.message) || 'เกิดข้อผิดพลาด', 'error');
+          }
+        }
+      });
+    });
+  });
+</script>
+<% } %>
+
+<%- include('../../partials/footer') %>

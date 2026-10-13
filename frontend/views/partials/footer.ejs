@@ -1,53 +1,39 @@
-<footer class="app-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <!-- คอลัมน์ที่ 1: ข้อมูลเกี่ยวกับโครงการ -->
-      <div class="footer-col">
-        <h4>Sharing Leftovers 🌿</h4>
-        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); line-height: 1.6; margin-bottom: var(--space-3);">
-          แพลตฟอร์มแบ่งปันสิ่งของเหลือใช้สภาพดี เพื่อลดปริมาณขยะ (Zero Waste) 
-          และสนับสนุนเศรษฐกิจหมุนเวียน (Circular Economy) ภายในชุมชนอย่างยั่งยืน
-        </p>
-        <span class="badge badge-available">Friendly Community Marketplace</span>
+<footer class="ui inverted vertical footer segment" style="background-color: var(--brand-green); margin-top: 3em; padding: 3em 0;">
+  <div class="ui container">
+    <div class="ui stackable inverted divided grid">
+      <div class="four wide column">
+        <h4 class="ui inverted header"><i class="fa-solid fa-leaf"></i> Sharing Leftovers</h4>
+        <p>แพลตฟอร์มแบ่งปันสิ่งของเหลือใช้สภาพดี เพื่อลดปริมาณขยะ (Zero Waste) และสนับสนุนเศรษฐกิจหมุนเวียน (Circular Economy) ภายในชุมชนอย่างยั่งยืน</p>
       </div>
-
-      <!-- คอลัมน์ที่ 2: ลิงก์ด่วนในระบบ -->
-      <div class="footer-col">
-        <h4>เมนูด่วน</h4>
-        <ul class="footer-links">
-          <li><a href="/">หน้าแรก</a></li>
-          <li><a href="/listings">ค้นหาสิ่งของใกล้คุณ</a></li>
-          <li><a href="/help/how-it-works">5 ขั้นตอนการใช้งาน</a></li>
-          <li><a href="/auth">เข้าสู่ระบบ / สมัครสมาชิก</a></li>
-        </ul>
+      <div class="four wide column">
+        <h4 class="ui inverted header">เมนูด่วน</h4>
+        <div class="ui inverted link list">
+          <a href="/" class="item">หน้าแรก</a>
+          <a href="/listings" class="item">ค้นหาสิ่งของใกล้คุณ</a>
+          <a href="/help/how-it-works" class="item">5 ขั้นตอนการใช้งาน</a>
+          <a href="/auth" class="item">เข้าสู่ระบบ / สมัครสมาชิก</a>
+        </div>
       </div>
-
-      <!-- คอลัมน์ที่ 3: ความปลอดภัยและกติกา -->
-      <div class="footer-col">
-        <h4>กติกาและความปลอดภัย</h4>
-        <ul class="footer-links">
-          <li><a href="/help/how-it-works#pickup-only">🤝 นัดรับด้วยตนเองเท่านั้น</a></li>
-          <li><a href="/help/how-it-works#single-reservation">🔒 ขอได้คนละ 1 ครั้งต่อประกาศ</a></li>
-          <li><a href="/help/how-it-works#privacy">🛡️ คุ้มครองข้อมูลสถานที่ส่วนตัว</a></li>
-          <li><a href="/api-docs">📚 เอกสาร API (Swagger)</a></li>
-        </ul>
+      <div class="four wide column">
+        <h4 class="ui inverted header">กติกาและความปลอดภัย</h4>
+        <div class="ui inverted link list">
+          <a href="/help/how-it-works#pickup-only" class="item"><i class="fa-solid fa-handshake"></i> นัดรับด้วยตนเองเท่านั้น</a>
+          <a href="/help/how-it-works#single-reservation" class="item"><i class="fa-solid fa-lock"></i> ขอได้คนละ 1 ครั้งต่อประกาศ</a>
+          <a href="/help/how-it-works#privacy" class="item"><i class="fa-solid fa-shield-halved"></i> คุ้มครองข้อมูลสถานที่ส่วนตัว</a>
+          <a href="/api-docs" class="item"><i class="fa-solid fa-book"></i> เอกสาร API (Swagger)</a>
+        </div>
       </div>
     </div>
-
-    <!-- ลิขสิทธิ์และรายละเอียดการส่งงานตาม 2569_Projects.md -->
-    <div class="footer-bottom">
-      <div>
-        © 2026 Sharing Leftovers · รายวิชา CP363205 ภาษาอนุกรมข้อมูลและการประยุกต์
-      </div>
-      <div>
-        พัฒนาด้วย Express.js + MongoDB + EJS Server-Side Rendering
-      </div>
+    <div class="ui inverted divider"></div>
+    <div style="font-size: 0.85em; opacity: 0.85;">
+      © 2026 Sharing Leftovers · รายวิชา CP363205 ภาษาอนุกรมข้อมูลและการประยุกต์<br>
+      พัฒนาด้วย Express.js + MongoDB + EJS Server-Side Rendering + Semantic UI
     </div>
   </div>
 </footer>
 
 <!-- Container สำหรับแสดง Toast แจ้งเตือนของระบบ -->
-<div id="toast-container" class="toast-container"></div>
+<div id="toast-container" style="position: fixed; top: 1em; right: 1em; z-index: 9999; display: flex; flex-direction: column; gap: 0.5em; max-width: 360px;"></div>
 
 </body>
 </html>

@@ -1,0 +1,122 @@
+<%- include('../../partials/head', { title: 'ค้นหาสิ่งของ' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const CONDITIONS = [
+    { value: 'new', label: 'ใหม่' },
+    { value: 'like_new', label: 'เหมือนใหม่' },
+    { value: 'good', label: 'ดี' },
+    { value: 'fair', label: 'พอใช้' },
+    { value: 'poor', label: 'มีตำหนิ' }
+  ];
+  const SORTS = [
+    { value: 'latest', label: 'ล่าสุด' },
+    { value: 'expiring', label: 'ใกล้หมดอายุ' },
+    { value: 'popular', label: 'ดูมากที่สุด' },
+    { value: 'oldest', label: 'เก่าที่สุด' }
+  ];
+%>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-magnifying-glass"></i> ค้นหาสิ่งของแบ่งปัน</h1>
+
+  <!-- ฟอร์มค้นหา/กรอง: ส่งผ่าน GET ให้ query string อยู่ใน URL (แชร์/ย้อนกลับ/รีเฟรชได้) -->
+  <form method="GET" action="/listings" id="filter-form" class="ui form segment" style="margin-bottom: 1.5em;">
+    <div class="four fields">
+      <div class="field">
+        <label for="f-search">ค้นหาด้วยคำ</label>
+        <input type="text" id="f-search" name="search" placeholder="เช่น โต๊ะ, เสื้อผ้า" value="<%= q.search || '' %>">
+      </div>
+      <div class="field">
+        <label for="f-category">หมวดหมู่</label>
+        <select id="f-category" name="category" class="ui fluid dropdown">
+          <option value="">ทั้งหมด</option>
+          <% categories.forEach(function(c) { %>
+            <option value="<%= c.slug %>" <%= q.category === c.slug ? 'selected' : '' %>><%= c.icon %> <%= c.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-condition">สภาพ</label>
+        <select id="f-condition" name="condition" class="ui fluid dropdown">
+          <option value="">ทั้งหมด</option>
+          <% CONDITIONS.forEach(function(c) { %>
+            <option value="<%= c.value %>" <%= q.condition === c.value ? 'selected' : '' %>><%= c.label %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-sort">เรียงตาม</label>
+        <select id="f-sort" name="sort" class="ui fluid dropdown">
+          <% SORTS.forEach(function(s) { %>
+            <option value="<%= s.value %>" <%= (q.sort || 'latest') === s.value ? 'selected' : '' %>><%= s.label %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+
+    <div class="three fields">
+      <div class="field">
+        <label for="f-province">จังหวัด</label>
+        <input type="text" id="f-province" name="province" value="<%= q.province || '' %>">
+      </div>
+      <div class="field">
+        <label for="f-district">อำเภอ/เขต</label>
+        <input type="text" id="f-district" name="district" value="<%= q.district || '' %>">
+      </div>
+      <div class="field">
+        <label for="f-subdistrict">ตำบล/แขวง</label>
+        <input type="text" id="f-subdistrict" name="subdistrict" value="<%= q.subdistrict || '' %>">
+      </div>
+    </div>
+
+    <input type="hidden" name="lat" id="f-lat" value="<%= q.lat || '' %>">
+    <input type="hidden" name="lng" id="f-lng" value="<%= q.lng || '' %>">
+
+    <button type="submit" class="ui green button">กรองผลลัพธ์</button>
+    <button type="button" id="near-me-btn" class="ui basic green button"><i class="fa-solid fa-location-dot"></i> ค้นหาใกล้ฉัน</button>
+    <a href="/listings" class="ui basic button">ล้างตัวกรองทั้งหมด</a>
+
+    <p id="geo-fallback-msg" style="display:none; margin-top: 0.8em; color: rgba(0,0,0,.5);">
+      ไม่สามารถเข้าถึงตำแหน่งของคุณได้ กรุณากรอกจังหวัด/อำเภอ/ตำบลแทน
+    </p>
+  </form>
+
+  <p style="color: rgba(0,0,0,.5);">พบ <%= total %> รายการ</p>
+
+  <% if (listings.length === 0) { %>
+    <%- include('../../partials/empty-state', {
+      emptyIcon: 'fa-magnifying-glass',
+      emptyTitle: 'ไม่พบสิ่งของที่ตรงกับตัวกรอง',
+      emptyDesc: 'ลองล้างตัวกรองหรือค้นหาด้วยคำอื่น',
+      emptyActionText: 'ล้างตัวกรองทั้งหมด',
+      emptyActionUrl: '/listings'
+    }) %>
+  <% } else { %>
+    <div class="ui three stackable cards" style="margin-bottom: 1.5em;">
+      <% listings.forEach(function(listing) { %>
+        <%- include('../../partials/listing-card', { listing }) %>
+      <% }) %>
+    </div>
+    <%- include('../../partials/pagination', { currentPage, totalPages, basePath }) %>
+  <% } %>
+</div>
+
+<script>
+  document.getElementById('near-me-btn').addEventListener('click', function () {
+    if (!navigator.geolocation) {
+      document.getElementById('geo-fallback-msg').style.display = 'block';
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      document.getElementById('f-lat').value = pos.coords.latitude;
+      document.getElementById('f-lng').value = pos.coords.longitude;
+      document.getElementById('filter-form').submit();
+    }, function () {
+      document.getElementById('geo-fallback-msg').style.display = 'block';
+    });
+  });
+</script>
+
+<%- include('../../partials/footer') %>

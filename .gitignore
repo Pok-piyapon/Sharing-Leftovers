@@ -5,3 +5,7 @@ node_modules/
 .personalfiles/
 *.log
 .DS_Store
+
+# ไฟล์รูปภาพที่ผู้ใช้อัปโหลด (user-generated content ไม่ควร commit ลง git)
+frontend/public/uploads/*
+!frontend/public/uploads/.gitkeep

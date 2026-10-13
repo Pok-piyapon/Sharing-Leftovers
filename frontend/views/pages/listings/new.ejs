@@ -1,0 +1,101 @@
+<%- include('../../partials/head', { title: 'ลงประกาศใหม่' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<div class="ui container" style="max-width: 680px !important; padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-box"></i> ลงประกาศแบ่งปันสิ่งของใหม่</h1>
+
+  <form id="listing-form" data-mode="create" class="ui form">
+    <!-- ข้อมูลสิ่งของ -->
+    <div class="ui segment">
+      <h3 class="ui header">1. ข้อมูลสิ่งของ</h3>
+      <div class="field">
+        <label>ชื่อสิ่งของ <span style="color:var(--brand-terracotta);">*</span></label>
+        <input type="text" id="f-title" required maxlength="120">
+      </div>
+      <div class="field">
+        <label>รายละเอียด <span style="color:var(--brand-terracotta);">*</span></label>
+        <textarea id="f-description" rows="3" required placeholder="อธิบายสภาพ ขนาด และข้อมูลที่เป็นประโยชน์ต่อผู้รับ"></textarea>
+      </div>
+      <div class="two fields">
+        <div class="field">
+          <label>หมวดหมู่ <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-category" class="ui fluid dropdown" required>
+            <% categories.forEach(function (c) { %>
+              <option value="<%= c.slug %>"><%= c.icon %> <%= c.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="field">
+          <label>สภาพ <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-condition" class="ui fluid dropdown" required>
+            <option value="new">ใหม่</option>
+            <option value="like_new">เหมือนใหม่</option>
+            <option value="good" selected>ดี</option>
+            <option value="fair">พอใช้</option>
+            <option value="poor">มีตำหนิ</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="max-width: 140px;">
+        <label>จำนวน (ชิ้น) <span style="color:var(--brand-terracotta);">*</span></label>
+        <input type="number" id="f-quantity" min="1" value="1" required>
+      </div>
+    </div>
+
+    <!-- รูปภาพ -->
+    <div class="ui segment">
+      <h3 class="ui header">2. รูปภาพ (1-5 รูป)</h3>
+      <p style="color: rgba(0,0,0,.5);">ใส่ URL ลิงก์รูปภาพ หรืออัปโหลดไฟล์จากเครื่อง</p>
+      <div id="image-url-list"></div>
+      <button type="button" id="add-image-btn" class="ui basic button">+ เพิ่มรูป</button>
+    </div>
+
+    <!-- การนัดรับ -->
+    <div class="ui segment">
+      <h3 class="ui header">3. การนัดรับ</h3>
+      <p style="color: rgba(0,0,0,.5);"><i class="fa-solid fa-handshake"></i> รับด้วยตนเองเท่านั้น ไม่มีบริการจัดส่ง</p>
+      <div class="three fields">
+        <div class="field">
+          <label>จังหวัด <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-province" required>
+            <option value="">กำลังโหลด...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>อำเภอ/เขต <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-district" required disabled>
+            <option value="">— เลือกอำเภอ/เขต —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ตำบล/แขวง <span style="color:var(--brand-terracotta);">*</span></label>
+          <select id="f-subdistrict" required disabled>
+            <option value="">— เลือกตำบล/แขวง —</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>ที่อยู่ละเอียด (จะแสดงให้เห็นเฉพาะผู้ที่ได้รับการอนุมัติแล้ว)</label>
+        <input type="text" id="f-address" placeholder="บ้านเลขที่ ซอย ถนน จุดนัดพบ">
+      </div>
+    </div>
+
+    <!-- วันหมดอายุ -->
+    <div class="ui segment">
+      <h3 class="ui header">4. วันหมดอายุประกาศ</h3>
+      <div class="field" style="max-width: 220px;">
+        <label>ประกาศจะปิดอัตโนมัติวันที่</label>
+        <input type="date" id="f-expires">
+      </div>
+    </div>
+
+    <button type="submit" class="ui fluid big green button">ลงประกาศแบ่งปัน</button>
+  </form>
+</div>
+
+<script src="/assets/js/thai-geo-select.js" defer></script>
+<script src="/assets/js/pages/image-url-repeater.js" defer></script>
+<script src="/assets/js/pages/listing-form.js" defer></script>
+
+<%- include('../../partials/footer') %>

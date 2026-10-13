@@ -2,20 +2,32 @@ const mongoose = require("mongoose");
 const Reservation = require("../models/Reservation");
 const Listing = require("../models/Listing");
 const ApiError = require("../middlewares/ApiError");
+const reservationService = require("../services/reservation.service");
 
 // ขอรับของ (สร้าง reservation)
 exports.createReservation = async (req, res) => {
   const { listingId } = req.params;
   const { quantity, message } = req.body;
 
+  if (req.user.role === "admin") {
+    throw new ApiError(403, "Admin ไม่มีสิทธิ์ขอรับของ (ป้องกันผลประโยชน์ทับซ้อน)");
+  }
+
   const listing = await Listing.findById(listingId);
   if (!listing) throw new ApiError(404, "ไม่พบประกาศนี้");
 
+  if (listing.owner.toString() === req.user.id) {
+    throw new ApiError(400, "ไม่สามารถส่งคำขอรับสิ่งของของตนเองได้");
+  }
+
+  // Single Lifetime Reservation: ขอได้ครั้งเดียวต่อประกาศตลอดไป แม้คำขอเดิมจะถูก reject/cancelled ไปแล้ว
+  const existing = await Reservation.findOne({ listing: listingId, requester: req.user.id });
+  if (existing) {
+    throw new ApiError(409, "คุณเคยส่งคำขอรับสิ่งของในประกาศนี้แล้ว ไม่สามารถส่งคำขอซ้ำได้");
+  }
+
   if (listing.status !== "available") {
     throw new ApiError(409, `ประกาศนี้ไม่พร้อมรับคำขอ (สถานะ: ${listing.status})`);
-  }
-  if (listing.owner.toString() === req.user.id) {
-    throw new ApiError(400, "ไม่สามารถขอรับของที่ตัวเองลงประกาศได้");
   }
   if (listing.expiresAt && listing.expiresAt < new Date()) {
     throw new ApiError(409, "ประกาศนี้หมดอายุแล้ว");
@@ -41,24 +53,11 @@ exports.createReservation = async (req, res) => {
 
 // คำขอของฉัน (ในฐานะผู้ขอ)
 exports.getMyReservations = async (req, res) => {
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
-  const filter = { requester: req.user.id };
-  if (req.query.status) filter.status = req.query.status;
-
-  const [reservations, total] = await Promise.all([
-    Reservation.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .populate({ path: "listing", select: "title images status availableQuantity owner", populate: { path: "owner", select: "name avatarUrl" } }),
-    Reservation.countDocuments(filter)
-  ]);
-
+  const { reservations, total, page, limit, totalPages } = await reservationService.listMyReservations(req.user.id, req.query);
   res.json({
     success: true,
     data: reservations,
-    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+    pagination: { page, limit, total, totalPages }
   });
 };
 
@@ -73,15 +72,37 @@ exports.getListingReservations = async (req, res) => {
     throw new ApiError(403, "เฉพาะเจ้าของประกาศเท่านั้นที่ดูรายการคำขอได้");
   }
 
-  const reservations = await Reservation.find({ listing: listingId })
-    .sort({ createdAt: -1 })
-    .populate("requester", "name avatarUrl phone");
+  const reservations = await reservationService.listListingReservations(listingId);
 
   res.json({ success: true, data: reservations });
 };
 
+// ---------- Unread / notification badge (สำหรับผู้ขอ) ----------
+
+exports.getUnreadCount = async (req, res) => {
+  const unreadCount = await Reservation.countDocuments({ requester: req.user.id, isReadByRequester: false });
+  res.json({ success: true, unreadCount });
+};
+
+exports.markRead = async (req, res) => {
+  const reservation = await Reservation.findById(req.params.id);
+  if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");
+  if (reservation.requester.toString() !== req.user.id) {
+    throw new ApiError(403, "เฉพาะผู้ขอเท่านั้นที่ทำรายการนี้ได้");
+  }
+  reservation.isReadByRequester = true;
+  await reservation.save();
+  res.json({ success: true, data: { reservation } });
+};
+
+exports.markAllRead = async (req, res) => {
+  await Reservation.updateMany({ requester: req.user.id, isReadByRequester: false }, { isReadByRequester: true });
+  res.json({ success: true });
+};
+
 // ---------- การเปลี่ยนสถานะ ----------
 
+// คืน availableQuantity ให้ประกาศ (ใช้ตอน reject/cancel/cascade) — export ไว้ให้ listing.controller ใช้ซ้ำตอน cascade cancel
 const restoreQuantity = async (listingId, qty) => {
   const updated = await Listing.findByIdAndUpdate(
     listingId,
@@ -90,11 +111,13 @@ const restoreQuantity = async (listingId, qty) => {
   );
   if (!updated) return;
   updated.availableQuantity = Math.min(updated.availableQuantity, updated.quantity);
+  // กลับเป็น available ได้เฉพาะตอนที่ยังเป็น reserved อยู่ — cancelled/expired ห้ามฟื้นกลับเด็ดขาด (no-resurrection rule)
   if (updated.availableQuantity > 0 && updated.status === "reserved") {
     updated.status = "available";
   }
   await updated.save();
 };
+exports.restoreQuantity = restoreQuantity;
 
 // เจ้าของอนุมัติ → หัก availableQuantity แบบ atomic ป้องกัน over-approve
 exports.approveReservation = async (req, res) => {
@@ -104,7 +127,8 @@ exports.approveReservation = async (req, res) => {
   const listing = await Listing.findById(reservation.listing);
   if (!listing) throw new ApiError(404, "ไม่พบประกาศของคำขอนี้");
 
-  if (listing.owner.toString() !== req.user.id && req.user.role !== "admin") {
+  // Admin Permission Isolation: admin ทำหน้าที่แทนเจ้าของประกาศไม่ได้เด็ดขาด
+  if (listing.owner.toString() !== req.user.id) {
     throw new ApiError(403, "เฉพาะเจ้าของประกาศเท่านั้นที่อนุมัติได้");
   }
   if (reservation.status !== "pending") {
@@ -133,6 +157,7 @@ exports.approveReservation = async (req, res) => {
 
   reservation.status = "approved";
   reservation.approvedAt = new Date();
+  reservation.isReadByRequester = false; // เจ้าของเพิ่งเปลี่ยนสถานะ → ผู้ขอยังไม่เห็น
   await reservation.save();
 
   res.json({ success: true, data: { reservation, listing: updated } });
@@ -143,7 +168,9 @@ exports.rejectReservation = async (req, res) => {
   if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");
 
   const listing = await Listing.findById(reservation.listing);
-  if (listing.owner.toString() !== req.user.id && req.user.role !== "admin") {
+  if (!listing) throw new ApiError(404, "ไม่พบประกาศของคำขอนี้");
+
+  if (listing.owner.toString() !== req.user.id) {
     throw new ApiError(403, "เฉพาะเจ้าของประกาศเท่านั้นที่ปฏิเสธได้");
   }
   if (!["pending", "approved"].includes(reservation.status)) {
@@ -157,6 +184,7 @@ exports.rejectReservation = async (req, res) => {
 
   reservation.status = "rejected";
   reservation.cancelledAt = new Date();
+  reservation.isReadByRequester = false;
   await reservation.save();
 
   res.json({ success: true, data: { reservation } });
@@ -180,6 +208,7 @@ exports.cancelReservation = async (req, res) => {
 
   reservation.status = "cancelled";
   reservation.cancelledAt = new Date();
+  // ผู้ขอยกเลิกเอง ไม่ต้องตั้ง isReadByRequester=false เพราะผู้ขอรู้อยู่แล้วว่าตัวเองทำอะไร
   await reservation.save();
 
   res.json({ success: true, data: { reservation } });
@@ -191,7 +220,9 @@ exports.completeReservation = async (req, res) => {
   if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");
 
   const listing = await Listing.findById(reservation.listing);
-  if (listing.owner.toString() !== req.user.id && req.user.role !== "admin") {
+  if (!listing) throw new ApiError(404, "ไม่พบประกาศของคำขอนี้");
+
+  if (listing.owner.toString() !== req.user.id) {
     throw new ApiError(403, "เฉพาะเจ้าของประกาศเท่านั้นที่ยืนยันการส่งมอบได้");
   }
   if (reservation.status !== "approved") {
@@ -202,10 +233,18 @@ exports.completeReservation = async (req, res) => {
   reservation.completedAt = new Date();
   await reservation.save();
 
-  // ถ้าของหมดแล้ว ปิดประกาศเป็น completed
-  if (listing.availableQuantity <= 0 && listing.status !== "completed") {
-    listing.status = "completed";
-    await listing.save();
+  // ปิดประกาศเป็น completed เฉพาะเมื่อยอดที่ส่งมอบสำเร็จรวมกันครบ quantity ทั้งหมดของประกาศ
+  // (ไม่ใช่แค่ availableQuantity หมด เพราะของอาจแบ่งส่งหลายคำขอ ต้องส่งครบทุกชิ้นจริงๆ)
+  if (!["cancelled", "expired"].includes(listing.status)) {
+    const completedTotal = await Reservation.aggregate([
+      { $match: { listing: listing._id, status: "completed" } },
+      { $group: { _id: null, sum: { $sum: "$quantity" } } }
+    ]);
+    const sumCompleted = completedTotal[0]?.sum || 0;
+    if (sumCompleted === listing.quantity) {
+      listing.status = "completed";
+      await listing.save();
+    }
   }
 
   res.json({ success: true, data: { reservation, listing } });

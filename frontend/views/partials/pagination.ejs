@@ -5,42 +5,15 @@
 
   if (total > 1) {
 %>
-<nav aria-label="การเปลี่ยนหน้าผลลัพธ์">
-  <ul class="pagination">
-    <!-- ปุ่มย้อนกลับ -->
-    <li>
-      <a 
-        href="<%= current > 1 ? base + (current - 1) : '#' %>" 
-        class="page-link <%= current <= 1 ? 'disabled' : '' %>"
-        aria-label="หน้าก่อนหน้า"
-      >
-        &laquo;
-      </a>
-    </li>
-
-    <!-- หมายเลขหน้า -->
-    <% for (let i = 1; i <= total; i++) { %>
-      <li>
-        <a 
-          href="<%= base + i %>" 
-          class="page-link <%= i === current ? 'active' : '' %>"
-          aria-current="<%= i === current ? 'page' : 'false' %>"
-        >
-          <%= i %>
-        </a>
-      </li>
-    <% } %>
-
-    <!-- ปุ่มถัดไป -->
-    <li>
-      <a 
-        href="<%= current < total ? base + (current + 1) : '#' %>" 
-        class="page-link <%= current >= total ? 'disabled' : '' %>"
-        aria-label="หน้าถัดไป"
-      >
-        &raquo;
-      </a>
-    </li>
-  </ul>
-</nav>
+<div class="ui pagination menu" aria-label="การเปลี่ยนหน้าผลลัพธ์" style="flex-wrap:wrap;">
+  <a href="<%= current > 1 ? base + (current - 1) : '#' %>" class="icon item <%= current <= 1 ? 'disabled' : '' %>" aria-label="หน้าก่อนหน้า">
+    <i class="fa-solid fa-angle-left"></i>
+  </a>
+  <% for (let i = 1; i <= total; i++) { %>
+    <a href="<%= base + i %>" class="item <%= i === current ? 'active' : '' %>" aria-current="<%= i === current ? 'page' : 'false' %>"><%= i %></a>
+  <% } %>
+  <a href="<%= current < total ? base + (current + 1) : '#' %>" class="icon item <%= current >= total ? 'disabled' : '' %>" aria-label="หน้าถัดไป">
+    <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
 <% } %>

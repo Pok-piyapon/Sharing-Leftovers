@@ -47,7 +47,8 @@ const listingSchema = new mongoose.Schema(
     pickup: {
       method: {
         type: String,
-        enum: ["pickup", "delivery"]
+        enum: ["pickup"],
+        default: "pickup"
       },
       location: {
         type: {
@@ -57,6 +58,11 @@ const listingSchema = new mongoose.Schema(
         coordinates: [Number]
       },
       address: String,
+      area: {
+        province: String,
+        district: String,
+        subdistrict: String
+      },
       pickupStart: Date,
       pickupEnd: Date
     },

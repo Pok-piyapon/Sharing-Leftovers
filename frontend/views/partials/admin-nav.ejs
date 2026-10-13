@@ -1,0 +1,17 @@
+<%
+  const navActive = typeof active !== 'undefined' ? active : '';
+  const NAV_ITEMS = [
+    { key: 'index', label: 'ภาพรวม', icon: 'fa-gauge', href: '/admin' },
+    { key: 'listings', label: 'ประกาศทั้งหมด', icon: 'fa-box', href: '/admin/listings' },
+    { key: 'reports', label: 'รายงานปัญหา', icon: 'fa-flag', href: '/admin/reports' },
+    { key: 'users', label: 'ผู้ใช้', icon: 'fa-users', href: '/admin/users' },
+    { key: 'categories', label: 'หมวดหมู่', icon: 'fa-tags', href: '/admin/categories' }
+  ];
+%>
+<div class="ui secondary pointing stackable menu">
+  <% NAV_ITEMS.forEach(function (item) { %>
+    <a href="<%= item.href %>" class="item <%= navActive === item.key ? 'active' : '' %>">
+      <i class="fa-solid <%= item.icon %>"></i>&nbsp;<%= item.label %>
+    </a>
+  <% }) %>
+</div>

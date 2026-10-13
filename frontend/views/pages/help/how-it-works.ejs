@@ -1,0 +1,84 @@
+<%- include('../../partials/head', { title: 'วิธีใช้งาน' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<div class="ui container" style="max-width: 760px !important; padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green); text-align:center;"><i class="fa-solid fa-book-open"></i> วิธีใช้งาน Sharing Leftovers</h1>
+
+  <div class="ui segment" style="margin: 2em 0;">
+    <div class="ui vertical steps" style="width:100%; box-shadow:none; border:none;">
+      <div class="step">
+        <i class="fa-solid fa-camera icon"></i>
+        <div class="content">
+          <div class="title">1. ลงประกาศ</div>
+          <div class="description">ถ่ายรูปสิ่งของที่ไม่ได้ใช้แล้ว (1-5 รูป) พร้อมรายละเอียดและพื้นที่นัดรับโดยประมาณ</div>
+        </div>
+      </div>
+      <div class="step">
+        <i class="fa-solid fa-magnifying-glass icon"></i>
+        <div class="content">
+          <div class="title">2. ผู้สนใจค้นหาและส่งคำขอ</div>
+          <div class="description">ผู้ใช้คนอื่นค้นหาสิ่งของและส่งคำขอรับของ (ส่งได้คนละ 1 ครั้งต่อประกาศเท่านั้น)</div>
+        </div>
+      </div>
+      <div class="step">
+        <i class="fa-solid fa-clipboard-check icon"></i>
+        <div class="content">
+          <div class="title">3. เจ้าของพิจารณาอนุมัติ</div>
+          <div class="description">เจ้าของประกาศเลือกอนุมัติหรือปฏิเสธคำขอที่ได้รับ</div>
+        </div>
+      </div>
+      <div class="step">
+        <i class="fa-solid fa-lock-open icon"></i>
+        <div class="content">
+          <div class="title">4. ข้อมูลนัดรับปลดล็อก</div>
+          <div class="description">เมื่ออนุมัติแล้ว ที่อยู่ละเอียดและเบอร์โทรจะแสดงให้ผู้ขอเห็นเพื่อนัดรับของ</div>
+        </div>
+      </div>
+      <div class="step">
+        <i class="fa-solid fa-handshake icon"></i>
+        <div class="content">
+          <div class="title">5. นัดรับและยืนยันส่งมอบ</div>
+          <div class="description">ทั้งสองฝ่ายนัดรับของด้วยตนเอง เมื่อส่งมอบเสร็จ เจ้าของกดยืนยันปิดรายการ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ui segment" style="margin-bottom: 2em;">
+    <h3 class="ui header">กติกาสำคัญ</h3>
+    <div class="ui relaxed list">
+      <div class="item" id="single-reservation"><i class="fa-solid fa-lock icon"></i><div class="content">ส่งคำขอได้คนละ 1 ครั้งต่อประกาศเท่านั้น (แม้คำขอเดิมถูกปฏิเสธหรือยกเลิกไปแล้ว)</div></div>
+      <div class="item" id="pickup-only"><i class="fa-solid fa-handshake icon"></i><div class="content">รับของด้วยตนเองเท่านั้น ไม่มีบริการจัดส่ง</div></div>
+      <div class="item" id="privacy"><i class="fa-solid fa-shield-halved icon"></i><div class="content">ที่อยู่ละเอียดและเบอร์โทรของเจ้าของจะแสดงให้เห็นเฉพาะผู้ที่ได้รับการอนุมัติคำขอแล้วเท่านั้น</div></div>
+    </div>
+  </div>
+
+  <div class="ui segment" style="margin-bottom: 2em;">
+    <h3 class="ui header">คำถามที่พบบ่อย</h3>
+    <div class="ui styled fluid accordion">
+      <div class="title"><i class="fa-solid fa-chevron-down icon"></i>ต้องเสียค่าใช้จ่ายไหม?</div>
+      <div class="content"><p>ไม่เสียค่าใช้จ่ายใดๆ แพลตฟอร์มนี้สร้างขึ้นเพื่อแบ่งปันสิ่งของในชุมชนโดยไม่แสวงหากำไร</p></div>
+
+      <div class="title"><i class="fa-solid fa-chevron-down icon"></i>ถ้าของมีหลายชิ้น ต้องส่งมอบให้คนเดียวหรือหลายคนได้?</div>
+      <div class="content"><p>แบ่งให้หลายคนได้ เจ้าของสามารถอนุมัติหลายคำขอจนกว่าของจะหมด ประกาศจะปิดเป็น "ส่งมอบครบแล้ว" เมื่อส่งมอบของครบทุกชิ้นแล้วเท่านั้น</p></div>
+
+      <div class="title"><i class="fa-solid fa-chevron-down icon"></i>ถ้าถูกปฏิเสธคำขอ ส่งคำขอใหม่ได้ไหม?</div>
+      <div class="content"><p>ไม่ได้ ระบบอนุญาตให้ส่งคำขอได้เพียงครั้งเดียวต่อประกาศ ไม่ว่าผลจะเป็นอย่างไร</p></div>
+
+      <div class="title"><i class="fa-solid fa-chevron-down icon"></i>จะรู้ได้อย่างไรว่าคำขอของฉันได้รับการอนุมัติ?</div>
+      <div class="content"><p>จะมีสัญลักษณ์แจ้งเตือนที่เมนู "คำขอของฉัน" และสามารถดูสถานะล่าสุดได้ที่หน้า /reservations/my</p></div>
+    </div>
+  </div>
+
+  <div class="ui green segment" style="text-align:center; padding: 2em;">
+    <h2 class="ui header">พร้อมเริ่มแบ่งปันแล้วหรือยัง?</h2>
+    <% if (isAuthenticated) { %>
+      <a href="/listings/new" class="ui big green button">+ เริ่มแบ่งปัน</a>
+    <% } else { %>
+      <a href="/auth" class="ui big green button">เข้าสู่ระบบเพื่อเริ่มแบ่งปัน</a>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

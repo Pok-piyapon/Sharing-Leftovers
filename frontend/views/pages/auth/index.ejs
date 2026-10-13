@@ -1,0 +1,68 @@
+<%- include('../../partials/head', { title: 'เข้าสู่ระบบ / สมัครสมาชิก' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<div class="ui container" style="max-width: 480px !important; padding-top: 3em; padding-bottom: 3em;">
+  <% if (returnTo !== '/') { %>
+    <div class="ui info message">
+      <i class="fa-solid fa-circle-info"></i> เข้าสู่ระบบเพื่อขอรับของชิ้นนี้ต่อ
+    </div>
+  <% } %>
+
+  <div class="ui segment">
+    <div class="ui two item tabular menu">
+      <button type="button" class="item <%= tab === 'login' ? 'active' : '' %>" data-auth-tab="login">เข้าสู่ระบบ</button>
+      <button type="button" class="item <%= tab === 'register' ? 'active' : '' %>" data-auth-tab="register">สมัครสมาชิก</button>
+    </div>
+
+    <input type="hidden" id="return-to" value="<%= returnTo %>">
+
+    <!-- แท็บเข้าสู่ระบบ -->
+    <div class="auth-tab-panel" data-tab-panel="login" style="display: <%= tab === 'login' ? 'block' : 'none' %>; padding-top: 1.5em;">
+      <form id="login-form" class="ui form">
+        <div class="field">
+          <label>อีเมล <span style="color:var(--brand-terracotta);">*</span></label>
+          <input type="email" id="login-email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label>รหัสผ่าน <span style="color:var(--brand-terracotta);">*</span></label>
+          <div class="ui action input fluid">
+            <input type="password" id="login-password" required autocomplete="current-password">
+            <button type="button" class="ui basic button" data-toggle-password="login-password"><i class="fa-regular fa-eye"></i></button>
+          </div>
+        </div>
+        <button type="submit" class="ui fluid green button">เข้าสู่ระบบ</button>
+      </form>
+    </div>
+
+    <!-- แท็บสมัครสมาชิก -->
+    <div class="auth-tab-panel" data-tab-panel="register" style="display: <%= tab === 'register' ? 'block' : 'none' %>; padding-top: 1.5em;">
+      <form id="register-form" class="ui form">
+        <div class="field">
+          <label>ชื่อ <span style="color:var(--brand-terracotta);">*</span></label>
+          <input type="text" id="register-name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label>อีเมล <span style="color:var(--brand-terracotta);">*</span></label>
+          <input type="email" id="register-email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label>เบอร์โทรศัพท์</label>
+          <input type="tel" id="register-phone" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label>รหัสผ่าน (อย่างน้อย 8 ตัวอักษร) <span style="color:var(--brand-terracotta);">*</span></label>
+          <div class="ui action input fluid">
+            <input type="password" id="register-password" minlength="8" required autocomplete="new-password">
+            <button type="button" class="ui basic button" data-toggle-password="register-password"><i class="fa-regular fa-eye"></i></button>
+          </div>
+        </div>
+        <button type="submit" class="ui fluid green button">สมัครสมาชิก</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/pages/auth.js" defer></script>
+
+<%- include('../../partials/footer') %>

@@ -4,20 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= typeof title !== 'undefined' ? title + ' | Sharing Leftovers' : 'Sharing Leftovers — ตลาดแบ่งปันสิ่งของเพื่อชุมชน' %></title>
-  
+
   <!-- ไอคอนและ Meta สำหรับ SEO/Social -->
   <meta name="description" content="แพลตฟอร์มแบ่งปันสิ่งของเหลือใช้ สภาพดี ภายในชุมชน เพื่อลดขยะ (Zero Waste) และสร้างความสัมพันธ์ที่อบอุ่น">
-  
-  <!-- ฟอนต์ภาษาไทย (Noto Sans Thai สำหรับเนื้อหา และ Prompt สำหรับหัวข้อ) ตาม UI.md -->
+
+  <!-- ฟอนต์ Kanit (ใช้แบบเดียวทั้งเว็บ) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Prompt:wght@500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- ไฟล์สไตล์กลาง (CSS Tokens, Layout, Components) -->
-  <link rel="stylesheet" href="/assets/css/tokens.css">
-  <link rel="stylesheet" href="/assets/css/layout.css">
-  <link rel="stylesheet" href="/assets/css/components.css">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- ไอคอน Font Awesome Free (Solid/Regular/Brands) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- Semantic UI (UI library เดียวที่ใช้ทั้งเว็บ) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css">
+
+  <!-- ปรับฟอนต์ให้เป็น Kanit ทับ default ของ Semantic UI + สีโทนเขียวของแบรนด์ -->
+  <link rel="stylesheet" href="/assets/css/overrides.css">
+
+  <!-- jQuery (จำเป็นสำหรับ Semantic UI JS modules) ต้องโหลดก่อน semantic.min.js เสมอ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js"></script>
+
   <!-- สคริปต์กลางหน้าบ้าน (API Service และ UI Components Controller) -->
   <script src="/assets/js/api.service.js" defer></script>
   <script src="/assets/js/components.js" defer></script>

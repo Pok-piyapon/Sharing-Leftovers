@@ -1,0 +1,77 @@
+<%- include('../../partials/head', { title: 'จัดการผู้ใช้' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-users"></i> จัดการผู้ใช้</h1>
+
+  <%- include('../../partials/admin-nav', { active: 'users' }) %>
+
+  <div style="margin: 1.5em 0;">
+    <a href="/admin/users" class="ui <%= !isActiveFilter ? 'green' : '' %> label">ทั้งหมด</a>
+    <a href="/admin/users?isActive=true" class="ui <%= isActiveFilter === 'true' ? 'green' : '' %> label">ใช้งานอยู่</a>
+    <a href="/admin/users?isActive=false" class="ui <%= isActiveFilter === 'false' ? 'green' : '' %> label">ถูกระงับ</a>
+  </div>
+
+  <table class="ui celled table">
+    <thead>
+      <tr>
+        <th>ชื่อ</th>
+        <th>อีเมล</th>
+        <th>เข้าร่วมเมื่อ</th>
+        <th>สถานะ</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(function (u) { %>
+        <tr>
+          <td><%= u.name %></td>
+          <td><%= u.email %></td>
+          <td><%= new Date(u.createdAt).toLocaleDateString('th-TH') %></td>
+          <td>
+            <% if (u.isActive) { %>
+              <div class="ui green label">ใช้งานอยู่</div>
+            <% } else { %>
+              <div class="ui red label" title="<%= u.banReason || '' %>">ถูกระงับ</div>
+            <% } %>
+          </td>
+          <td>
+            <% if (u.isActive) { %>
+              <% if (u.role !== 'admin') { %>
+                <button type="button" class="ui red mini button" data-open-ban="<%= u._id %>" data-open-modal="ban-modal">ระงับการใช้งาน</button>
+              <% } %>
+            <% } else { %>
+              <button type="button" class="ui basic mini button" data-unban="<%= u._id %>">เปิดการใช้งาน</button>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <%- include('../../partials/pagination', { currentPage, totalPages, basePath: '/admin/users?page=' }) %>
+</div>
+
+<!-- Modal: ระงับผู้ใช้ (บังคับระบุเหตุผล) -->
+<div class="ui modal" id="ban-modal">
+  <div class="header">ระงับการใช้งานผู้ใช้</div>
+  <div class="content">
+    <div class="ui warning message">
+      <i class="fa-solid fa-triangle-exclamation"></i> เซสชันที่ผู้ใช้นี้กำลังใช้งานอยู่จะถูกตัดทันทีทุกอุปกรณ์
+    </div>
+    <form id="ban-form" class="ui form">
+      <div class="field">
+        <label>เหตุผลการระงับ <span style="color:var(--brand-terracotta);">*</span></label>
+        <textarea id="ban-reason" rows="3" required></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="actions">
+    <div class="ui button" data-close-modal>ยกเลิก</div>
+    <button type="submit" form="ban-form" class="ui red button">ยืนยันระงับการใช้งาน</button>
+  </div>
+</div>
+
+<script src="/assets/js/pages/admin-users.js" defer></script>
+
+<%- include('../../partials/footer') %>

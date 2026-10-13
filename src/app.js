@@ -9,13 +9,17 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 
 const { errorHandler, notFoundHandler } = require("./middlewares/errorHandler");
+const attachLocals = require("./middlewares/attachLocals");
 
+const webRoutes = require("./routes/web.routes");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const categoryRoutes = require("./routes/category.routes");
 const listingRoutes = require("./routes/listing.routes");
 const reservationRoutes = require("./routes/reservation.routes");
 const reportRoutes = require("./routes/report.routes");
+const adminRoutes = require("./routes/admin.routes");
+const uploadRoutes = require("./routes/upload.routes");
 
 const app = express();
 
@@ -29,6 +33,7 @@ app.use(
   })
 );
 app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ extended: true })); // สำหรับฟอร์ม HTML ฝั่งเว็บที่ POST จริง (เช่น /auth/logout)
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use("/assets", express.static(path.join(__dirname, "../frontend/public")));
 
@@ -42,7 +47,8 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       collectionName: "sessions",
-      ttl: 7 * 24 * 60 * 60 // 7 วัน
+      ttl: 7 * 24 * 60 * 60, // 7 วัน
+      stringify: false // เก็บ session เป็น document จริง เพื่อ query/ลบ session ของ user รายคนได้ตรงๆตอนแบน
     }),
     cookie: {
       httpOnly: true,
@@ -53,15 +59,14 @@ app.use(
   })
 );
 
+// เตรียม res.locals (currentUser, isAuthenticated, unreadCount, csrfToken, flash) ให้ทุก request
+app.use(attachLocals);
+
 // Swagger docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/health", (req, res) => {
   res.json({ success: true, status: "ok", uptime: process.uptime() });
-});
-
-app.get("/", (req, res) => {
-  res.render("home", { appName: "Sharing Leftovers" });
 });
 
 app.use("/api/v1/auth", authRoutes);
@@ -70,6 +75,10 @@ app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/listings", listingRoutes);
 app.use("/api/v1/reservations", reservationRoutes);
 app.use("/api/v1/reports", reportRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/uploads", uploadRoutes);
+
+app.use("/", webRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

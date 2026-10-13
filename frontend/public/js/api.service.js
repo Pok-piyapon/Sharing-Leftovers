@@ -25,11 +25,13 @@ const ApiService = (function () {
    */
   async function request(endpoint, options = {}) {
     const url = `${BASE_URL}${endpoint}`;
+    // FormData (อัปโหลดไฟล์) ต้องไม่ตั้ง Content-Type เอง ปล่อยให้เบราว์เซอร์ใส่ boundary ให้
+    const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
 
     const config = {
       method: options.method || 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...(options.headers || {})
       },
       // ส่ง Session Cookie ไปด้วยเสมอข้าม Request
@@ -37,8 +39,8 @@ const ApiService = (function () {
       ...options
     };
 
-    // แปลง body เป็น JSON string ถ้าเป็น Object
-    if (config.body && typeof config.body === 'object') {
+    // แปลง body เป็น JSON string ถ้าเป็น Object ธรรมดา (ไม่แตะ FormData)
+    if (config.body && typeof config.body === 'object' && !isFormData) {
       config.body = JSON.stringify(config.body);
     }
 
@@ -148,6 +150,49 @@ const ApiService = (function () {
        */
       async getById(id) {
         return request(`/categories/${id}`);
+      },
+
+      /**
+       * สร้างหมวดหมู่ใหม่ (admin)
+       * @param {Object} data - { name, slug, description, icon }
+       */
+      async create(data) {
+        return request('/categories', { method: 'POST', body: data });
+      },
+
+      /**
+       * แก้ไขหมวดหมู่ (admin)
+       * @param {string} id
+       * @param {Object} data
+       */
+      async update(id, data) {
+        return request(`/categories/${id}`, { method: 'PATCH', body: data });
+      },
+
+      /**
+       * ลบ/ปิดใช้งานหมวดหมู่ (admin) — soft-disable อัตโนมัติถ้ามี listing ใช้อยู่
+       * @param {string} id
+       */
+      async delete(id) {
+        return request(`/categories/${id}`, { method: 'DELETE' });
+      }
+    },
+
+    /**
+     * --------------------------------------------------------------------------
+     * โมดูลอัปโหลดไฟล์รูปภาพ (Uploads API)
+     * --------------------------------------------------------------------------
+     */
+    uploads: {
+      /**
+       * อัปโหลดไฟล์รูปภาพหนึ่งไฟล์ ได้ URL กลับมาใช้ใส่ในฟิลด์ images ของประกาศ
+       * @param {File} file
+       * @returns {Promise<Object>} { success, data: { url } }
+       */
+      async uploadImage(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+        return request('/uploads', { method: 'POST', body: formData });
       }
     },
 
@@ -216,6 +261,37 @@ const ApiService = (function () {
         return request(`/listings/${id}`, {
           method: 'DELETE'
         });
+      }
+    },
+
+    /**
+     * --------------------------------------------------------------------------
+     * โมดูลโปรไฟล์ผู้ใช้ (Users API)
+     * --------------------------------------------------------------------------
+     */
+    users: {
+      /**
+       * แก้ไขโปรไฟล์ของตนเอง (name, phone, avatarUrl, location, address)
+       * @param {Object} data
+       */
+      async updateMe(data) {
+        return request('/users/me', { method: 'PATCH', body: data });
+      },
+
+      /**
+       * ประกาศทั้งหมดที่ตนเองลง
+       * @param {Object} [params]
+       */
+      async getMyListings(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return request(`/users/me/listings${query ? `?${query}` : ''}`);
+      },
+
+      /**
+       * ปิดการใช้งานบัญชีของตนเอง (soft delete)
+       */
+      async deleteMe() {
+        return request('/users/me', { method: 'DELETE' });
       }
     },
 
@@ -291,6 +367,36 @@ const ApiService = (function () {
         return request(`/reservations/${id}/complete`, {
           method: 'PATCH'
         });
+      },
+
+      /**
+       * เจ้าของประกาศดูรายชื่อผู้ขอรับของทั้งหมดในประกาศหนึ่ง
+       * @param {string} listingId
+       */
+      async getListingReservations(listingId) {
+        return request(`/listings/${listingId}/reservations`);
+      },
+
+      /**
+       * จำนวนคำขอที่ยังไม่อ่าน (สำหรับ badge แจ้งเตือน)
+       */
+      async getUnreadCount() {
+        return request('/reservations/unread-count');
+      },
+
+      /**
+       * ทำเครื่องหมายอ่านแล้วทีละรายการ
+       * @param {string} id
+       */
+      async markRead(id) {
+        return request(`/reservations/${id}/read`, { method: 'PATCH' });
+      },
+
+      /**
+       * ทำเครื่องหมายอ่านแล้วทั้งหมด (เรียกตอนเปิดหน้า /reservations/my)
+       */
+      async markAllRead() {
+        return request('/reservations/read-all', { method: 'PATCH' });
       }
     },
 
@@ -312,6 +418,64 @@ const ApiService = (function () {
           method: 'POST',
           body: { reason, description }
         });
+      },
+
+      /**
+       * ดูรายการ report ทั้งหมด (admin)
+       * @param {Object} [params] - { status, reason, page, limit }
+       */
+      async getAll(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return request(`/reports${query ? `?${query}` : ''}`);
+      },
+
+      /**
+       * อัปเดตสถานะ report (admin)
+       * @param {string} id
+       * @param {string} status
+       */
+      async updateStatus(id, status) {
+        return request(`/reports/${id}`, { method: 'PATCH', body: { status } });
+      }
+    },
+
+    /**
+     * --------------------------------------------------------------------------
+     * โมดูลผู้ดูแลระบบ (Admin API)
+     * --------------------------------------------------------------------------
+     */
+    admin: {
+      /**
+       * ตัวเลขสรุปภาพรวมสำหรับหน้า /admin
+       */
+      async getStats() {
+        return request('/admin/stats');
+      },
+
+      /**
+       * ดูรายชื่อผู้ใช้ทั้งหมด
+       * @param {Object} [params] - { page, limit, isActive }
+       */
+      async getUsers(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return request(`/users${query ? `?${query}` : ''}`);
+      },
+
+      /**
+       * ระงับการใช้งานผู้ใช้ (บังคับ logout ทันทีทุกอุปกรณ์)
+       * @param {string} id
+       * @param {string} reason - จำเป็นเสมอตอนแบน
+       */
+      async banUser(id, reason) {
+        return request(`/users/${id}/status`, { method: 'PATCH', body: { isActive: false, reason } });
+      },
+
+      /**
+       * เปิดการใช้งานผู้ใช้กลับ
+       * @param {string} id
+       */
+      async unbanUser(id) {
+        return request(`/users/${id}/status`, { method: 'PATCH', body: { isActive: true } });
       }
     }
   };

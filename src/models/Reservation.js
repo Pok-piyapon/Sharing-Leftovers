@@ -27,7 +27,13 @@ const reservationSchema = new mongoose.Schema(
     },
     approvedAt: Date,
     completedAt: Date,
-    cancelledAt: Date
+    cancelledAt: Date,
+    // true = ผู้ขอเห็นสถานะล่าสุดแล้ว; เริ่มต้น true เพราะ "เหตุการณ์ใหม่" ที่ requester ต้องถูกแจ้งคือ
+    // ตอนเจ้าของเปลี่ยนสถานะ (approve/reject) ไม่ใช่ตอนสร้างคำขอ (ซึ่ง requester รู้อยู่แล้วว่าตัวเองทำ)
+    isReadByRequester: {
+      type: Boolean,
+      default: true
+    }
   },
   {
     timestamps: true,

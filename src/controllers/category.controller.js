@@ -1,6 +1,7 @@
 const Category = require("../models/Category");
 const Listing = require("../models/Listing");
 const ApiError = require("../middlewares/ApiError");
+const categoryService = require("../services/category.service");
 
 exports.listCategories = async (req, res) => {
   const filter = {};
@@ -8,8 +9,9 @@ exports.listCategories = async (req, res) => {
     filter.isActive = req.query.isActive === "true";
   }
 
-  const categories = await Category.find(filter).sort({ name: 1 });
-  res.json({ success: true, data: categories });
+  const withUsage = await categoryService.listWithUsage(filter);
+
+  res.json({ success: true, data: withUsage });
 };
 
 exports.getCategory = async (req, res) => {

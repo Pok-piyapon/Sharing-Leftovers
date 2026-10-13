@@ -26,6 +26,47 @@ router.get("/my", requireAuth, reservationController.getMyReservations);
 
 /**
  * @swagger
+ * /reservations/unread-count:
+ *   get:
+ *     summary: จำนวนคำขอที่ยังไม่อ่าน (สำหรับ badge แจ้งเตือนของผู้ขอ)
+ *     tags: [Reservations]
+ *     security: [{ sessionCookie: [] }]
+ *     responses:
+ *       200: { description: OK }
+ */
+router.get("/unread-count", requireAuth, reservationController.getUnreadCount);
+
+/**
+ * @swagger
+ * /reservations/read-all:
+ *   patch:
+ *     summary: ทำเครื่องหมายอ่านแล้วทั้งหมด (เปิดหน้า /reservations/my)
+ *     tags: [Reservations]
+ *     security: [{ sessionCookie: [] }]
+ *     responses:
+ *       200: { description: OK }
+ */
+router.patch("/read-all", requireAuth, reservationController.markAllRead);
+
+/**
+ * @swagger
+ * /reservations/{id}/read:
+ *   patch:
+ *     summary: ทำเครื่องหมายอ่านแล้วทีละรายการ
+ *     tags: [Reservations]
+ *     security: [{ sessionCookie: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: OK }
+ */
+router.patch("/:id/read", requireAuth, reservationController.markRead);
+
+/**
+ * @swagger
  * /reservations/{id}/approve:
  *   patch:
  *     summary: เจ้าของประกาศอนุมัติคำขอ (หัก availableQuantity)

@@ -58,7 +58,7 @@ router.get("/:id", requireAuth, requireAdmin, userController.getUser);
  * @swagger
  * /users/{id}/status:
  *   patch:
- *     summary: เปิด/ปิดการใช้งานหรือเปลี่ยน role (admin)
+ *     summary: เปิด/ปิดการใช้งานผู้ใช้ (admin) — ห้ามเปลี่ยน role ผ่าน endpoint นี้
  *     tags: [Users]
  *     security: [{ sessionCookie: [] }]
  *     parameters:
@@ -67,15 +67,18 @@ router.get("/:id", requireAuth, requireAdmin, userController.getUser);
  *         required: true
  *         schema: { type: string }
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [isActive]
  *             properties:
  *               isActive: { type: boolean }
- *               role: { type: string, enum: [user, admin] }
+ *               reason: { type: string, description: "จำเป็นเมื่อ isActive=false" }
  *     responses:
  *       200: { description: OK }
+ *       400: { description: ไม่ระบุ isActive หรือไม่ระบุ reason ตอนแบน }
  */
 router.patch("/:id/status", requireAuth, requireAdmin, userController.updateUserStatus);
 

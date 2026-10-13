@@ -1,0 +1,42 @@
+<%- include('../../partials/head', { title: 'ภาพรวมระบบ' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-shield-halved"></i> ภาพรวมระบบ</h1>
+
+  <%- include('../../partials/admin-nav', { active: 'index' }) %>
+
+  <div class="ui four stackable statistics" style="margin: 2em 0;">
+    <div class="statistic">
+      <div class="value" style="color: var(--brand-green);"><%= stats.totalUsers %></div>
+      <div class="label">ผู้ใช้ทั้งหมด</div>
+    </div>
+    <div class="statistic">
+      <div class="value" style="color: var(--brand-terracotta);"><%= stats.suspendedUsers %></div>
+      <div class="label">ผู้ใช้ที่ถูกระงับ</div>
+    </div>
+    <div class="statistic">
+      <div class="value" style="color: #21ba45;"><%= stats.activeListings %></div>
+      <div class="label">ประกาศที่พร้อมรับ</div>
+    </div>
+    <div class="statistic">
+      <div class="value" style="color: #fbbd08;"><%= stats.pendingReports %></div>
+      <div class="label">รายงานที่รอตรวจสอบ</div>
+    </div>
+  </div>
+
+  <h3 class="ui header">รายงานล่าสุดที่รอตรวจสอบ</h3>
+  <% if (recentReports.length === 0) { %>
+    <p style="color: rgba(0,0,0,.5);">ไม่มีรายงานที่รอตรวจสอบ</p>
+  <% } else { %>
+    <% recentReports.forEach(function (r) { %>
+      <div class="ui segment" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap: 0.5em;">
+        <span><%= (r.listing && r.listing.title) || 'ประกาศถูกลบแล้ว' %> — รายงานโดย <%= (r.reporter && r.reporter.name) || '-' %></span>
+        <a href="/admin/reports">ดูรายละเอียด <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<%- include('../../partials/footer') %>

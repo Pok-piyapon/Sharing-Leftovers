@@ -1,0 +1,73 @@
+<%- include('../../partials/head', { title: 'รายงานปัญหา' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const REASON_TEXT = { spam: 'สแปม', inappropriate: 'ไม่เหมาะสม', fraud: 'หลอกลวง', illegal: 'ผิดกฎหมาย', wrong_information: 'ข้อมูลเท็จ', other: 'อื่น ๆ' };
+  const STATUS_INFO = {
+    pending: { text: 'รอตรวจสอบ', color: 'yellow' },
+    reviewing: { text: 'กำลังตรวจสอบ', color: 'green' },
+    resolved: { text: 'ปิดเคสแล้ว', color: 'grey' },
+    rejected: { text: 'ปฏิเสธรายงาน', color: 'red' }
+  };
+  const STATUS_FILTERS = [
+    { value: '', label: 'ทั้งหมด' },
+    { value: 'pending', label: 'รอตรวจสอบ' },
+    { value: 'reviewing', label: 'กำลังตรวจสอบ' },
+    { value: 'resolved', label: 'ปิดเคสแล้ว' },
+    { value: 'rejected', label: 'ปฏิเสธแล้ว' }
+  ];
+%>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-flag"></i> รายงานปัญหา</h1>
+
+  <%- include('../../partials/admin-nav', { active: 'reports' }) %>
+
+  <div style="margin: 1.5em 0;">
+    <% STATUS_FILTERS.forEach(function (f) { %>
+      <a href="/admin/reports<%= f.value ? '?status=' + f.value : '' %>" class="ui <%= status === f.value ? 'green' : '' %> label"><%= f.label %></a>
+    <% }) %>
+  </div>
+
+  <% if (reports.length === 0) { %>
+    <%- include('../../partials/empty-state', { emptyIcon: 'fa-circle-check', emptyTitle: 'ไม่มีรายงานในหมวดนี้' }) %>
+  <% } else { %>
+    <% reports.forEach(function (r) { const info = STATUS_INFO[r.status] || { text: r.status, color: 'yellow' }; const listing = r.listing || {}; %>
+      <div class="ui segment">
+        <div style="display:flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5em;">
+          <div>
+            <strong><%= listing.title || 'ประกาศถูกลบแล้ว' %></strong>
+            <span style="color: rgba(0,0,0,.5);"> &middot; รายงานโดย <%= (r.reporter && r.reporter.name) || '-' %> &middot; <%= new Date(r.createdAt).toLocaleDateString('th-TH') %></span>
+          </div>
+          <div class="ui <%= info.color %> label"><%= info.text %></div>
+        </div>
+        <p style="margin-top: 0.5em;">
+          <span class="ui label"><%= REASON_TEXT[r.reason] || r.reason %></span>
+          <% if (r.description) { %> — <%= r.description %><% } %>
+        </p>
+
+        <% if (['pending','reviewing'].includes(r.status)) { %>
+          <div style="margin-top: 0.8em;">
+            <% if (r.status === 'pending') { %>
+              <button type="button" class="ui basic small button" data-report-reviewing="<%= r._id %>">เริ่มตรวจสอบ</button>
+            <% } %>
+            <% if (listing._id) { %>
+              <button type="button" class="ui red small button" data-report-cancel-listing="<%= r._id %>" data-listing-id="<%= listing._id %>">ยกเลิกประกาศนี้</button>
+            <% } %>
+            <button type="button" class="ui basic small button" data-report-resolved="<%= r._id %>">ปิดเคส (ไม่มีปัญหา)</button>
+            <button type="button" class="ui basic small button" data-report-rejected="<%= r._id %>">ปฏิเสธรายงาน</button>
+            <% if (listing.owner && listing.owner._id) { %>
+              <button type="button" class="ui basic small button" data-report-ban-author="<%= listing.owner._id %>"><i class="fa-solid fa-ban"></i> ระงับผู้ลงประกาศ</button>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    <% }) %>
+    <%- include('../../partials/pagination', { currentPage, totalPages, basePath: status ? `/admin/reports?status=${status}&page=` : '/admin/reports?page=' }) %>
+  <% } %>
+</div>
+
+<script src="/assets/js/pages/admin-reports.js" defer></script>
+
+<%- include('../../partials/footer') %>

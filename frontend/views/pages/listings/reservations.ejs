@@ -1,0 +1,77 @@
+<%- include('../../partials/head', { title: 'จัดการคำขอ' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const STATUS_INFO = {
+    pending: { text: 'รอพิจารณา', color: 'yellow' },
+    approved: { text: 'อนุมัติแล้ว', color: 'green' },
+    rejected: { text: 'ไม่อนุมัติ', color: 'red' },
+    cancelled: { text: 'ยกเลิกแล้ว', color: 'grey' },
+    completed: { text: 'ส่งมอบสำเร็จ', color: 'grey' }
+  };
+%>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <a href="/listings/<%= listing._id %>" style="display:inline-block; margin-bottom: 1em;"><i class="fa-solid fa-angle-left"></i> กลับไปหน้าประกาศ</a>
+
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-list-check"></i> จัดการคำขอ — <%= listing.title %></h1>
+  <% if (!canManage) { %>
+    <p style="color: rgba(0,0,0,.5); margin-bottom: 1em;"><i class="fa-solid fa-shield-halved"></i> คุณกำลังดูในมุมมอง Admin (อ่านอย่างเดียว ไม่สามารถอนุมัติ/ปฏิเสธแทนเจ้าของได้)</p>
+  <% } %>
+
+  <div class="ui three stackable statistics" style="margin-bottom: 2em;">
+    <div class="statistic">
+      <div class="value"><%= summary.remaining %> / <%= summary.total %></div>
+      <div class="label">เหลือ/ทั้งหมด</div>
+    </div>
+    <div class="statistic">
+      <div class="value"><%= summary.reserved %></div>
+      <div class="label">อนุมัติแล้ว (รอส่งมอบ)</div>
+    </div>
+    <div class="statistic">
+      <div class="value"><%= summary.delivered %></div>
+      <div class="label">ส่งมอบสำเร็จแล้ว</div>
+    </div>
+  </div>
+
+  <% if (reservations.length === 0) { %>
+    <%- include('../../partials/empty-state', {
+      emptyIcon: 'fa-inbox',
+      emptyTitle: 'ยังไม่มีคำขอสำหรับประกาศนี้',
+      emptyDesc: 'รอให้คนอื่นเห็นประกาศของคุณและส่งคำขอเข้ามา'
+    }) %>
+  <% } else { %>
+    <% reservations.forEach(function (r) { const info = STATUS_INFO[r.status] || { text: r.status, color: 'yellow' }; %>
+      <div class="ui segment">
+        <div style="display:flex; justify-content: space-between; flex-wrap:wrap; gap: 0.5em;">
+          <div>
+            <strong><%= (r.requester && r.requester.name) || 'ผู้ใช้' %></strong>
+            <span style="color: rgba(0,0,0,.5);"> &middot; จำนวน <%= r.quantity %> ชิ้น &middot; <%= new Date(r.createdAt).toLocaleDateString('th-TH') %></span>
+          </div>
+          <div class="ui <%= info.color %> label"><%= info.text %></div>
+        </div>
+        <% if (r.message) { %><p style="margin-top: 0.5em;"><i class="fa-regular fa-comment"></i> <%= r.message %></p><% } %>
+        <% if (['approved','completed'].includes(r.status) && r.requester && r.requester.phone) { %>
+          <p style="color: rgba(0,0,0,.5);"><i class="fa-solid fa-phone"></i> <%= r.requester.phone %></p>
+        <% } %>
+
+        <% if (canManage) { %>
+          <div style="margin-top: 0.8em;">
+            <% if (r.status === 'pending') { %>
+              <button type="button" class="ui green small button" data-approve data-id="<%= r._id %>">อนุมัติ</button>
+              <button type="button" class="ui basic small button" data-reject data-id="<%= r._id %>">ปฏิเสธ</button>
+            <% } else if (r.status === 'approved') { %>
+              <button type="button" class="ui green small button" data-complete data-id="<%= r._id %>">ยืนยันส่งมอบแล้ว</button>
+              <button type="button" class="ui basic small button" data-cancel-appt data-id="<%= r._id %>">ยกเลิกนัด</button>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<% if (canManage) { %><script src="/assets/js/pages/listing-reservations.js" defer></script><% } %>
+
+<%- include('../../partials/footer') %>

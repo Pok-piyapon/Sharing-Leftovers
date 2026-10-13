@@ -1,0 +1,78 @@
+<%- include('../../partials/head', { title: 'จัดการหมวดหมู่' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap:wrap; gap: 1em; margin-bottom: 1em;">
+    <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-tags"></i> จัดการหมวดหมู่</h1>
+    <button type="button" id="add-category-btn" class="ui green button" data-open-modal="category-modal">+ เพิ่มหมวดหมู่</button>
+  </div>
+
+  <%- include('../../partials/admin-nav', { active: 'categories' }) %>
+
+  <table class="ui celled table" style="margin-top: 1.5em;">
+    <thead>
+      <tr>
+        <th>ไอคอน</th>
+        <th>ชื่อ</th>
+        <th>Slug</th>
+        <th>คำอธิบาย</th>
+        <th>จำนวนประกาศ</th>
+        <th>สถานะ</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% categories.forEach(function (c) { %>
+        <tr>
+          <td style="font-size: 1.3rem;"><%= c.icon || '📦' %></td>
+          <td><%= c.name %></td>
+          <td style="color: rgba(0,0,0,.5);"><%= c.slug %></td>
+          <td style="color: rgba(0,0,0,.5);"><%= c.description || '-' %></td>
+          <td><%= c.usageCount %></td>
+          <td>
+            <div class="ui <%= c.isActive ? 'green' : 'red' %> label"><%= c.isActive ? 'เปิดใช้งาน' : 'ปิดใช้งาน' %></div>
+          </td>
+          <td style="white-space:nowrap;">
+            <button type="button" class="ui basic mini button" data-edit-category="<%= c._id %>" data-name="<%= c.name %>" data-slug="<%= c.slug %>" data-description="<%= c.description || '' %>" data-icon="<%= c.icon || '' %>" data-open-modal="category-modal">แก้ไข</button>
+            <button type="button" class="ui basic mini button" data-toggle-category="<%= c._id %>" data-next-active="<%= !c.isActive %>"><%= c.isActive ? 'ปิดใช้งาน' : 'เปิดใช้งาน' %></button>
+            <button type="button" class="ui red mini button" data-delete-category="<%= c._id %>" data-usage-count="<%= c.usageCount %>">ลบ</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal: เพิ่ม/แก้ไขหมวดหมู่ -->
+<div class="ui modal" id="category-modal">
+  <div class="header" id="category-modal-title">เพิ่มหมวดหมู่ใหม่</div>
+  <div class="content">
+    <form id="category-form" class="ui form">
+      <div class="field">
+        <label>ชื่อหมวดหมู่ <span style="color:var(--brand-terracotta);">*</span></label>
+        <input type="text" id="cat-name" required>
+      </div>
+      <div class="field">
+        <label>Slug <span style="color:var(--brand-terracotta);">*</span></label>
+        <input type="text" id="cat-slug" required placeholder="เช่น food">
+      </div>
+      <div class="field">
+        <label>ไอคอน (emoji)</label>
+        <input type="text" id="cat-icon" placeholder="🍜">
+      </div>
+      <div class="field">
+        <label>คำอธิบาย</label>
+        <textarea id="cat-description" rows="2"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="actions">
+    <div class="ui button" data-close-modal>ยกเลิก</div>
+    <button type="submit" form="category-form" class="ui green button">บันทึก</button>
+  </div>
+</div>
+
+<script src="/assets/js/pages/admin-categories.js" defer></script>
+
+<%- include('../../partials/footer') %>

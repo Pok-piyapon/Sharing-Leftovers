@@ -1,0 +1,78 @@
+<%- include('../../partials/head', { title: 'จัดการประกาศทั้งหมด' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const STATUS_INFO = {
+    available: { text: 'พร้อมรับ', color: 'green' },
+    reserved: { text: 'จองเต็มแล้ว', color: 'orange' },
+    completed: { text: 'ส่งมอบแล้ว', color: 'grey' },
+    cancelled: { text: 'ยกเลิกแล้ว', color: 'red' },
+    expired: { text: 'หมดอายุ', color: 'black' }
+  };
+  const STATUS_FILTERS = [
+    { value: 'all', label: 'ทั้งหมด' },
+    { value: 'available', label: 'พร้อมรับ' },
+    { value: 'reserved', label: 'จองเต็มแล้ว' },
+    { value: 'completed', label: 'ส่งมอบแล้ว' },
+    { value: 'cancelled', label: 'ยกเลิกแล้ว' },
+    { value: 'expired', label: 'หมดอายุ' }
+  ];
+  const currentStatus = q.status || 'all';
+%>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-box"></i> จัดการประกาศทั้งหมด</h1>
+
+  <%- include('../../partials/admin-nav', { active: 'listings' }) %>
+
+  <div style="margin: 1.5em 0;">
+    <% STATUS_FILTERS.forEach(function (f) { %>
+      <a href="/admin/listings?status=<%= f.value %>" class="ui <%= currentStatus === f.value ? 'green' : '' %> label"><%= f.label %></a>
+    <% }) %>
+  </div>
+
+  <p style="color: rgba(0,0,0,.5);">พบ <%= total %> รายการ</p>
+
+  <% if (listings.length === 0) { %>
+    <%- include('../../partials/empty-state', { emptyIcon: 'fa-inbox', emptyTitle: 'ไม่พบประกาศในหมวดนี้' }) %>
+  <% } else { %>
+    <table class="ui celled table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>ชื่อสิ่งของ</th>
+          <th>เจ้าของ</th>
+          <th>หมวดหมู่</th>
+          <th>สถานะ</th>
+          <th>เหลือ/ทั้งหมด</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% listings.forEach(function (l) { const info = STATUS_INFO[l.status] || { text: l.status, color: 'green' }; %>
+          <tr>
+            <td>
+              <img src="<%= (l.images && l.images[0]) || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100' %>" style="width:44px; height:44px; object-fit:cover; border-radius:4px;" onerror="this.style.display='none';">
+            </td>
+            <td><a href="/listings/<%= l._id %>"><%= l.title %></a></td>
+            <td><%= (l.owner && l.owner.name) || '-' %></td>
+            <td><%= (l.category && l.category.name) || '-' %></td>
+            <td><div class="ui <%= info.color %> label"><%= info.text %></div></td>
+            <td><%= l.availableQuantity %> / <%= l.quantity %></td>
+            <td>
+              <% if (!['cancelled','completed','expired'].includes(l.status)) { %>
+                <button type="button" class="ui red mini button" data-admin-cancel-listing="<%= l._id %>">ยกเลิก</button>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <%- include('../../partials/pagination', { currentPage, totalPages, basePath }) %>
+  <% } %>
+</div>
+
+<script src="/assets/js/pages/admin-listings.js" defer></script>
+
+<%- include('../../partials/footer') %>

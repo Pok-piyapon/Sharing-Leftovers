@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const multer = require("multer");
 const ApiError = require("./ApiError");
 
 const notFoundHandler = (req, res, next) => {
@@ -36,8 +37,22 @@ const errorHandler = (err, req, res, next) => {
     message = "รูปแบบ JSON ไม่ถูกต้อง";
   }
 
+  // multer: ไฟล์ใหญ่เกินกำหนด/ส่งผิด field name ฯลฯ
+  if (err instanceof multer.MulterError) {
+    statusCode = 400;
+    message = err.code === "LIMIT_FILE_SIZE" ? "ไฟล์มีขนาดใหญ่เกิน 5MB" : err.message;
+  }
+
   if (statusCode === 500) {
     console.error("[errorHandler]", err);
+  }
+
+  // หน้าเว็บ (ไม่ใช่ /api/*) ที่ accept html ให้ render หน้า error EJS แทน JSON
+  // (401 บนหน้าเว็บถูก requireWebAuth redirect ไป /auth ไปแล้วตั้งแต่ก่อนถึงที่นี่)
+  const isApiRequest = req.originalUrl.startsWith("/api/");
+  if (!isApiRequest && req.accepts(["html", "json"]) === "html") {
+    const view = statusCode === 404 ? "errors/404" : statusCode === 403 ? "errors/403" : "errors/500";
+    return res.status(statusCode).render(view, { title: "เกิดข้อผิดพลาด", message });
   }
 
   res.status(statusCode).json({

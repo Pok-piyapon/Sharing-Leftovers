@@ -1,0 +1,83 @@
+<%- include('../../partials/head', { title: 'พื้นที่ของฉัน' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const STATUS_INFO = {
+    pending: { text: 'รอเจ้าของพิจารณา', color: 'yellow' },
+    approved: { text: 'อนุมัติแล้ว', color: 'green' },
+    rejected: { text: 'ไม่ได้รับอนุมัติ', color: 'red' },
+    cancelled: { text: 'ยกเลิกแล้ว', color: 'grey' },
+    completed: { text: 'ส่งมอบสำเร็จ', color: 'grey' }
+  };
+  const LISTING_STATUS_INFO = {
+    available: { text: 'พร้อมรับ', color: 'green' },
+    reserved: { text: 'จองเต็มแล้ว', color: 'orange' },
+    completed: { text: 'ส่งมอบแล้ว', color: 'grey' },
+    cancelled: { text: 'ยกเลิกแล้ว', color: 'red' },
+    expired: { text: 'หมดอายุ', color: 'black' }
+  };
+%>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap:wrap; gap: 1em; margin-bottom: 1.5em;">
+    <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-user"></i> สวัสดี, <%= currentUser.name %></h1>
+    <a href="/listings/new" class="ui green button"><i class="fa-solid fa-plus"></i> เริ่มแบ่งปัน</a>
+  </div>
+
+  <!-- สรุปสถิติ -->
+  <div class="ui three stackable statistics" style="margin-bottom: 2em;">
+    <div class="statistic">
+      <div class="value" style="color: var(--brand-green);"><%= openListingsCount %></div>
+      <div class="label">ประกาศที่เปิดอยู่</div>
+    </div>
+    <div class="statistic">
+      <div class="value" style="color: #fbbd08;"><%= pendingReceivedCount %></div>
+      <div class="label">คำขอที่รอฉันพิจารณา</div>
+    </div>
+    <div class="statistic">
+      <div class="value" style="color: #2185d0;"><%= unreadCount %></div>
+      <div class="label">การแจ้งเตือนที่ยังไม่อ่าน</div>
+    </div>
+  </div>
+
+  <div class="ui stackable two column grid">
+    <!-- ประกาศของฉัน -->
+    <div class="column">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.8em;">
+        <h3 class="ui header">ประกาศของฉัน</h3>
+        <a href="/users/me/listings">ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <% if (recentListings.length === 0) { %>
+        <p style="color: rgba(0,0,0,.5);">คุณยังไม่มีประกาศ</p>
+      <% } else { %>
+        <% recentListings.forEach(function (l) { const info = LISTING_STATUS_INFO[l.status] || { text: l.status, color: 'green' }; %>
+          <div class="ui segment" style="display:flex; justify-content:space-between; align-items:center; padding: 0.8em 1em;">
+            <a href="/listings/<%= l._id %>"><%= l.title %></a>
+            <div class="ui <%= info.color %> label"><%= info.text %></div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
+    <!-- คำขอของฉัน -->
+    <div class="column">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.8em;">
+        <h3 class="ui header">คำขอของฉัน</h3>
+        <a href="/reservations/my">ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <% if (recentReservations.length === 0) { %>
+        <p style="color: rgba(0,0,0,.5);">คุณยังไม่ได้ส่งคำขอรับของ</p>
+      <% } else { %>
+        <% recentReservations.forEach(function (r) { const info = STATUS_INFO[r.status] || { text: r.status, color: 'yellow' }; const listing = r.listing || {}; %>
+          <div class="ui segment" style="display:flex; justify-content:space-between; align-items:center; padding: 0.8em 1em;">
+            <a href="/listings/<%= listing._id %>"><%= listing.title || 'ประกาศถูกลบ' %></a>
+            <div class="ui <%= info.color %> label"><%= info.text %></div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

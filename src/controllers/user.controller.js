@@ -95,19 +95,33 @@ exports.getUser = async (req, res) => {
   res.json({ success: true, data: { user } });
 };
 
+// รับเฉพาะ isActive + reason เท่านั้น — ไม่อ่าน/ไม่ประมวลผลฟิลด์ role เด็ดขาด (ป้องกัน privilege escalation)
+// การกำหนดสิทธิ์ admin ทำได้เฉพาะระดับ database เท่านั้น
 exports.updateUserStatus = async (req, res) => {
-  const { isActive, role } = req.body;
+  const { isActive, reason } = req.body;
 
-  if (isActive === undefined && role === undefined) {
-    throw new ApiError(400, "ระบุ isActive และ/หรือ role");
+  if (typeof isActive !== "boolean") {
+    throw new ApiError(400, "ระบุ isActive เป็น true/false");
+  }
+  if (isActive === false && (!reason || !String(reason).trim())) {
+    throw new ApiError(400, "ระบุ reason เมื่อระงับการใช้งานผู้ใช้");
   }
 
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    { ...(isActive !== undefined && { isActive }), ...(role !== undefined && { role }) },
-    { new: true, runValidators: true }
-  );
+  const user = await User.findById(req.params.id);
   if (!user) throw new ApiError(404, "ไม่พบผู้ใช้งาน");
+
+  user.isActive = isActive;
+  if (isActive === false) {
+    user.banReason = reason;
+    user.bannedAt = new Date();
+  } else {
+    user.banReason = undefined;
+    user.bannedAt = undefined;
+  }
+  await user.save();
+  // ไม่ต้องลบ session ออกจาก store โดยตรง: requireAuth/requireWebAuth ตรวจ isActive จาก DB
+  // สดใหม่ทุก request อยู่แล้ว ผู้ใช้ที่ถูกแบนจะถูกปฏิเสธทันทีใน request ถัดไปพร้อมข้อความที่ถูกต้อง
+  // (ลบ session document ทิ้งตรงๆ จะทำให้ request ถัดไปเห็นเป็น "ยังไม่ได้ login" แทนที่จะเป็น "ถูกระงับ")
 
   res.json({ success: true, data: { user } });
 };

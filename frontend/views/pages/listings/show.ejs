@@ -1,0 +1,167 @@
+<%- include('../../partials/head', { title: listing.title }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const STATUS_TEXT = {
+    available: { text: 'พร้อมรับ', color: 'green' },
+    reserved: { text: 'จองเต็มแล้ว', color: 'orange' },
+    completed: { text: 'ส่งมอบครบแล้ว', color: 'grey' },
+    cancelled: { text: 'ยกเลิกแล้ว', color: 'red' },
+    expired: { text: 'หมดอายุ', color: 'black' }
+  };
+  const CONDITION_TEXT = { new: 'ใหม่', like_new: 'เหมือนใหม่', good: 'ดี', fair: 'พอใช้', poor: 'มีตำหนิ' };
+  const statusInfo = STATUS_TEXT[listing.status] || { text: listing.status, color: 'green' };
+  const area = listing.pickup && listing.pickup.area
+    ? `${listing.pickup.area.subdistrict || ''} ${listing.pickup.area.district || ''} ${listing.pickup.area.province || ''}`.trim()
+    : '';
+  const unlockedPickup = !!(listing.pickup && (listing.pickup.address || listing.pickup.location));
+  const isGuest = !isAuthenticated;
+  const isAdminViewer = isAuthenticated && currentUser.role === 'admin';
+  const canClaim = isAuthenticated && !isAdminViewer && !listing.isOwner && !listing.hasRequested && listing.status === 'available';
+%>
+
+<div class="ui container" id="listing-page" data-listing-id="<%= listing._id %>" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <a href="/listings" style="display:inline-block; margin-bottom: 1em;"><i class="fa-solid fa-angle-left"></i> กลับไปหน้าค้นหา</a>
+
+  <div class="ui stackable two column grid">
+    <!-- แกลเลอรีรูปภาพ -->
+    <div class="column">
+      <div class="ui segment" style="padding:0; overflow:hidden;">
+        <img
+          src="<%= (listing.images && listing.images[0]) || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&auto=format&fit=crop&q=60' %>"
+          alt="<%= listing.title %>"
+          style="width:100%; aspect-ratio: 4/3; object-fit: cover;"
+          onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&auto=format&fit=crop&q=60';"
+        >
+      </div>
+      <% if (listing.images && listing.images.length > 1) { %>
+        <div class="ui three stackable cards" style="margin-top: 0.5em;">
+          <% listing.images.slice(1).forEach(function (img) { %>
+            <div class="image">
+              <img src="<%= img %>" alt="" style="width:100%; aspect-ratio: 4/3; object-fit: cover;" onerror="this.closest('.image').style.display='none';">
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- รายละเอียด -->
+    <div class="column">
+      <div class="ui <%= statusInfo.color %> label" style="margin-bottom: 0.5em;"><%= statusInfo.text %></div>
+      <h1 class="ui header" style="color: var(--brand-green);"><%= listing.title %></h1>
+      <div style="margin-bottom: 1em;">
+        <span class="ui label"><%= listing.category && listing.category.icon %> <%= listing.category && listing.category.name %></span>
+        <span class="ui label">สภาพ: <%= CONDITION_TEXT[listing.condition] || listing.condition %></span>
+        <span class="ui label"><i class="fa-solid fa-boxes-stacked"></i> เหลือ <%= listing.availableQuantity %> จาก <%= listing.quantity %> ชิ้น</span>
+      </div>
+
+      <p style="line-height: 1.7; margin-bottom: 1.5em; white-space: pre-line;"><%= listing.description %></p>
+
+      <!-- กล่องข้อมูลนัดรับ: ล็อก/ปลดล็อกตามสิทธิ์ -->
+      <div class="ui segment" style="margin-bottom: 1.5em; background: #f7f7f2;">
+        <% if (unlockedPickup) { %>
+          <h4 class="ui header"><i class="fa-solid fa-location-dot"></i> ข้อมูลนัดรับ (ปลดล็อกแล้ว)</h4>
+          <p>ที่อยู่: <%= listing.pickup.address || '-' %></p>
+          <% if (listing.owner && listing.owner.phone) { %><p>เบอร์ติดต่อเจ้าของ: <%= listing.owner.phone %></p><% } %>
+          <% if (listing.pickup.pickupStart) { %><p>ช่วงเวลานัดรับ: <%= new Date(listing.pickup.pickupStart).toLocaleString('th-TH') %> <% if (listing.pickup.pickupEnd) { %>- <%= new Date(listing.pickup.pickupEnd).toLocaleString('th-TH') %><% } %></p><% } %>
+        <% } else { %>
+          <h4 class="ui header"><i class="fa-solid fa-lock"></i> ข้อมูลนัดรับ (จะปลดล็อกเมื่อได้รับการอนุมัติ)</h4>
+          <p style="color: rgba(0,0,0,.55);">พื้นที่โดยประมาณ: <%= area || 'ไม่ระบุ' %></p>
+        <% } %>
+      </div>
+
+      <!-- ปุ่ม action ตาม role -->
+      <% if (isGuest) { %>
+        <a href="/auth?returnTo=<%= encodeURIComponent('/listings/' + listing._id + '?action=claim') %>" class="ui fluid big green button">
+          เข้าสู่ระบบเพื่อขอรับของชิ้นนี้
+        </a>
+      <% } else if (isAdminViewer) { %>
+        <% if (!['cancelled','completed','expired'].includes(listing.status)) { %>
+          <button type="button" id="cancel-listing-btn" class="ui fluid red button"><i class="fa-solid fa-shield-halved"></i> ยกเลิกประกาศนี้ (Admin)</button>
+        <% } %>
+      <% } else if (listing.isOwner) { %>
+        <a href="/listings/<%= listing._id %>/reservations" class="ui green button">จัดการคำขอที่ได้รับ</a>
+        <% if (!listing.hasAnyReservation) { %>
+          <a href="/listings/<%= listing._id %>/edit" class="ui basic button">แก้ไขประกาศ</a>
+        <% } else { %>
+          <button type="button" class="ui basic disabled button" title="ไม่สามารถแก้ไขได้เนื่องจากมีคำขอรับของเกิดขึ้นแล้ว">แก้ไขประกาศ (ถูกล็อก)</button>
+        <% } %>
+        <% if (!['cancelled','completed'].includes(listing.status)) { %>
+          <button type="button" id="cancel-listing-btn" class="ui red button">ยกเลิกประกาศ</button>
+        <% } %>
+      <% } else if (listing.hasRequested) { %>
+        <button type="button" class="ui fluid big green disabled button">คุณเคยส่งคำขอสำหรับสิ่งของชิ้นนี้ไปแล้ว</button>
+        <a href="/reservations/my" style="display:block; margin-top: 0.5em; text-align:center;">ดูสถานะคำขอของฉัน <i class="fa-solid fa-arrow-right"></i></a>
+      <% } else if (canClaim) { %>
+        <button type="button" id="claim-trigger-btn" class="ui fluid big green button" data-open-modal="claim-modal"><i class="fa-solid fa-box"></i> ขอรับของชิ้นนี้</button>
+      <% } else { %>
+        <button type="button" class="ui fluid big green disabled button">ประกาศนี้ไม่พร้อมรับคำขอ (สถานะ: <%= statusInfo.text %>)</button>
+      <% } %>
+
+      <% if (isAuthenticated && !isAdminViewer && !listing.isOwner) { %>
+        <div style="margin-top: 1em;">
+          <button type="button" class="ui basic small button" data-open-modal="report-modal"><i class="fa-solid fa-flag"></i> รายงานประกาศนี้</button>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: ขอรับของ -->
+<div class="ui modal" id="claim-modal">
+  <div class="header">ขอรับสิ่งของชิ้นนี้</div>
+  <div class="content">
+    <form id="claim-form" class="ui form">
+      <div class="field">
+        <label>จำนวนที่ต้องการรับ <span style="color:var(--brand-terracotta);">*</span></label>
+        <select id="claim-qty" class="ui fluid dropdown">
+          <% for (let i = 1; i <= (listing.availableQuantity || 1); i++) { %>
+            <option value="<%= i %>"><%= i %> ชิ้น</option>
+          <% } %>
+        </select>
+      </div>
+      <div class="field">
+        <label>ข้อความถึงเจ้าของสิ่งของ</label>
+        <textarea id="claim-msg" rows="3" placeholder="เช่น สะดวกไปรับช่วงเย็นหลังเลิกเรียนครับ"></textarea>
+        <div style="font-size:0.85em; color: rgba(0,0,0,.5); margin-top:0.4em;"><i class="fa-solid fa-lock"></i> ส่งคำขอได้ครั้งเดียวต่อประกาศนี้เท่านั้น (ขอได้คนละ 1 ครั้งต่อประกาศ)</div>
+      </div>
+    </form>
+  </div>
+  <div class="actions">
+    <div class="ui button" data-close-modal>ยกเลิก</div>
+    <button type="submit" form="claim-form" class="ui green button">ยืนยันส่งคำขอ</button>
+  </div>
+</div>
+
+<!-- Modal: รายงานประกาศ -->
+<div class="ui modal" id="report-modal">
+  <div class="header">รายงานประกาศนี้</div>
+  <div class="content">
+    <form id="report-form" class="ui form">
+      <div class="field">
+        <label>เหตุผล <span style="color:var(--brand-terracotta);">*</span></label>
+        <select id="report-reason" class="ui fluid dropdown" required>
+          <option value="spam">สแปม</option>
+          <option value="inappropriate">ไม่เหมาะสม</option>
+          <option value="fraud">หลอกลวง</option>
+          <option value="illegal">ผิดกฎหมาย</option>
+          <option value="wrong_information">ข้อมูลเท็จ</option>
+          <option value="other">อื่น ๆ</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>รายละเอียดเพิ่มเติม</label>
+        <textarea id="report-desc" rows="3"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="actions">
+    <div class="ui button" data-close-modal>ยกเลิก</div>
+    <button type="submit" form="report-form" class="ui red button">ส่งรายงาน</button>
+  </div>
+</div>
+
+<script src="/assets/js/pages/listing-show.js" defer></script>
+
+<%- include('../../partials/footer') %>

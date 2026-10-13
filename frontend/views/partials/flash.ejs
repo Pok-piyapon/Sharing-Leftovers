@@ -1,0 +1,8 @@
+<% if (typeof flash !== 'undefined' && flash && flash.message) { %>
+  <div class="ui container" style="margin-top: 1em;">
+    <div class="ui <%= flash.type === 'error' ? 'negative' : flash.type === 'success' ? 'positive' : 'info' %> message">
+      <i class="fa-solid <%= flash.type === 'error' ? 'fa-triangle-exclamation' : flash.type === 'success' ? 'fa-circle-check' : 'fa-circle-info' %>"></i>
+      <%= flash.message %>
+    </div>
+  </div>
+<% } %>

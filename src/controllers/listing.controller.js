@@ -1,109 +1,50 @@
 const mongoose = require("mongoose");
 const Listing = require("../models/Listing");
 const Category = require("../models/Category");
+const Reservation = require("../models/Reservation");
 const ApiError = require("../middlewares/ApiError");
+const { restoreQuantity } = require("./reservation.controller");
+const listingService = require("../services/listing.service");
 
-const SORT_OPTIONS = {
-  latest: { createdAt: -1 },
-  oldest: { createdAt: 1 },
-  popular: { viewCount: -1 },
-  expiring: { expiresAt: 1 }
-};
+const IMAGE_URL_RE = listingService.IMAGE_URL_RE;
 
 exports.getListings = async (req, res) => {
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
-  const { category, condition, status, search, lat, lng, radius, sort } = req.query;
-
-  const filter = {};
-
-  if (status) {
-    filter.status = status;
-  } else {
-    filter.status = "available";
-  }
-
-  if (condition) filter.condition = condition;
-
-  if (category) {
-    // รองรับทั้ง slug (เช่น food) และ ObjectId
-    const cat = await Category.findOne({
-      $or: [{ slug: category.toLowerCase() }]
-    });
-    if (!cat) {
-      return res.json({ success: true, data: [], pagination: { page, limit, total: 0, totalPages: 0 } });
-    }
-    filter.category = cat._id;
-  }
-
-  if (search) {
-    filter.$text = { $search: search };
-  }
-
-  // ค้นหาตามระยะทาง (lat, lng, radius เป็นเมตร)
-  if (lat !== undefined && lng !== undefined) {
-    const radiusMeters = parseInt(radius) || 5000;
-    filter["pickup.location"] = {
-      $near: {
-        $geometry: {
-          type: "Point",
-          coordinates: [parseFloat(lng), parseFloat(lat)]
-        },
-        $maxDistance: radiusMeters
-      }
-    };
-  }
-
-  // $near เรียงตามระยะทางเอง (MongoDB ห้าม sort ซ้ำ)
-  const hasGeo = lat !== undefined && lng !== undefined;
-  const sortOption = hasGeo ? null : SORT_OPTIONS[sort] || SORT_OPTIONS.latest;
-
-  // count ใช้ $near ไม่ได้ (count ไม่มีการเรียงผลลัพธ์) จึงใช้ $geoWithin แทน
-  let countFilter = filter;
-  if (hasGeo) {
-    const radiusMeters = parseInt(radius) || 5000;
-    countFilter = {
-      ...filter,
-      "pickup.location": {
-        $geoWithin: {
-          $centerSphere: [[parseFloat(lng), parseFloat(lat)], radiusMeters / 6378100]
-        }
-      }
-    };
-  }
-
-  let query = Listing.find(filter);
-  if (sortOption) query = query.sort(sortOption);
-  query = query.skip((page - 1) * limit).limit(limit).populate("category", "name slug icon").populate("owner", "name avatarUrl");
-
-  const [listings, total] = await Promise.all([query, Listing.countDocuments(countFilter)]);
-
+  const { listings, total, page, limit, totalPages } = await listingService.searchListings(req.query, req.user);
   res.json({
     success: true,
     data: listings,
-    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+    pagination: { page, limit, total, totalPages }
   });
 };
 
 exports.getListing = async (req, res) => {
-  const listing = await Listing.findByIdAndUpdate(
-    req.params.id,
-    { $inc: { viewCount: 1 } },
-    { new: true }
-  )
-    .populate("category", "name slug icon")
-    .populate("owner", "name avatarUrl phone");
-
+  const listing = await listingService.getListingDetail(req.params.id, req.user);
   if (!listing) throw new ApiError(404, "ไม่พบประกาศนี้");
-
   res.json({ success: true, data: { listing } });
 };
 
 exports.createListing = async (req, res) => {
+  if (req.user.role === "admin") {
+    throw new ApiError(403, "Admin ไม่มีสิทธิ์สร้างประกาศ (ป้องกันผลประโยชน์ทับซ้อน)");
+  }
+
   const { title, description, category, condition, quantity, images, pickup, expiresAt } = req.body;
 
   if (!title || !category || !condition) {
     throw new ApiError(400, "title, category และ condition เป็นข้อมูลที่จำเป็น");
+  }
+  if (!description || !String(description).trim()) {
+    throw new ApiError(400, "description เป็นข้อมูลที่จำเป็น");
+  }
+  if (!Array.isArray(images) || images.length < 1 || images.length > 5) {
+    throw new ApiError(400, "images ต้องเป็น array ของ URL รูปภาพ 1-5 รูป");
+  }
+  if (!images.every((url) => typeof url === "string" && IMAGE_URL_RE.test(url))) {
+    throw new ApiError(400, "images ต้องเป็น URL ที่ขึ้นต้นด้วย http:// หรือ https:// เท่านั้น");
+  }
+  const area = pickup && pickup.area;
+  if (!pickup || !area || !area.province || !area.district || !area.subdistrict) {
+    throw new ApiError(400, "pickup.area (province, district, subdistrict) เป็นข้อมูลที่จำเป็น");
   }
 
   // รองรับทั้ง ObjectId และ slug (เช่น "furniture")
@@ -128,7 +69,7 @@ exports.createListing = async (req, res) => {
     condition,
     quantity: qty,
     availableQuantity: qty,
-    pickup,
+    pickup: { ...pickup, method: "pickup" }, // ล็อกให้เป็น pickup เท่านั้นเสมอ ไม่รองรับ delivery
     expiresAt
   });
 
@@ -139,15 +80,26 @@ exports.updateListing = async (req, res) => {
   const listing = await Listing.findById(req.params.id);
   if (!listing) throw new ApiError(404, "ไม่พบประกาศนี้");
 
+  // Admin Permission Isolation: admin แก้เนื้อหาประกาศของผู้อื่นไม่ได้เด็ดขาด (ทำได้แค่ยกเลิก)
+  if (req.user.role === "admin") {
+    throw new ApiError(403, "Admin ไม่มีสิทธิ์แก้ไขเนื้อหาประกาศ");
+  }
+
   const isOwner = listing.owner.toString() === req.user.id;
-  if (!isOwner && req.user.role !== "admin") {
+  if (!isOwner) {
     throw new ApiError(403, "คุณไม่มีสิทธิ์แก้ไขประกาศนี้");
+  }
+
+  // Strict Edit Lock: มีคำขอเกิดขึ้นแล้ว (ไม่ว่าสถานะใด) ห้ามแก้ไขอีกต่อไป
+  const hasAnyReservation = await Reservation.exists({ listing: listing._id });
+  if (hasAnyReservation) {
+    throw new ApiError(409, "ไม่สามารถแก้ไขประกาศได้เนื่องจากมีคำขอเกิดขึ้นในประกาศนี้แล้ว");
   }
 
   const allowed = ["title", "description", "condition", "images", "pickup", "expiresAt", "quantity"];
   for (const key of allowed) {
     if (req.body[key] !== undefined) {
-      listing[key] = req.body[key];
+      listing[key] = key === "pickup" ? { ...req.body.pickup, method: "pickup" } : req.body[key];
     }
   }
 
@@ -165,7 +117,7 @@ exports.updateListing = async (req, res) => {
   res.json({ success: true, data: { listing } });
 };
 
-// Soft delete: เปลี่ยนสถานะเป็น cancelled แทนการลบข้อมูลจริง
+// Soft delete: เปลี่ยนสถานะเป็น cancelled แทนการลบข้อมูลจริง + cascade cancel คำขอที่ค้างอยู่
 exports.deleteListing = async (req, res) => {
   const listing = await Listing.findById(req.params.id);
   if (!listing) throw new ApiError(404, "ไม่พบประกาศนี้");
@@ -175,8 +127,27 @@ exports.deleteListing = async (req, res) => {
     throw new ApiError(403, "คุณไม่มีสิทธิ์ลบประกาศนี้");
   }
 
-  listing.status = "cancelled";
-  await listing.save();
+  const reservations = await Reservation.find({ listing: listing._id });
+  for (const r of reservations) {
+    if (r.status === "pending") {
+      r.status = "cancelled";
+      r.cancelledAt = new Date();
+      r.isReadByRequester = false;
+      await r.save();
+    } else if (r.status === "approved") {
+      r.status = "cancelled";
+      r.cancelledAt = new Date();
+      r.isReadByRequester = false;
+      await r.save();
+      await restoreQuantity(listing._id, r.quantity);
+    }
+    // completed: ของถูกส่งมอบไปแล้ว ถือเป็นประวัติที่ไม่แตะต้อง
+  }
 
-  res.json({ success: true, message: "ยกเลิกประกาศเรียบร้อยแล้ว", data: { listing } });
+  // No-resurrection rule: ยกเลิกแล้วคือจบ ไม่มีทางกลับเป็น available อีก
+  // ใช้ findByIdAndUpdate (ไม่ใช่ listing.save() ตัวแปรเดิม) เพราะ restoreQuantity ข้างบน
+  // อาจแก้ availableQuantity ของ listing นี้ไปแล้วผ่าน query แยก ตัวแปร listing ในมือตอนนี้เก่าไม่ทัน
+  const finalListing = await Listing.findByIdAndUpdate(listing._id, { status: "cancelled" }, { new: true });
+
+  res.json({ success: true, message: "ยกเลิกประกาศเรียบร้อยแล้ว", data: { listing: finalListing } });
 };

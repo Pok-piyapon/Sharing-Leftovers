@@ -1,0 +1,88 @@
+<%- include('../../partials/head', { title: 'ประกาศของฉัน' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const STATUS_INFO = {
+    available: { text: 'พร้อมรับ', color: 'green' },
+    reserved: { text: 'จองเต็มแล้ว', color: 'orange' },
+    completed: { text: 'ส่งมอบแล้ว', color: 'grey' },
+    cancelled: { text: 'ยกเลิกแล้ว', color: 'red' },
+    expired: { text: 'หมดอายุ', color: 'black' }
+  };
+  const FILTERS = [
+    { value: '', label: 'ทั้งหมด' },
+    { value: 'available', label: 'พร้อมรับ' },
+    { value: 'reserved', label: 'จองเต็มแล้ว' },
+    { value: 'completed', label: 'ส่งมอบแล้ว' },
+    { value: 'cancelled', label: 'ยกเลิกแล้ว' },
+    { value: 'expired', label: 'หมดอายุ' }
+  ];
+%>
+
+<div class="ui container" style="padding-top: 1.5em; padding-bottom: 3em;">
+  <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap:wrap; gap: 1em; margin-bottom: 1em;">
+    <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-list-check"></i> ประกาศของฉัน</h1>
+    <a href="/listings/new" class="ui green button"><i class="fa-solid fa-plus"></i> ลงประกาศใหม่</a>
+  </div>
+
+  <div style="margin-bottom: 1.5em;">
+    <% FILTERS.forEach(function (f) { %>
+      <a href="/users/me/listings<%= f.value ? '?status=' + f.value : '' %>" class="ui <%= status === f.value ? 'green' : '' %> label"><%= f.label %></a>
+    <% }) %>
+  </div>
+
+  <% if (listings.length === 0) { %>
+    <%- include('../../partials/empty-state', {
+      emptyIcon: 'fa-box',
+      emptyTitle: 'คุณยังไม่มีประกาศในหมวดนี้',
+      emptyDesc: 'เริ่มแบ่งปันสิ่งของที่ไม่ได้ใช้แล้วให้คนอื่นได้เลย',
+      emptyActionText: 'ลงประกาศใหม่',
+      emptyActionUrl: '/listings/new'
+    }) %>
+  <% } else { %>
+    <table class="ui celled table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>ชื่อสิ่งของ</th>
+          <th>สถานะ</th>
+          <th>เหลือ/ทั้งหมด</th>
+          <th>คำขอรอพิจารณา</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% listings.forEach(function (l) { const info = STATUS_INFO[l.status] || { text: l.status, color: 'green' }; %>
+          <tr>
+            <td>
+              <img src="<%= (l.images && l.images[0]) || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100' %>" style="width:48px; height:48px; object-fit:cover; border-radius:4px;" onerror="this.style.display='none';">
+            </td>
+            <td><a href="/listings/<%= l._id %>"><%= l.title %></a></td>
+            <td><div class="ui <%= info.color %> label"><%= info.text %></div></td>
+            <td><%= l.availableQuantity %> / <%= l.quantity %></td>
+            <td>
+              <% if (l.pendingCount > 0) { %><div class="ui yellow label"><%= l.pendingCount %> คำขอ</div><% } else { %>-<% } %>
+            </td>
+            <td style="white-space:nowrap;">
+              <a href="/listings/<%= l._id %>/reservations" class="ui basic mini button">จัดการคำขอ</a>
+              <% if (!l.hasAnyReservation) { %>
+                <a href="/listings/<%= l._id %>/edit" class="ui basic mini button">แก้ไข</a>
+              <% } else { %>
+                <button type="button" class="ui basic mini disabled button" title="ไม่สามารถแก้ไขได้เนื่องจากมีคำขอรับของเกิดขึ้นแล้ว">แก้ไข</button>
+              <% } %>
+              <% if (!['cancelled','completed'].includes(l.status)) { %>
+                <button type="button" class="ui red mini button" data-cancel-listing="<%= l._id %>">ยกเลิก</button>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <%- include('../../partials/pagination', { currentPage, totalPages, basePath }) %>
+  <% } %>
+</div>
+
+<script src="/assets/js/pages/me-listings.js" defer></script>
+
+<%- include('../../partials/footer') %>

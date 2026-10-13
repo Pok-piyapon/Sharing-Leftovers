@@ -1,19 +1,15 @@
 <%
-  const icon = typeof emptyIcon !== 'undefined' ? emptyIcon : '📦';
+  const icon = typeof emptyIcon !== 'undefined' ? emptyIcon : 'fa-box-open';
   const title = typeof emptyTitle !== 'undefined' ? emptyTitle : 'ยังไม่มีข้อมูลในส่วนนี้';
   const desc = typeof emptyDesc !== 'undefined' ? emptyDesc : 'ขณะนี้ยังไม่มีรายการที่จะแสดงผล คุณสามารถเริ่มสร้างประกาศใหม่หรือค้นหาสิ่งของชิ้นอื่นได้';
   const actionText = typeof emptyActionText !== 'undefined' ? emptyActionText : null;
   const actionUrl = typeof emptyActionUrl !== 'undefined' ? emptyActionUrl : '/';
 %>
-
-<div class="empty-state">
-  <div class="empty-state-icon"><%= icon %></div>
-  <h3 class="empty-state-title"><%= title %></h3>
-  <p class="empty-state-desc"><%= desc %></p>
-  
+<div class="ui basic segment" style="text-align:center; padding: 3em 1em;">
+  <i class="fa-solid <%= icon %>" style="font-size: 3rem; color: #c9ccd1; margin-bottom: 0.5em;"></i>
+  <h3 class="ui header"><%= title %></h3>
+  <p style="color: rgba(0,0,0,.55);"><%= desc %></p>
   <% if (actionText) { %>
-    <a href="<%= actionUrl %>" class="btn btn-primary" style="margin-top: var(--space-2);">
-      <%= actionText %>
-    </a>
+    <a href="<%= actionUrl %>" class="ui primary button" style="margin-top: 0.5em;"><%= actionText %></a>
   <% } %>
 </div>

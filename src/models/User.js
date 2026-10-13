@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true
+    },
+    banReason: {
+      type: String
+    },
+    bannedAt: {
+      type: Date
     }
   },
   {

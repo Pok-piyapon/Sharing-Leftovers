@@ -1,0 +1,71 @@
+<%- include('../../partials/head', { title: 'โปรไฟล์ของฉัน' }) %>
+<%- include('../../partials/header') %>
+<%- include('../../partials/flash') %>
+
+<%
+  const addr = currentUser.address || {};
+%>
+
+<div class="ui container" style="max-width: 560px !important; padding-top: 1.5em; padding-bottom: 3em;">
+  <h1 class="ui header" style="color: var(--brand-green);"><i class="fa-solid fa-user"></i> โปรไฟล์ของฉัน</h1>
+
+  <form id="profile-form" class="ui form segment" style="margin-bottom: 1.5em;">
+    <div class="field">
+      <label>รูปโปรไฟล์ (URL)</label>
+      <input type="url" id="p-avatar" value="<%= currentUser.avatarUrl || '' %>" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label>ชื่อ <span style="color:var(--brand-terracotta);">*</span></label>
+      <input type="text" id="p-name" value="<%= currentUser.name %>" required>
+    </div>
+    <div class="field">
+      <label>อีเมล</label>
+      <input type="email" value="<%= currentUser.email %>" disabled>
+      <div style="font-size:0.85em; color: rgba(0,0,0,.5); margin-top:0.3em;">ไม่สามารถเปลี่ยนอีเมลได้</div>
+    </div>
+    <div class="field">
+      <label>เบอร์โทรศัพท์</label>
+      <input type="tel" id="p-phone" value="<%= currentUser.phone || '' %>">
+    </div>
+    <div class="three fields">
+      <div class="field">
+        <label>จังหวัด</label>
+        <select id="p-province">
+          <option value="<%= addr.province || '' %>"><%= addr.province || 'กำลังโหลด...' %></option>
+        </select>
+      </div>
+      <div class="field">
+        <label>อำเภอ/เขต</label>
+        <select id="p-district">
+          <option value="<%= addr.district || '' %>"><%= addr.district || '— เลือกอำเภอ/เขต —' %></option>
+        </select>
+      </div>
+      <div class="field">
+        <label>ตำบล/แขวง</label>
+        <select id="p-subdistrict">
+          <option value="<%= addr.subdistrict || '' %>"><%= addr.subdistrict || '— เลือกตำบล/แขวง —' %></option>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="ui green button">บันทึกการเปลี่ยนแปลง</button>
+  </form>
+
+  <div class="ui segment" style="margin-bottom: 1.5em;">
+    <h3 class="ui header"><i class="fa-solid fa-location-dot"></i> ตำแหน่งปัจจุบัน</h3>
+    <p style="color: rgba(0,0,0,.5);">ใช้สำหรับค้นหาสิ่งของใกล้ตัวคุณ</p>
+    <button type="button" id="use-location-btn" class="ui basic button">ใช้ตำแหน่งปัจจุบันของฉัน</button>
+  </div>
+
+  <a href="/auth/password" class="ui fluid button" style="margin-bottom: 1.5em;"><i class="fa-solid fa-lock"></i> เปลี่ยนรหัสผ่าน</a>
+
+  <div class="ui segment" style="border: 1px solid var(--brand-terracotta);">
+    <h3 class="ui header" style="color: var(--brand-terracotta);"><i class="fa-solid fa-triangle-exclamation"></i> โซนอันตราย</h3>
+    <p style="color: rgba(0,0,0,.5);">ปิดการใช้งานบัญชีของคุณ (ไม่สามารถกู้คืนได้ด้วยตนเอง)</p>
+    <button type="button" id="close-account-btn" class="ui red button">ปิดการใช้งานบัญชี</button>
+  </div>
+</div>
+
+<script src="/assets/js/thai-geo-select.js" defer></script>
+<script src="/assets/js/pages/profile.js" defer></script>
+
+<%- include('../../partials/footer') %>

@@ -2,7 +2,7 @@ const router = require("express").Router();
 const listingController = require("../controllers/listing.controller");
 const reservationController = require("../controllers/reservation.controller");
 const reportController = require("../controllers/report.controller");
-const { requireAuth, requireAdmin } = require("../middlewares/auth");
+const { requireAuth, optionalAuth } = require("../middlewares/auth");
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ const { requireAuth, requireAdmin } = require("../middlewares/auth");
  *       201: { description: สร้างสำเร็จ }
  *       401: { description: ยังไม่ได้เข้าสู่ระบบ }
  */
-router.get("/", listingController.getListings);
+router.get("/", optionalAuth, listingController.getListings);
 router.post("/", requireAuth, listingController.createListing);
 
 /**
@@ -121,7 +121,7 @@ router.post("/", requireAuth, listingController.createListing);
  *     responses:
  *       200: { description: ยกเลิกสำเร็จ }
  */
-router.get("/:id", listingController.getListing);
+router.get("/:id", optionalAuth, listingController.getListing);
 router.patch("/:id", requireAuth, listingController.updateListing);
 router.delete("/:id", requireAuth, listingController.deleteListing);
 
