@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' | Sharing Leftovers' : 'Sharing Leftovers — ตลาดแบ่งปันสิ่งของเพื่อชุมชน' %></title>
+  
+  <!-- ไอคอนและ Meta สำหรับ SEO/Social -->
+  <meta name="description" content="แพลตฟอร์มแบ่งปันสิ่งของเหลือใช้ สภาพดี ภายในชุมชน เพื่อลดขยะ (Zero Waste) และสร้างความสัมพันธ์ที่อบอุ่น">
+  
+  <!-- ฟอนต์ภาษาไทย (Noto Sans Thai สำหรับเนื้อหา และ Prompt สำหรับหัวข้อ) ตาม UI.md -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Prompt:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- ไฟล์สไตล์กลาง (CSS Tokens, Layout, Components) -->
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  
+  <!-- สคริปต์กลางหน้าบ้าน (API Service และ UI Components Controller) -->
+  <script src="/assets/js/api.service.js" defer></script>
+  <script src="/assets/js/components.js" defer></script>
+</head>
+<body>

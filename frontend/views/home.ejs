@@ -1,0 +1,306 @@
+<%- include('partials/head', { title: 'หน้าแรก & Phase 0 Component Showcase' }) %>
+<%- include('partials/header') %>
+
+<main class="main-content">
+  <div class="container">
+
+    <!-- ====================================================================
+         1. แถบเครื่องมือตรวจสอบสำหรับ Phase 0 (Interactive Phase 0 Reviewer Bar)
+         ==================================================================== -->
+    <section class="card" style="padding: var(--space-4); margin-bottom: var(--space-8); background-color: #FFFFFF; border-left: 6px solid var(--color-primary);">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3);">
+        <div>
+          <span class="badge badge-available" style="font-size: 0.8rem; margin-bottom: 4px;">Phase 0 เสร็จสมบูรณ์</span>
+          <h2 style="font-family: var(--font-family-heading); font-size: var(--font-size-lg); color: var(--color-primary-dark);">
+            🎯 แผงทดสอบและตรวจรับงาน Phase 0 (Component & Design Tokens Showcase)
+          </h2>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-top: 2px;">
+            คลิกสลับปุ่มด้านขวาเพื่อทดสอบการเปลี่ยนมุมมอง Header ตาม 3 บทบาท (ตามเกณฑ์ 2569_Projects.md และ UI.md)
+          </p>
+        </div>
+
+        <!-- ปุ่มสลับบทบาทจำลอง -->
+        <div style="display: flex; gap: var(--space-2);">
+          <button type="button" class="btn btn-sm btn-outline active" data-set-role="guest">👤 Guest (ผู้เข้าชม)</button>
+          <button type="button" class="btn btn-sm btn-outline" data-set-role="member">📦 สมาชิก (Member)</button>
+          <button type="button" class="btn btn-sm btn-outline" data-set-role="admin">🛡️ แอดมิน (Admin)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         2. Hero Section (ตามแบบร่าง UI.md ข้อ 3.1)
+         ==================================================================== -->
+    <section style="text-align: center; padding: var(--space-10) 0; max-width: 800px; margin: 0 auto;">
+      <span class="chip" style="background-color: var(--color-primary-light); color: var(--color-primary); font-weight: 600; margin-bottom: var(--space-4);">
+        🌱 ตลาดแบ่งปันของชุมชน · Zero Waste Marketplace
+      </span>
+      <h1 style="font-family: var(--font-family-heading); font-size: 2.5rem; font-weight: 700; color: var(--color-primary-dark); line-height: 1.25; margin-bottom: var(--space-4);">
+        แบ่งปันสิ่งของ ส่งต่อคุณค่าให้ชุมชน 🌿
+      </h1>
+      <p style="font-size: var(--font-size-lg); color: var(--color-text-muted); margin-bottom: var(--space-8); line-height: 1.6;">
+        ของที่คุณไม่ได้ใช้ อาจเป็นสิ่งจำเป็นของคนอื่น ร่วมส่งต่อเสื้อผ้า อาหาร หนังสือ และของใช้สภาพดีให้เพื่อนบ้านรอบตัว
+      </p>
+
+      <!-- กล่องค้นหาหน้าแรก -->
+      <div class="card" style="padding: var(--space-3); max-width: 650px; margin: 0 auto; box-shadow: var(--shadow-md);">
+        <form action="/listings" method="GET" style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+          <input 
+            type="text" 
+            name="search" 
+            class="form-input" 
+            placeholder="พิมพ์ชื่อสิ่งของที่ต้องการ เช่น เสื้อผ้า, โต๊ะเขียนหนังสือ..." 
+            style="flex: 1; min-width: 220px;"
+          >
+          <button type="submit" class="btn btn-primary">
+            🔍 ค้นหา
+          </button>
+        </form>
+      </div>
+
+      <!-- ชิปหมวดหมู่ยอดนิยม -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); margin-top: var(--space-6);">
+        <span class="chip">🍜 อาหาร & วัตถุดิบ</span>
+        <span class="chip">👕 เสื้อผ้า & เครื่องแต่งกาย</span>
+        <span class="chip">📦 ของใช้ในบ้าน</span>
+        <span class="chip">📚 หนังสือ & เครื่องเขียน</span>
+        <span class="chip">📱 เครื่องใช้ไฟฟ้า</span>
+      </div>
+    </section>
+
+    <hr style="border: 0; border-top: 1px solid var(--color-border); margin: var(--space-8) 0;">
+
+    <!-- ====================================================================
+         3. Showcase ชิ้นส่วน UI Components (สำหรับ Checklist ตรวจงาน)
+         ==================================================================== -->
+    <div style="margin-bottom: var(--space-8);">
+      <h2 style="font-family: var(--font-family-heading); font-size: var(--font-size-2xl); color: var(--color-primary-dark); margin-bottom: var(--space-2);">
+        🧪 การทดสอบชิ้นส่วน UI Components (Definition of Done Verification)
+      </h2>
+      <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin-bottom: var(--space-6);">
+        ชิ้นส่วนทั้งหมดถูกเขียนเป็นระบบกลางตามโทนสี Friendly Community พร้อมใช้งานในทุกหน้าตั้งแต่ Phase 1 ถึง Phase 10
+      </p>
+
+      <!-- แถวที่ 1: สีและปุ่มกด -->
+      <div class="grid grid-cols-1 grid-cols-2-md" style="margin-bottom: var(--space-8);">
+        <!-- การทดสอบปุ่ม -->
+        <div class="card" style="padding: var(--space-6);">
+          <h3 style="font-family: var(--font-family-heading); font-size: var(--font-size-lg); margin-bottom: var(--space-4);">
+            1. ปุ่มกด (Buttons — สูงไม่ต่ำกว่า 44px)
+          </h3>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-4);">
+            <button type="button" class="btn btn-primary">ปุ่มหลัก Primary</button>
+            <button type="button" class="btn btn-outline">ปุ่มขอบ Outline</button>
+            <button type="button" class="btn btn-danger">ปุ่มลบ/ระงับ Danger</button>
+            <button type="button" class="btn btn-secondary">ปุ่มรอง Secondary</button>
+            <button type="button" class="btn btn-primary" disabled>ปุ่มปิดใช้งาน Disabled</button>
+          </div>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-muted);">
+            ✓ ผ่านเกณฑ์ Accessibility: ตัวหนังสือขาวบนเขียว `#246B4A` และบนส้มอิฐ `#B85C38` มี Contrast ไม่ต่ำกว่า 4.5:1
+          </p>
+        </div>
+
+        <!-- การทดสอบป้ายสถานะ -->
+        <div class="card" style="padding: var(--space-6);">
+          <h3 style="font-family: var(--font-family-heading); font-size: var(--font-size-lg); margin-bottom: var(--space-4);">
+            2. ป้ายสถานะ (Status Badges — ครบ 8 สถานะ)
+          </h3>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3);">
+            <span class="badge badge-available">พร้อมรับ (Available)</span>
+            <span class="badge badge-reserved">จองเต็มแล้ว (Reserved)</span>
+            <span class="badge badge-completed">ส่งมอบแล้ว (Completed)</span>
+            <span class="badge badge-cancelled">ยกเลิกแล้ว (Cancelled)</span>
+            <span class="badge badge-expired">หมดอายุ (Expired)</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+            <span class="badge badge-pending">คำขอ: รอพิจารณา (Pending)</span>
+            <span class="badge badge-approved">คำขอ: อนุมัติแล้ว (Approved)</span>
+            <span class="badge badge-rejected">คำขอ: ไม่อนุมัติ (Rejected)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- แถวที่ 2: Interactive Modals & Toast -->
+      <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-8);">
+        <h3 style="font-family: var(--font-family-heading); font-size: var(--font-size-lg); margin-bottom: var(--space-4);">
+          3. หน้าต่าง Modal & ระบบแจ้งเตือน Toast Message
+        </h3>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-3);">
+          <!-- ปุ่มเปิด Modal -->
+          <button type="button" class="btn btn-primary" data-open-modal="demo-claim-modal">
+            📦 เปิด Modal ทดสอบ (ขอรับของ)
+          </button>
+
+          <!-- ปุ่มเปิด Confirm Dialog -->
+          <button type="button" class="btn btn-danger" id="trigger-confirm-dialog-btn">
+            ⚠️ เปิด Confirm Dialog (ยืนยันยกเลิก)
+          </button>
+
+          <!-- ปุ่มทดสอบ Toast -->
+          <button type="button" class="btn btn-outline" onclick="window.Toast.show('ส่งคำขอรับของสำเร็จเรียบร้อยแล้ว!', 'success')">
+            ✅ ทดสอบ Toast Success
+          </button>
+          <button type="button" class="btn btn-outline" onclick="window.Toast.show('คุณเคยส่งคำขอสำหรับสิ่งของชิ้นนี้ไปแล้ว', 'error')">
+            ⚠️ ทดสอบ Toast Error
+          </button>
+          <button type="button" class="btn btn-outline" onclick="window.Toast.show('ประกาศนี้เหลือเวลานัดรับอีก 2 วัน', 'info')">
+            ℹ️ ทดสอบ Toast Info
+          </button>
+        </div>
+      </div>
+
+      <!-- แถวที่ 3: ตัวอย่างการ์ดสิ่งของ (Listing Cards Reusable Component) -->
+      <div style="margin-bottom: var(--space-8);">
+        <h3 style="font-family: var(--font-family-heading); font-size: var(--font-size-xl); color: var(--color-primary-dark); margin-bottom: var(--space-4);">
+          4. การ์ดสิ่งของ (Listing Card Component — สัดส่วนภาพ 4:3)
+        </h3>
+
+        <div class="grid grid-cols-1 grid-cols-2-sm grid-cols-3-lg">
+          <!-- การ์ดที่ 1: สถานะพร้อมรับ -->
+          <%- include('partials/listing-card', {
+            listing: {
+              _id: 'demo-1',
+              title: 'โต๊ะทำงานไม้สภาพดี ขนาด 120 ซม.',
+              images: ['https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&auto=format&fit=crop&q=60'],
+              status: 'available',
+              category: { name: 'เฟอร์นิเจอร์', icon: '🪑' },
+              condition: 'good',
+              quantity: 2,
+              availableQuantity: 1,
+              pickup: { area: { province: 'ขอนแก่น', district: 'เมือง', subdistrict: 'ในเมือง' } }
+            }
+          }) %>
+
+          <!-- การ์ดที่ 2: สถานะจองเต็มแล้ว -->
+          <%- include('partials/listing-card', {
+            listing: {
+              _id: 'demo-2',
+              title: 'หนังสือเตรียมสอบภาษาอังกฤษ IELTS & TOEIC 3 เล่ม',
+              images: ['https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=60'],
+              status: 'reserved',
+              category: { name: 'หนังสือ', icon: '📚' },
+              condition: 'like_new',
+              quantity: 3,
+              availableQuantity: 0,
+              pickup: { area: { province: 'ขอนแก่น', district: 'เมือง', subdistrict: 'ศิลา' } }
+            }
+          }) %>
+
+          <!-- การ์ดที่ 3: สถานะส่งมอบแล้ว -->
+          <%- include('partials/listing-card', {
+            listing: {
+              _id: 'demo-3',
+              title: 'เสื้อกันหนาวไหมพรม สีครีม ไซส์ L',
+              images: ['https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&auto=format&fit=crop&q=60'],
+              status: 'completed',
+              category: { name: 'เสื้อผ้า', icon: '👕' },
+              condition: 'good',
+              quantity: 1,
+              availableQuantity: 0,
+              pickup: { area: { province: 'ขอนแก่น', district: 'เมือง', subdistrict: 'ในเมือง' } }
+            }
+          }) %>
+        </div>
+      </div>
+
+      <!-- แถวที่ 4: Empty State และ Pagination Demo -->
+      <div class="grid grid-cols-1 grid-cols-2-md">
+        <!-- Empty State Component -->
+        <div>
+          <h3 style="font-family: var(--font-family-heading); font-size: var(--font-size-lg); margin-bottom: var(--space-3);">
+            5. กล่องแสดงเมื่อไม่มีข้อมูล (Empty State Component)
+          </h3>
+          <%- include('partials/empty-state', {
+            emptyIcon: '📦',
+            emptyTitle: 'ไม่พบสิ่งของในหมวดหมู่นี้',
+            emptyDesc: 'ลองปรับลดคำค้นหา หรือล้างตัวกรองพื้นที่เพื่อค้นหาในรัศมีที่กว้างขึ้น',
+            emptyActionText: 'ล้างตัวกรองทั้งหมด',
+            emptyActionUrl: '/listings'
+          }) %>
+        </div>
+
+        <!-- Skeleton Loading Demo -->
+        <div>
+          <h3 style="font-family: var(--font-family-heading); font-size: var(--font-size-lg); margin-bottom: var(--space-3);">
+            6. แถบโหลดข้อมูลชั่วคราว (Skeleton Loading)
+          </h3>
+          <div class="card" style="padding: var(--space-4);">
+            <div class="skeleton" style="width: 100%; aspect-ratio: 4/3; margin-bottom: var(--space-3);"></div>
+            <div class="skeleton" style="width: 60%; height: 20px; margin-bottom: var(--space-2);"></div>
+            <div class="skeleton" style="width: 90%; height: 16px; margin-bottom: var(--space-2);"></div>
+            <div class="skeleton" style="width: 40%; height: 16px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination Component Demo -->
+      <div style="margin-top: var(--space-8);">
+        <h3 style="font-family: var(--font-family-heading); font-size: var(--font-size-lg); margin-bottom: var(--space-2); text-align: center;">
+          7. ระบบเปลี่ยนหน้า (Pagination Component)
+        </h3>
+        <%- include('partials/pagination', { currentPage: 2, totalPages: 5, basePath: '?page=' }) %>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<!-- ====================================================================
+     หน้าต่าง Modal ตัวอย่างสำหรับทดสอบ
+     ==================================================================== -->
+<div class="modal-backdrop" id="demo-claim-modal" aria-hidden="true" role="dialog">
+  <div class="modal" role="document">
+    <div class="modal-header">
+      <h3 class="modal-title">ขอรับสิ่งของชิ้นนี้</h3>
+      <button type="button" class="modal-close-btn" data-close-modal aria-label="ปิด">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">
+        ระบุจำนวนที่ต้องการและข้อความสั้น ๆ ถึงผู้ลงประกาศ เพื่อนัดหมายเวลารับของ
+      </p>
+      
+      <div class="form-group">
+        <label for="demo-qty" class="form-label">จำนวนที่ต้องการรับ <span class="required">*</span></label>
+        <select id="demo-qty" class="form-select">
+          <option value="1">1 ชิ้น</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="demo-msg" class="form-label">ข้อความถึงเจ้าของสิ่งของ</label>
+        <textarea id="demo-msg" class="form-textarea" placeholder="เช่น สะดวกไปรับช่วงเย็นหลังเลิกเรียนครับ"></textarea>
+        <span class="form-hint">🔒 ผู้ใช้หนึ่งคนขอได้ครั้งเดียวต่อประกาศ (Single Lifetime Reservation)</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-close-modal>ยกเลิก</button>
+      <button type="button" class="btn btn-primary" onclick="window.ModalController.close('demo-claim-modal'); window.Toast.show('ส่งคำขอรับของสำเร็จ!', 'success');">
+        ยืนยันส่งคำขอ
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ผูกการทำงานปุ่มเปิด Confirm Dialog
+  document.addEventListener('DOMContentLoaded', () => {
+    const confirmBtn = document.getElementById('trigger-confirm-dialog-btn');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', () => {
+        window.ConfirmDialog.show({
+          title: 'ยืนยันการยกเลิกประกาศ?',
+          message: 'หากยกเลิกประกาศ คำขอที่ค้างอยู่ทั้งหมดจะเปลี่ยนเป็นสถานะยกเลิก (Cancelled) และไม่สามารถกู้คืนได้',
+          confirmText: 'ยืนยันการยกเลิก',
+          cancelText: 'ย้อนกลับ',
+          isDanger: true,
+          onConfirm: () => {
+            window.Toast.show('ยกเลิกประกาศเรียบร้อยแล้ว', 'error');
+          }
+        });
+      });
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,84 @@
+<!-- แถบสีแจ้งเตือนโหมดผู้ดูแลระบบ (Admin Mode Banner) -->
+<div id="admin-mode-banner" class="admin-mode-banner" style="display: none;">
+  🛡️ คุณกำลังอยู่ในโหมดผู้ดูแลระบบ (Back-office Mode) — ตรวจตราและกำกับดูแลประกาศ
+</div>
+
+<header class="app-header">
+  <div class="container header-container">
+    <!-- โลโก้แบรนด์ Sharing Leftovers -->
+    <a href="/" class="brand-logo" aria-label="Sharing Leftovers หน้าแรก">
+      <span class="brand-badge">SL</span>
+      <span>Sharing Leftovers</span>
+    </a>
+
+    <!-- ลิงก์นำทางส่วนกลาง -->
+    <nav class="nav-menu" aria-label="เมนูหลัก">
+      <a href="/listings" class="nav-link">🔍 ค้นหาสิ่งของ</a>
+      <a href="/help/how-it-works" class="nav-link">📖 วิธีใช้งาน</a>
+    </nav>
+
+    <!-- 1. ส่วนสำหรับ Guest (ผู้เข้าชมทั่วไปที่ยังไม่ได้เข้าสู่ระบบ) -->
+    <div class="header-actions header-role-guest">
+      <a href="/auth" class="btn btn-secondary btn-sm">เข้าสู่ระบบ</a>
+      <a href="/auth?tab=register" class="btn btn-primary btn-sm">สมัครสมาชิก</a>
+    </div>
+
+    <!-- 2. ส่วนสำหรับ Member (สมาชิกที่เข้าสู่ระบบแล้ว) -->
+    <div class="header-actions header-role-member" style="display: none;">
+      <a href="/listings/new" class="btn btn-primary btn-sm">
+        <span>+</span> เริ่มแบ่งปัน
+      </a>
+      <a href="/reservations/my" class="nav-link" title="คำขอของฉัน">
+        <span>📦 คำขอของฉัน</span>
+        <span class="badge-counter" id="unread-badge">1</span>
+      </a>
+      <div style="position: relative; display: inline-block;">
+        <a href="/dashboard" class="btn btn-secondary btn-sm">
+          <span>👤 สมาชิก</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. ส่วนสำหรับ Admin (ผู้ดูแลระบบ) -->
+    <div class="header-actions header-role-admin" style="display: none;">
+      <span class="badge badge-reserved" style="font-size: 0.8rem; padding: 4px 8px;">
+        🛡️ แอดมิน: Admin
+      </span>
+      <a href="/admin" class="btn btn-primary btn-sm">
+        ⚙️ จัดการระบบ
+      </a>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="alert('ออกจากระบบเรียบร้อย')">
+        ออกจากระบบ
+      </button>
+    </div>
+
+    <!-- ปุ่มเปิดเมนูสำหรับอุปกรณ์มือถือ (Hamburger Button) -->
+    <button type="button" class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="เปิดเมนูนำทาง" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- เมนู Drawer เลื่อนลงมาบนหน้าจอมือถือ -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <a href="/listings" class="nav-link" style="font-size: 1.1rem; padding: 10px 0;">🔍 ค้นหาสิ่งของ</a>
+    <a href="/help/how-it-works" class="nav-link" style="font-size: 1.1rem; padding: 10px 0;">📖 วิธีใช้งาน</a>
+    
+    <div class="header-role-guest" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+      <a href="/auth" class="btn btn-secondary btn-block">เข้าสู่ระบบ</a>
+      <a href="/auth?tab=register" class="btn btn-primary btn-block">สมัครสมาชิก</a>
+    </div>
+
+    <div class="header-role-member" style="display: none; flex-direction: column; gap: 10px; margin-top: 15px;">
+      <a href="/listings/new" class="btn btn-primary btn-block">+ เริ่มแบ่งปัน</a>
+      <a href="/reservations/my" class="btn btn-secondary btn-block">📦 คำขอของฉัน (1)</a>
+      <a href="/dashboard" class="btn btn-secondary btn-block">👤 พื้นที่ของฉัน</a>
+    </div>
+
+    <div class="header-role-admin" style="display: none; flex-direction: column; gap: 10px; margin-top: 15px;">
+      <a href="/admin" class="btn btn-primary btn-block">⚙️ จัดการระบบ (Admin)</a>
+      <button type="button" class="btn btn-danger btn-block">ออกจากระบบ</button>
+    </div>
+  </div>
+</header>

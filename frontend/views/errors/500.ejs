@@ -1,0 +1,20 @@
+<%- include('../partials/head', { title: '500 เกิดข้อผิดพลาดในระบบ' }) %>
+<%- include('../partials/header') %>
+
+<main class="main-content">
+  <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 50vh;">
+    <div class="empty-state" style="max-width: 520px; border-style: solid; padding: var(--space-8);">
+      <div style="font-size: 4.5rem; line-height: 1; margin-bottom: var(--space-2);">⚙️</div>
+      <h1 class="empty-state-title" style="font-size: 2rem;">500 ระบบขัดข้องชั่วคราว</h1>
+      <p class="empty-state-desc">
+        เกิดข้อผิดพลาดในการประมวลผลข้อมูลของเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้งในภายหลัง
+      </p>
+      <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
+        <button type="button" class="btn btn-primary" onclick="window.location.reload();">ลองโหลดใหม่อีกครั้ง</button>
+        <a href="/" class="btn btn-secondary">กลับสู่หน้าแรก</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

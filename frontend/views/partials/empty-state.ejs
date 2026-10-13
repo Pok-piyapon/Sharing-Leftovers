@@ -1,0 +1,19 @@
+<%
+  const icon = typeof emptyIcon !== 'undefined' ? emptyIcon : '📦';
+  const title = typeof emptyTitle !== 'undefined' ? emptyTitle : 'ยังไม่มีข้อมูลในส่วนนี้';
+  const desc = typeof emptyDesc !== 'undefined' ? emptyDesc : 'ขณะนี้ยังไม่มีรายการที่จะแสดงผล คุณสามารถเริ่มสร้างประกาศใหม่หรือค้นหาสิ่งของชิ้นอื่นได้';
+  const actionText = typeof emptyActionText !== 'undefined' ? emptyActionText : null;
+  const actionUrl = typeof emptyActionUrl !== 'undefined' ? emptyActionUrl : '/';
+%>
+
+<div class="empty-state">
+  <div class="empty-state-icon"><%= icon %></div>
+  <h3 class="empty-state-title"><%= title %></h3>
+  <p class="empty-state-desc"><%= desc %></p>
+  
+  <% if (actionText) { %>
+    <a href="<%= actionUrl %>" class="btn btn-primary" style="margin-top: var(--space-2);">
+      <%= actionText %>
+    </a>
+  <% } %>
+</div>
