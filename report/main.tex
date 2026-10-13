@@ -1,0 +1,909 @@
+% ============================================================
+% รายงานโครงงาน: ระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้
+% (Sharing Leftovers API)
+% Compile: tectonic main.tex (XeLaTeX engine)
+% ฟอนต์: TH Sarabun (Sarabun - Google Fonts) ขนาด 16pt
+% ============================================================
+\documentclass[12pt,a4paper]{report}
+
+% ---------- ฟอนต์ไทย: THSarabun (จาก D:\GE\fonts) ----------
+\usepackage{fontspec}
+\setmainfont{THSarabun}[
+  Path = fonts/,
+  UprightFont = THSarabun.ttf,
+  BoldFont = THSarabun Bold.ttf,
+  ItalicFont = THSarabun Italic.ttf,
+  BoldItalicFont = THSarabun BoldItalic.ttf
+]
+\setmonofont{Consolas}[Scale=0.82]
+
+% ขนาดตัวอักษร 16pt (มาตรฐานรายงานภาษาไทย TH Sarabun)
+\usepackage[fontsize=16pt]{fontsize}
+
+% เปิดการตัดบรรทัดภาษาไทย (ICU word breaking)
+\XeTeXlinebreaklocale "th"
+\XeTeXlinebreakskip = 0pt plus 2pt minus 0.5pt
+\emergencystretch=2em
+
+% ---------- เลย์เอาต์ ----------
+\usepackage{geometry}
+\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+\setlength{\parindent}{2.5em}
+\setlength{\parskip}{0pt}
+\widowpenalty=10000
+\clubpenalty=10000
+\usepackage{setspace}
+\onehalfspacing
+
+% ---------- แพ็กเกจทั่วไป ----------
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+% จัด longtable ให้อยู่กึ่งกลางหน้า
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{listings}
+\usepackage{tocloft}
+
+% ---------- รูปแบบหัวบท (บทที่ N / ชื่อบท แบบกึ่งกลาง) ----------
+\newcommand{\chapterthainame}{บทที่}
+\titleformat{\chapter}[display]
+  {\centering\bfseries\Large}
+  {\chapterthainame\ \thechapter}{0.6em}{\bfseries\Large}
+\titlespacing*{\chapter}{0pt}{-30pt}{28pt}
+% หัวข้อรองเป็นตัวหนาขนาดเท่าตัวอักษรปกติ ตาม Format
+\titleformat{\section}{\bfseries\normalsize}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\bfseries\normalsize}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\bfseries\normalsize}{\thesubsubsection}{0.8em}{}
+\titlespacing*{\section}{0pt}{14pt}{8pt}
+\titlespacing*{\subsection}{0pt}{10pt}{6pt}
+
+% ---------- หัวกระดาษ: เลขหน้ามุมขวาบน ----------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{20pt}
+\fancypagestyle{front}{%
+  \fancyhf{}%
+  \fancyhead[R]{\thailPage}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+% เลขหน้าบรรณานุกรมภาษาไทย ก ข ค ง จ ฉ ช ซ ฌ ญ ฎ ฏ ...
+\newcommand{\thailPage}{%
+  \ifcase\value{page}\or ก\or ข\or ค\or ง\or จ\or ฉ\or ช\or ซ\or ฌ\or ญ\or ฎ\or ฏ\or ฐ\or ฑ\or ฒ\or ณ\or เ\or โ\or ใ\or ไ\fi
+}
+
+% หน้าแรกของบท/สารบัญ (plain) ให้เลขหน้าอยู่มุมขวาบนเช่นเดียวกัน
+% (ช่วงพรีเฟสพิมพ์เลขหน้าไทย ก ข ค โดยควบคุมด้วย \iffrontmode)
+\newif\iffrontmode
+\frontmodetrue
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\iffrontmode\thailPage\else\thepage\fi}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+
+% เลขภาพ/ตารางรันต่อเนื่องทั้งเล่ม (ภาพที่ 1, 2, ... ไม่ผูกกับบท)
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+
+% หัวเรื่องของสารบัญ/สารบัญตาราง/สารบัญภาพ ให้อยู่กึ่งกลาง
+\renewcommand{\cfttoctitlefont}{\hfill\bfseries\Large}
+\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftlottitlefont}{\hfill\bfseries\Large}
+\renewcommand{\cftafterlottitle}{\hfill}
+\renewcommand{\cftloftitlefont}{\hfill\bfseries\Large}
+\renewcommand{\cftafterloftitle}{\hfill}
+
+% รายการบทในสารบัญเป็นแบบ "บทที่ 1 บทนำ"
+\renewcommand{\cftchappresnum}{บทที่ }
+\renewcommand{\cftchapaftersnum}{\hspace{0.8em}}
+\setlength{\cftchapnumwidth}{7em}
+
+% ---------- ตาราง/ภาพ ชื่อภาษาไทย ----------
+\renewcommand{\tablename}{ตารางที่}
+\renewcommand{\figurename}{ภาพที่}
+\renewcommand{\listtablename}{สารบัญตาราง}
+\renewcommand{\listfigurename}{สารบัญภาพ}
+\renewcommand{\contentsname}{สารบัญ}
+\renewcommand{\bibname}{บรรณานุกรม}
+\renewcommand{\appendixname}{ภาคผนวก}
+
+% สารบัญ: ชื่อหัวข้ออยู่ซ้าย เลขหน้าอยู่ขวา
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+
+% ---------- ลิงก์ ----------
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue,
+  bookmarks=true,
+  bookmarksnumbered=true,
+  unicode=true,
+  hypertexnames=false
+]{hyperref}
+
+\hypersetup{
+  pdftitle={รายงานโครงงาน ระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้},
+  pdfauthor={คณะผู้จัดทำ},
+  pdfsubject={Sharing Leftovers API},
+  pdfkeywords={REST API, MongoDB, Sharing Economy, Express.js}
+}
+
+% ---------- โค้ดในภาคผนวก ----------
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  framerule=0.3pt,
+  showstringspaces=false,
+  tabsize=2
+}
+
+\begin{document}
+
+% ============================================================
+% หน้าปก (ภาษาไทย)
+% ============================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{0.2cm}
+  \includegraphics[width=2.8cm]{kku_logo.png}\\[0.5cm]
+
+  {\bfseries\fontsize{26pt}{34pt}\selectfont
+  การพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้\\
+  โดยใช้สถาปัตยกรรม REST API ร่วมกับ\\
+  ฐานข้อมูล MongoDB\par}
+  \vspace{0.6cm}
+
+  {\bfseries\fontsize{17pt}{24pt}\selectfont
+  DEVELOPMENT OF A WEB-BASED SHARING PLATFORM\\
+  FOR UNUSED HOUSEHOLD ITEMS USING REST API\\
+  ARCHITECTURE WITH MONGODB DATABASE\par}
+  \vspace{0.7cm}
+
+  \begin{tabular}{ll}
+    {\bfseries นาย} & {\bfseries ............................................................}\\[0.15em]
+    {\bfseries นาย} & {\bfseries ............................................................}\\[0.15em]
+    {\bfseries นาย} & {\bfseries ............................................................}\\
+  \end{tabular}
+
+  \vfill
+  {\bfseries\fontsize{14pt}{20pt}\selectfont
+  คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์\\
+  มหาวิทยาลัยขอนแก่น\\
+  พ.ศ. 2568\par}
+\end{center}
+\end{titlepage}
+
+% ============================================================
+% หน้าปกภาษาไทย (ฉบับรายวิชา)
+% ============================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{2.0cm}
+  {\bfseries
+  การพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้\\
+  โดยใช้สถาปัตยกรรม REST API ร่วมกับ\\
+  ฐานข้อมูล MongoDB\par}
+  \vspace{2.5cm}
+
+  \begin{tabular}{ll}
+    {\bfseries นาย} & {\bfseries ............................................................}\\[0.35em]
+    {\bfseries นาย} & {\bfseries ............................................................}\\[0.35em]
+    {\bfseries นาย} & {\bfseries ............................................................}\\
+  \end{tabular}
+
+  \vfill
+  {\bfseries รายงานนี้เป็นส่วนหนึ่งของรายวิชา GE362785 การคิดเชิงสร้างสรรค์และการแก้ปัญหา\\
+  ภาคเรียนที่ 1 ปีการศึกษา 2568\\
+  สถาบันการสอนวิชาศึกษาทั่วไป มหาวิทยาลัยขอนแก่น\par}
+  \vspace*{1.0cm}
+\end{center}
+\end{titlepage}
+
+% ============================================================
+% หน้าปก (ภาษาอังกฤษ)
+% ============================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{2.0cm}
+  {\bfseries
+  DEVELOPMENT OF A WEB-BASED SHARING PLATFORM\\
+  FOR UNUSED HOUSEHOLD ITEMS USING REST API\\
+  ARCHITECTURE WITH MONGODB DATABASE\par}
+  \vspace{2.5cm}
+
+  \begin{tabular}{ll}
+    {\bfseries MR.} & {\bfseries ............................................................}\\[0.35em]
+    {\bfseries MR.} & {\bfseries ............................................................}\\[0.35em]
+    {\bfseries MR.} & {\bfseries ............................................................}\\
+  \end{tabular}
+
+  \vfill
+  {\bfseries THIS REPORT IS A PART OF THE COURSE\\
+  GE362785 CREATIVE THINKING AND PROBLEM SOLVING\\
+  SEMESTER 1, ACADEMIC YEAR 2025\\
+  THE GENERAL EDUCATION INSTITUTE AT KHON KAEN UNIVERSITY\par}
+  \vspace*{1.0cm}
+\end{center}
+\end{titlepage}
+
+% ============================================================
+% หน้าข้อมูลโครงงาน (ภาษาไทย) — เริ่มเลขหน้าไทย ก
+% ============================================================
+\clearpage
+\setcounter{page}{1}
+\pagestyle{front}
+
+\noindent\begin{tabular}{@{}p{5.0cm}@{}>{\raggedright\arraybackslash}p{10.9cm}@{}}
+{\bfseries ชื่อโครงงาน} &
+การพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้โดยใช้สถาปัตยกรรม REST API ร่วมกับฐานข้อมูล MongoDB\\
+\end{tabular}
+
+\vspace{0.8em}
+\noindent{\bfseries ชื่อผู้จัดทำ}
+
+\vspace{0.2em}
+\noindent\begin{tabular}{@{}l l l@{}}
+นาย & .......................................... & รหัสประจำตัว .......................\\
+นาย & .......................................... & รหัสประจำตัว .......................\\
+นาย & .......................................... & รหัสประจำตัว .......................\\
+\end{tabular}
+
+\vspace{0.8em}
+\noindent\begin{tabular}{@{}p{5.0cm}@{}l@{}}
+{\bfseries อาจารย์ที่ปรึกษา} & อาจารย์ สมาพร กอบุตร\\[0.4em]
+{\bfseries ปีการศึกษา} & 2568\\
+\end{tabular}
+
+\newpage
+
+% ============================================================
+% บทคัดย่อ (ภาษาไทย)
+% ============================================================
+\begin{center}
+  {\bfseries\large บทคัดย่อ}
+\end{center}
+
+ปัญหาของเหลือใช้ในครัวเรือน เช่น เฟอร์นิเจอร์ เครื่องใช้ไฟฟ้า เสื้อผ้า และของใช้ในบ้านที่ยังสภาพดีแต่ไม่ได้รับการใช้งาน เป็นปัญหาที่พบได้บ่อย โดยส่วนใหญ่เจ้าของมักเลือกทิ้งหรือฝากขายตามกลุ่มซื้อขายออนไลน์ทั่วไป ซึ่งมีขั้นตอนยุ่งยากและไม่มีระบบติดตามสถานะที่ชัดเจน จากปัญหาดังกล่าวคณะผู้จัดทำจึงได้พัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้ เพื่อ 1) พัฒนาระบบลงประกาศและแบ่งปันของเหลือใช้ที่ผู้ใช้สามารถลงประกาศได้โดยไม่มีค่าใช้จ่าย 2) พัฒนาระบบขอรับ จอง อนุมัติ และปิดรายการเมื่อส่งมอบของแล้วอย่างเป็นระบบ และ 3) ออกแบบ REST API พร้อมเอกสารประกอบอัตโนมัติรองรับการนำไปพัฒนาต่อยอดในอนาคต
+
+\vspace{0.8em}
+
+ระบบพัฒนาด้วย Node.js ร่วมกับเฟรมเวิร์ก Express.js สำหรับพัฒนา REST API และใช้ MongoDB Atlas เป็นฐานข้อมูลบนคลาวด์ผ่านไลบรารี Mongoose โดยออกแบบโครงสร้างข้อมูลหลัก 5 ส่วน ได้แก่ ผู้ใช้ (User) หมวดหมู่ (Category) ประกาศ (Listing) การขอรับ (Reservation) และการรายงาน (Report) การยืนยันตัวตนใช้ระบบ Session ที่จัดเก็บในฐานข้อมูล รองรับการค้นหาของตามระยะทางด้วยดัชนีเชิงภูมิศาสตร์ (Geospatial Index) และจัดทำเอกสาร API อัตโนมัติด้วย Swagger UI
+
+\vspace{0.8em}
+
+ผลการดำเนินงานพบว่า ระบบสามารถรองรับการทำงานครบทั้ง 6 กลุ่ม API รวม 20 Endpoint และผ่านการทดสอบทั้งหมด 10 สถานการณ์ เช่น การสมัครสมาชิก การลงประกาศ การป้องกันการจองซ้ำด้วยดัชนีเอกลักษณ์ การอนุมัติที่ลดจำนวนของคงเหลือแบบอะตอมมิก และการค้นหาตามระยะทาง ผลการทดสอบทั้งหมดเป็นไปตามที่ออกแบบไว้ แสดงให้เห็นว่าระบบที่พัฒนาขึ้นสามารถใช้เป็นรากฐานของแพลตฟอร์มแบ่งปันของเหลือใช้ที่สมบูรณ์ต่อไปได้
+
+\vspace{0.8em}
+\noindent{\bfseries คำสำคัญ:} แบ่งปันของเหลือใช้, REST API, MongoDB, เศรษฐกิจแบ่งปัน
+
+\newpage
+
+% ============================================================
+% หน้าข้อมูลโครงงาน (ภาษาอังกฤษ)
+% ============================================================
+\begin{flushleft}
+\noindent\begin{tabular}{@{}p{5.0cm}@{}>{\raggedright\arraybackslash}p{10.9cm}@{}}
+{\bfseries Project Title} &
+Development of a web-based sharing platform for unused household items using REST API architecture with MongoDB database\\
+\end{tabular}
+
+\vspace{0.8em}
+\noindent{\bfseries Author}
+
+\vspace{0.2em}
+\noindent\begin{tabular}{@{}l l l@{}}
+Mr. & .......................................... & Student-ID .......................\\
+Mr. & .......................................... & Student-ID .......................\\
+Mr. & .......................................... & Student-ID .......................\\
+\end{tabular}
+
+\vspace{0.8em}
+\noindent\begin{tabular}{@{}p{5.0cm}@{}l@{}}
+{\bfseries Project Advisor} & Samaporn Kawboot\\[0.4em]
+{\bfseries Academic Year} & 2025\\
+\end{tabular}
+\end{flushleft}
+
+\newpage
+
+% ============================================================
+% ABSTRACT
+% ============================================================
+\begin{center}
+  {\bfseries\large ABSTRACT}
+\end{center}
+
+Unused household items such as furniture, appliances, clothing, and other goods that are still in good condition but no longer in use are a common problem. Most owners choose to throw them away or sell them in general online groups, which involves complicated procedures and lacks a clear tracking system. For these reasons, the authors developed a web-based sharing platform for unused items in order to: 1) develop a system that allows users to post and share unused items free of charge; 2) develop a systematic request, reservation, approval, and completion process when items are delivered; and 3) design a REST API with automatic documentation to support future development.
+
+\vspace{0.8em}
+
+This system was developed using Node.js with the Express.js framework, and MongoDB Atlas as the database through the Mongoose library. The data structure was designed into five main collections: User, Category, Listing, Reservation, and Report. Authentication uses a session system stored in the database instead of tokens, supports distance-based item searching with a geospatial index, and generates API documentation automatically with Swagger UI.
+
+\vspace{0.3em}
+
+The results showed that the system supports all six API groups and passed all ten test scenarios, such as registration, login, duplicate-reservation prevention, atomic quantity reduction on approval, and distance-based searching. All test results behaved as designed, demonstrating that the system can serve as the foundation of a complete sharing platform for unused items.
+
+\vspace{0.8em}
+\noindent{\bfseries Keywords:} Sharing Unused Items, REST API, MongoDB, Sharing Economy
+
+\newpage
+
+% ============================================================
+% กิตติกรรมประกาศ
+% ============================================================
+\begin{center}
+  {\bfseries\large กิตติกรรมประกาศ}
+\end{center}
+
+การศึกษาค้นคว้าเล่มนี้สำเร็จลุล่วงได้เป็นอย่างดี ด้วยความกรุณาของอาจารย์สมาพร กอบุตร อาจารย์ที่ปรึกษาซึ่งได้ให้คำแนะนำและตรวจแก้ไขข้อบกพร่องมาโดยตลอดตั้งแต่เริ่มจนสำเร็จเรียบร้อย คณะผู้จัดทำจึงขอกราบขอบพระคุณด้วยความเคารพอย่างสูงไว้ ณ โอกาสนี้
+
+\vspace{0.6em}
+
+ขอขอบพระคุณนักศึกษาและบุคลากรคณะวิศวกรรมศาสตร์ มหาวิทยาลัยขอนแก่น ที่ให้ความอนุเคราะห์อำนวยความสะดวกในการศึกษาหาข้อมูลและทดสอบระบบ ขอบคุณเพื่อน ๆ ในกลุ่มที่ให้ความร่วมมือในการศึกษาค้นคว้าครั้งนี้ จนทำให้การศึกษาค้นคว้าครั้งนี้สำเร็จลุล่วงด้วยดี
+
+\vspace{0.6em}
+
+ขอขอบพระคุณทุก ๆ ท่านที่ให้การสนับสนุนและให้กำลังใจในการศึกษาครั้งนี้ อนึ่ง จากการศึกษาค้นคว้าฉบับนี้สามารถก่อให้เกิดความรู้และข้อคิดที่มีประโยชน์แก่การพัฒนาระบบแบ่งปันของเหลือใช้ คณะผู้จัดทำขอมอบความดีครั้งนี้ให้อาจารย์ตลอดจนผู้ให้ความรู้ทางเอกสารอ้างอิงทุกท่านที่คณะผู้จัดทำใช้อ้างอิงในการค้นคว้าฉบับนี้ หากการศึกษาค้นคว้าฉบับนี้มีข้อผิดพลาดหรือข้อบกพร่องประการใด คณะผู้จัดทำขอน้อมรับไว้ด้วยความขอบพระคุณอย่างสูง
+
+\vspace{1.2em}
+\begin{flushright}
+คณะผู้จัดทำ
+\end{flushright}
+
+\newpage
+
+% ============================================================
+% สารบัญ
+% ============================================================
+% แทรกรายการหน้าพรีเฟส (เลขหน้าแบบไทย) ไว้ต้นไฟล์ .toc
+\addtocontents{toc}{\protect\begin{tabular}{@{}p{13.2cm}@{}r@{}}}
+\addtocontents{toc}{บทคัดย่อ (ภาษาไทย) & ข\\}
+\addtocontents{toc}{บทคัดย่อ (ภาษาอังกฤษ) & ง\\}
+\addtocontents{toc}{กิตติกรรมประกาศ & จ\\}
+\addtocontents{toc}{สารบัญ & ฉ\\}
+\addtocontents{toc}{สารบัญตาราง & ซ\\}
+\addtocontents{toc}{สารบัญภาพ & ฌ\\}
+\addtocontents{toc}{\protect\end{tabular}\protect\par}
+\addtocontents{toc}{\protect\vspace{1.2em}}
+\addtocontents{toc}{\protect\noindent{\bfseries หน้าที่}\protect\par}
+\addtocontents{toc}{\protect\vspace{0.3em}}
+\tableofcontents
+
+\newpage
+
+% ============================================================
+% สารบัญตาราง
+% ============================================================
+\addtocontents{lot}{\protect\noindent{\bfseries ตารางที่}\protect\hfill{\bfseries หน้าที่}\protect\par}
+\addtocontents{lot}{\protect\vspace{-0.6em}}
+\listoftables
+
+\newpage
+
+% ============================================================
+% สารบัญภาพ
+% ============================================================
+\addtocontents{lof}{\protect\noindent{\bfseries ภาพที่}\protect\hfill{\bfseries หน้าที่}\protect\par}
+\addtocontents{lof}{\protect\vspace{-0.6em}}
+\listoffigures
+
+% ============================================================
+% เนื้อหาหลัก — เลขหน้าอารบิกเริ่มที่ 1
+% ============================================================
+\clearpage
+\pagenumbering{arabic}
+\frontmodefalse
+
+\chapter{บทนำ}
+
+\section{ความเป็นมาและความสำคัญของปัญหา}
+
+ในปัจจุบันการบริโภคสินค้าของคนไทยเพิ่มขึ้นอย่างต่อเนื่อง ส่งผลให้เกิดสิ่งของที่ยังใช้งานได้แต่ไม่ได้รับการใช้งานจำนวนมากในแต่ละครัวเรือน เช่น เฟอร์นิเจอร์ที่เหลือจากการย้ายที่พัก เครื่องใช้ไฟฟ้าที่ซื้อเครื่องใหม่มาทดแทน เสื้อผ้าที่ใส่ไม่ได้ขนาด และของใช้ในบ้านที่ซื้อมาเก็บไว้แต่ไม่ได้ใช้ โดยปกติเจ้าของสิ่งของเหล่านี้มักเลือกทิ้งลงถังขยะ ซึ่งนอกจากจะเป็นการสูญเปล่าทางเศรษฐกิจแล้ว ยังเพิ่มภาระให้ระบบการกำจัดขยะของชุมชน และส่งผลกระทบต่อสิ่งแวดล้อมโดยตรง
+
+\vspace{0.4em}
+
+อีกทางเลือกหนึ่งที่นิยมใช้กันคือการฝากขายหรือแจกตามกลุ่มซื้อขายออนไลน์ทั่วไป แต่กลุ่มดังกล่าวถูกออกแบบมาสำหรับการซื้อขายเพื่อกำไรเป็นหลัก ผู้ใช้ที่ต้องการแบ่งปันสิ่งของจึงต้องผ่านขั้นตอนยุ่งยาก เช่น การต่อรองราคา การติดต่อสื่อสารที่กระจัดกระจายหลายช่องทาง และไม่มีระบบติดตามสถานะของรายการว่ามอบของแล้วหรือยัง อีกทั้งยังเกิดปัญหาความไม่น่าเชื่อถือของผู้ขายบางราย ทำให้ผู้ใช้ทั่วไปขาดความมั่นใจในการนำสิ่งของมาแบ่งปันกัน
+
+\vspace{0.4em}
+
+แนวคิดเศรษฐกิจแบ่งปัน (Sharing Economy) คือรูปแบบทางเศรษฐกิจที่เน้นการใช้ทรัพยากรร่วมกันโดยไม่จำเป็นต้องเป็นเจ้าของถาวร ซึ่งได้รับความนิยมเพิ่มขึ้นอย่างมากในยุคดิจิทัล เนื่องจากแพลตฟอร์มออนไลน์ช่วยลดต้นทุนในการเชื่อมต่อระหว่างผู้ให้และผู้รับ ทำให้การแบ่งปันสิ่งของเกิดขึ้นได้ง่ายและมีประสิทธิภาพมากขึ้น ในต่างประเทศมีแพลตฟอร์มแบ่งปันสิ่งของมือสองจำนวนมาก ขณะที่ในประเทศไทยแพลตฟอร์มลักษณะนี้ที่เน้นการแบ่งปันโดยไม่มีการซื้อขายมีอยู่อย่างจำกัด
+
+\vspace{0.4em}
+
+จากเหตุผลดังกล่าว คณะผู้จัดทำจึงเห็นว่าควรพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้ที่มีกระบวนการทำงานครบวงจร ทั้งการลงประกาศ การขอรับหรือจองของ การอนุมัติโดยเจ้าของประกาศ และการปิดรายการเมื่อส่งมอบของแล้ว โดยออกแบบระบบให้เป็น REST API ที่แยกส่วนการทำงานออกจากหน้าจอผู้ใช้อย่างชัดเจน เพื่อให้สามารถนำไปเชื่อมต่อกับเว็บไซต์หรือแอปพลิเคชันมือถือได้ในอนาคต รวมถึงรองรับการค้นหาของใกล้ตัวตามระยะทางด้วยข้อมูลตำแหน่งภูมิศาสตร์ ซึ่งช่วยให้ผู้ใช้สามารถมอบรับของกันได้สะดวกโดยไม่ต้องเดินทางไกล
+
+\section{วัตถุประสงค์ของโครงงาน}
+
+\begin{enumerate}[label=1.2.\arabic*, leftmargin=4.2em, itemsep=0.2em]
+  \item เพื่อพัฒนาระบบลงประกาศและแบ่งปันของเหลือใช้ที่ผู้ใช้สามารถลงประกาศได้โดยไม่มีค่าใช้จ่าย
+  \item เพื่อพัฒนาระบบขอรับ จอง อนุมัติ และปิดรายการเมื่อส่งมอบของแล้วอย่างเป็นระบบ พร้อมป้องกันปัญหาการจองซ้ำและการอนุมัติเกินจำนวนของที่มีอยู่
+  \item เพื่อออกแบบ REST API พร้อมเอกสารประกอบอัตโนมัติ ที่สามารถนำไปเชื่อมต่อกับเว็บไซต์หรือแอปพลิเคชันอื่นได้ในอนาคต
+\end{enumerate}
+
+\section{ประโยชน์ที่คาดว่าจะได้รับ}
+
+\begin{enumerate}[label=1.3.\arabic*, leftmargin=4.2em, itemsep=0.2em]
+  \item ช่วยลดปริมาณขยะจากสิ่งของที่ยังใช้งานได้ โดยให้ผู้ใช้สามารถส่งต่อของเหลือใช้ถึงผู้ที่ต้องการใช้จริงได้โดยตรง
+  \item ผู้ใช้สามารถค้นหาของแบ่งปันในบริเวณใกล้ตัวตามระยะทางที่กำหนด ทำให้การนัดรับของสะดวกและประหยัดเวลา
+  \item ระบบติดตามสถานะคำขอรับอย่างชัดเจนตั้งแต่การขอรับ อนุมัติ จนถึงการส่งมอบ ทำให้ทั้งสองฝ่ายมั่นใจในรายการ
+  \item ผู้จัดทำได้รับประสบการณ์การออกแบบสถาปัตยกรรมระบบ การออกแบบฐานข้อมูล การพัฒนา REST API และการทดสอบระบบอย่างเป็นขั้นตอน
+  \item ระบบที่พัฒนาขึ้นมีเอกสาร API อัตโนมัติ สามารถต่อยอดพัฒนาส่วนหน้าจอผู้ใช้หรือแอปพลิเคชันมือถือต่อได้โดยไม่ต้องเริ่มออกแบบใหม่
+\end{enumerate}
+
+\section{ขอบเขตและข้อจำกัดของโครงงาน}
+
+\subsection{ขอบเขต}
+
+โครงงานนี้มุ่งเน้นการพัฒนาส่วนของ REST API สำหรับระบบแบ่งปันของเหลือใช้ ครอบคลุมการทำงานหลัก 3 เรื่อง ได้แก่ 1) ผู้ใช้สามารถลงทะเบียน เข้าสู่ระบบ และลงประกาศของเหลือใช้พร้อมระบุจำนวน สภาพของ วิธีการรับของ และตำแหน่งที่ตั้ง 2) ผู้ใช้อื่นสามารถค้นหาประกาศด้วยหมวดหมู่ คำค้นหา และระยะทาง พร้อมยื่นคำขอรับของ และ 3) เจ้าของประกาศสามารถอนุมัติ ปฏิเสธ และยืนยันการส่งมอบเพื่อปิดรายการ รวมถึงระบบรายงานประกาศไม่เหมาะสมสำหรับผู้ดูแลระบบ ทั้งนี้ระบบยังพัฒนาหน้าจอผู้ใช้ (User Interface) ด้วยเทมเพลต EJS ฝั่งเซิร์ฟเวอร์ ครอบคลุมหน้ารวมประกาศ รายละเอียดประกาศ ฟอร์มลงประกาศ และฟอร์มยืนยันตัวตน
+
+\subsection{ข้อจำกัด}
+
+ระบบพัฒนาหน้าจอผู้ใช้ในรูปแบบเทมเพลตฝั่งเซิร์ฟเวอร์ (Server-Side Rendering) ด้วย EJS ซึ่งยังไม่รวมการทำงานแบบฝั่งลูกข่ายที่ซับซ้อน เช่น Single Page Application การอัปโหลดรูปภาพประกอบประกาศยังใช้รูปแบบลิงก์ URL โดยไม่มีระบบจัดเก็บไฟล์ของตนเอง และระบบยังไม่มีการแจ้งเตือนแบบเรียลไทม์ เช่น การแจ้งเตือนผ่านอีเมลหรือแอปพลิเคชันส่งข้อความ เมื่อมีผู้ยื่นคำขอรับของ
+
+\section{ระยะเวลาในการดำเนินการ}
+
+สิงหาคม 2568 -- ตุลาคม 2568
+
+\chapter{วรรณกรรมและงานวิจัยที่เกี่ยวข้อง}
+
+ผู้จัดทำโครงงานได้ศึกษาค้นคว้าทฤษฎีและเอกสารที่เกี่ยวข้องดังนี้
+
+\begin{enumerate}[label=\arabic*., leftmargin=2.5em, itemsep=0.2em]
+  \item แนวคิดเศรษฐกิจแบ่งปัน (Sharing Economy)
+  \item งานวิจัยเกี่ยวกับระบบแบ่งปันและซื้อขายของมือสอง
+  \item สถาปัตยกรรม REST API
+  \item ฐานข้อมูล MongoDB และการค้นหาเชิงภูมิศาสตร์
+  \item การยืนยันตัวตนด้วย Session
+  \item เอกสาร API อัตโนมัติด้วย OpenAPI และ Swagger
+\end{enumerate}
+
+\section{แนวคิดเศรษฐกิจแบ่งปัน}
+
+เศรษฐกิจแบ่งปัน (Sharing Economy) คือรูปแบบเศรษฐกิจที่อิงจากการให้บุคคลได้รับสิทธิในการใช้สินทรัพย์ที่ไม่ได้ใช้งานของกันและกัน โดยมักอาศัยแพลตฟอร์มออนไลน์เป็นตัวเชื่อมต่อ การศึกษาของ Hamari, Sj\"oklint และ Ukkonen (2016) พบว่าแรงจูงใจหลักของผู้ที่เข้าร่วมการแบ่งปันทรัพยากรร่วมกัน คือความยั่งยืนทางเศรษฐกิจ การที่ผู้ใช้เห็นว่าเป็นกิจกรรมที่ดี และความสนุกในการใช้งาน ซึ่งแสดงว่าแพลตฟอร์มที่ออกแบบให้ใช้งานง่ายและเห็นประโยชน์ชัดเจนจะช่วยให้ผู้ใช้เข้าร่วมมากขึ้น งานของ Botsman และ Rogers (2010) ยังชี้ว่าหัวใจสำคัญของเศรษฐกิจแบ่งปันคือระบบความเชื่อมั่นระหว่างผู้ใช้ที่ไม่รู้จักกัน ซึ่งสอดคล้องกับการที่ระบบโครงงานนี้ออกแบบให้มีระบบรายงานประกาศและการยืนยันส่งมอบอย่างเป็นขั้นตอน
+
+\section{งานวิจัยเกี่ยวกับระบบแบ่งปันและซื้อขายของมือสอง}
+
+งานวิจัยด้านแพลตฟอร์มของมือสองส่วนใหญ่เน้นการซื้อขายเพื่อกำไร เช่น ระบบประมูลและระบบร้านค้าออนไลน์ ซึ่งมีกระบวนการชำระเงินและการจัดส่งเป็นศูนย์กลาง แต่สำหรับการแบ่งปันของเหลือใช้ กระบวนการหลักคือการแสดงความประสงค์ขอรับ การอนุมัติโดยเจ้าของ และการนัดรับของด้วยตนเอง ระบบจึงต้องออกแบบสถานะของรายการให้แตกต่างออกไป โครงงานนี้จึงออกแบบสถานะของการขอรับ ได้แก่ รอการพิจารณา (pending) อนุมัติ (approved) ปฏิเสธ (rejected) ยกเลิก (cancelled) และส่งมอบแล้ว (completed) เพื่อให้การติดตามรายการเป็นไปอย่างชัดเจนแต่ต้น
+
+\section{สถาปัตยกรรม REST API}
+
+REST (Representational State Transfer) คือรูปแบบสถาปัตยกรรมสำหรับระบบกระจายที่ Fielding (2000) เสนอขึ้น โดยใช้หลักการของ HTTP อย่างตรงไปตรงมา ทรัพยากรทุกอย่างถูกระบุด้วย URL และการทำงานกับทรัพยากรใช้วิธีการ HTTP มาตรฐาน เช่น GET สำหรับอ่าน POST สำหรับสร้าง PATCH สำหรับแก้ไข และ DELETE สำหรับลบ ข้อดีของการออกแบบระบบเป็น REST API คือส่วนหลังบ้านแยกออกจากส่วนหน้าอย่างสมบูรณ์ ทำให้สามารถเปลี่ยนเทคโนโลยีฝั่งหน้าหรือเพิ่มช่องทางใหม่ เช่น แอปพลิเคชันมือถือ โดยไม่ต้องแก้ไขส่วนหลังบ้าน อีกทั้งการจัดกลุ่ม API เป็นเวอร์ชัน เช่น /api/v1 ช่วยให้การปรับปรุงระบบในอนาคตไม่กระทบผู้ใช้เดิม
+
+\section{ฐานข้อมูล MongoDB และการค้นหาเชิงภูมิศาสตร์}
+
+MongoDB คือฐานข้อมูลแบบเอกสาร (Document Database) ที่จัดเก็บข้อมูลในรูปแบบ BSON ซึ่งมีความยืดหยุ่นในการออกแบบโครงสร้างข้อมูลเหมาะกับระบบที่มีข้อมูลหลากหลายรูปแบบ เช่น ประกาศที่มีรายละเอียดต่างกันตามชนิดของสินค้า จุดเด่นที่สำคัญอีกประการคือการสนับสนุนข้อมูลเชิงภูมิศาสตร์ในตัว โดย MongoDB สามารถจัดเก็บตำแหน่งในรูปแบบ GeoJSON และสร้างดัชนีชนิด 2dsphere เพื่อค้นหาเอกสารภายในระยะทางที่กำหนดได้ (MongoDB, 2025) ระบบโครงงานนี้จึงใช้ความสามารถดังกล่าวในการค้นหาประกาศใกล้ตัวผู้ใช้โดยระบุละติจูด ลองจิจูด และรัศมีค้นหาเป็นเมตร
+
+\section{การยืนยันตัวตนด้วย Session}
+
+การยืนยันตัวตนเป็นส่วนสำคัญของระบบที่มีการลงประกาศและอนุมัติรายการ แนวทางที่นิยมมี 2 แบบ คือการใช้ Token เช่น JWT และการใช้ Session ฝั่งเซิร์ฟเวอร์ การใช้ Session ให้เซิร์ฟเวอร์ควบคุมสถานะการเข้าสู่ระบบได้โดยตรง สามารถยกเลิก Session ได้ทันทีเมื่อผู้ใช้ออกจากระบบหรือเมื่อบัญชีถูกระงับ และข้อมูลสำคัญไม่ถูกฝังอยู่ในตัว Token ซึ่งช่วยลดความเสี่ยงด้านความปลอดภัย ตามคำแนะนำด้านการจัดการ Session ของ OWASP (2024) ระบบโครงงานนี้จึงเลือกใช้ express-session โดยจัดเก็บ Session ลงใน MongoDB ผ่าน connect-mongo เพื่อให้ข้อมูลการเข้าสู่ระบบยังคงอยู่แม้มีการรีสตาร์ตเซิร์ฟเวอร์
+
+\section{เอกสาร API อัตโนมัติด้วย OpenAPI และ Swagger}
+
+OpenAPI Specification คือมาตรฐานสากลสำหรับการอธิบาย REST API ที่ระบุรายละเอียดทรัพยากร พารามิเตอร์ และผลลัพธ์ของแต่ละ Endpoint (OpenAPI Initiative, 2024) เมื่อนำมาใช้ร่วมกับเครื่องมืออย่าง Swagger UI นักพัฒนาสามารถทดลองเรียกใช้ API ได้จากหน้าเอกสารโดยตรง ทำให้การทำงานร่วมกันระหว่างผู้พัฒนาส่วนหลังบ้านและส่วนหน้าง่ายขึ้น ระบบโครงงานนี้จัดทำเอกสาร API โดยอัตโนมัติจากซอร์สโค้ดด้วย swagger-jsdoc และแสดงผลด้วย swagger-ui-express ครอบคลุม Endpoint ทั้ง 20 รายการ
+
+\section{ระบบเทมเพลตฝั่งเซิร์ฟเวอร์ EJS}
+
+EJS (Embedded JavaScript Templates) คือเทมเพลตเอนจินสำหรับภาษา JavaScript ที่ใช้สร้างหน้าเว็บแบบฝั่งเซิร์ฟเวอร์ (Server-Side Rendering) โดยผสานข้อมูลจากระบบหลังบ้านเข้ากับโครงสร้างหน้าเว็บ HTML ผ่านแท็กฝังโค้ดในไฟล์เทมเพลต ข้อดีของแนวทางนี้คือทำงานบนเซิร์ฟเวอร์เดียวกับ REST API โดยไม่ต้องพัฒนาส่วนหน้าแยกออกไป ผู้ใช้จึงเข้าถึงระบบได้ผ่านเบราว์เซอร์โดยตรง และการยืนยันตัวตนด้วย Session Cookie ทำงานได้ทันทีโดยไม่ต้องจัดการ Token ฝั่งลูกข่ายเพิ่มเติม อีกทั้งยังคงเส้นทาง REST API เดิมไว้สำหรับการต่อยอดสู่แอปพลิเคชันมือถือหรือเฟรมเวิร์กฝั่งหน้าในอนาคตได้อย่างเป็นอิสระต่อกัน
+
+\chapter{อุปกรณ์และวิธีดำเนินการ}
+
+การพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้มีอุปกรณ์ซอฟต์แวร์ การออกแบบระบบ และวิธีการทดสอบ ดังต่อไปนี้
+
+\section{อุปกรณ์และซอฟต์แวร์}
+
+\begin{enumerate}[label=\arabic*., leftmargin=2.5em, itemsep=0.2em]
+  \item เครื่องคอมพิวเตอร์ ระบบปฏิบัติการ Windows
+  \item Node.js เวอร์ชัน 24 สำหรับรัน JavaScript ฝั่งเซิร์ฟเวอร์
+  \item Express.js เฟรมเวิร์กสำหรับพัฒนา REST API
+  \item MongoDB Atlas ฐานข้อมูลบนคลาวด์ และ Mongoose สำหรับจัดการข้อมูล
+  \item express-session และ connect-mongo สำหรับระบบยืนยันตัวตน
+  \item bcryptjs สำหรับเข้ารหัสรหัสผ่าน
+  \item swagger-ui-express และ swagger-jsdoc สำหรับเอกสาร API
+  \item EJS Template Engine สำหรับพัฒนาหน้าจอผู้ใช้ฝั่งเซิร์ฟเวอร์
+  \item Git Bash และโปรแกรม Visual Studio Code สำหรับพัฒนาโปรแกรม
+\end{enumerate}
+
+\section{การออกแบบและพัฒนาระบบ}
+
+\subsection{สถาปัตยกรรมระบบ}
+
+ระบบออกแบบตามสถาปัตยกรรม REST API โดยแยกส่วนการทำงานอย่างชัดเจน ผู้ใช้หรือโปรแกรมฝั่งหน้าส่งคำขอผ่าน HTTP มายังเซิร์ฟเวอร์ Express.js ซึ่งตรวจสอบสิทธิ์ผู้ใช้ด้วย Session ก่อนส่งต่อให้ Controller ทำหน้าที่ประมวลผล แล้วจึงติดต่อฐานข้อมูล MongoDB ผ่าน Mongoose ดังภาพที่ \ref{fig:arch}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=3pt, text width=3.0cm, minimum height=1.0cm,
+              align=center, font=\small, fill=blue!6},
+  arr/.style={-{Stealth[length=5pt]}, thick, gray!70}
+]
+  \node[box] (client) {ผู้ใช้ / เว็บไซต์\\(EJS Template)};
+  \node[box, right=0.8cm of client] (api) {Express.js\\REST API};
+  \node[box, right=0.8cm of api] (odm) {Mongoose\\ODM};
+  \node[box, right=0.8cm of odm] (db) {MongoDB\\Atlas};
+  \node[box, below=0.9cm of api, fill=green!7] (sw) {Swagger UI\\เอกสาร API};
+  \draw[arr] (client) -- (api);
+  \draw[arr] (api) -- (odm);
+  \draw[arr] (odm) -- (db);
+  \draw[arr, dashed] (sw) -- (api);
+\end{tikzpicture}
+\caption{สถาปัตยกรรมของระบบ}
+\label{fig:arch}
+\end{figure}
+
+โครงสร้างโปรเจกต์แบ่งตามหน้าที่การทำงาน ประกอบด้วยโฟลเดอร์ config สำหรับการเชื่อมต่อฐานข้อมูลและตั้งค่า Swagger, models สำหรับนิยามโครงสร้างข้อมูล, controllers สำหรับตรรกะการทำงาน, middlewares สำหรับตรวจสอบสิทธิ์และจัดการข้อผิดพลาด, routes สำหรับกำหนดเส้นทาง API ทั้ง 6 กลุ่ม และ views สำหรับเทมเพลตหน้าเว็บ EJS พร้อมไฟล์สไตล์ CSS ในโฟลเดอร์ public
+
+\subsection{การพัฒนาหน้าจอผู้ใช้ด้วย EJS}
+
+หน้าจอผู้ใช้พัฒนาด้วยเทมเพลต EJS ฝั่งเซิร์ฟเวอร์ โดยออกแบบให้ทุกหน้าใช้ส่วนหัวและส่วนท้ายร่วมกันผ่านเทมเพลตย่อย (Partial) แสดงสถานะการเข้าสู่ระบบของผู้ใช้และข้อความแจ้งเตือนชั่วคราว (Flash Message) ที่จัดเก็บใน Session หน้าเว็บหลักประกอบด้วย 1) หน้ารวมประกาศที่แสดงรายการของแบ่งปันพร้อมฟอร์มค้นหาตามหมวดหมู่และคำค้นหา 2) หน้ารายละเอียดประกาศที่แสดงข้อมูลของ ตำแหน่งรับของ และฟอร์มยื่นคำขอรับสำหรับผู้ใช้ทั่วไป หรือรายชื่อผู้ขอพร้อมปุ่มอนุมัติ ปฏิเสธ และยืนยันการส่งมอบสำหรับเจ้าของประกาศ 3) ฟอร์มสมัครสมาชิกและเข้าสู่ระบบ 4) ฟอร์มลงประกาศใหม่ และ 5) หน้ารวมประกาศของฉันและคำขอรับของฉันสำหรับติดตามสถานะรายการ
+
+การทำงานของหน้าเว็บยึดหลักการสำคัญคือใช้ Session เดียวกันกับ REST API ทำให้ผู้ใช้ที่เข้าสู่ระบบผ่านหน้าเว็บสามารถเรียกใช้ API ได้ทันที และการกระทำทุกอย่างบนหน้าเว็บผ่านการตรวจสอบสิทธิ์ชุดเดียวกัน เมื่อดำเนินการสำเร็จระบบจะเปลี่ยนหน้า (Redirect) พร้อมข้อความยืนยัน หากเกิดข้อผิดพลาด เช่น จองซ้ำหรือของไม่พอ ระบบจะแสดงข้อความแจ้งเตือนกลับมาที่หน้าเดิมแทนการแสดงรหัสข้อผิดพลาดดิบ ๆ
+
+\subsection{การออกแบบฐานข้อมูล}
+
+ระบบออกแบบคอลเลกชันหลัก 5 คอลเลกชัน ดังแสดงในตารางที่ \ref{tab:collections} โดยความสัมพันธ์หลักคือผู้ใช้หนึ่งคนสามารถมีประกาศได้หลายประกาศ และประกาศหนึ่งประกาศสามารถมีคำขอรับได้หลายคำขอ โดยแยกคำขอรับเป็นคอลเลกชันต่างหากเพื่อให้จัดการสถานะได้ง่ายและป้องกันการจองซ้ำด้วยดัชนีเอกลักษณ์
+
+\begin{table}[htbp]
+\centering
+\caption{คอลเลกชันหลักของระบบและหน้าที่}
+\label{tab:collections}
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{คอลเลกชัน} & \textbf{หน้าที่และข้อมูลสำคัญ}\\
+\midrule
+User & ข้อมูลผู้ใช้ ชื่อ อีเมล รหัสผ่านแบบเข้ารหัส บทบาท (ผู้ใช้ทั่วไปหรือผู้ดูแลระบบ) และที่อยู่\\
+Category & หมวดหมู่ของแบ่งปัน 7 หมวด เช่น อาหาร เสื้อผ้า เฟอร์นิเจอร์ เครื่องใช้ไฟฟ้า\\
+Listing & ประกาศของแบ่งปัน ชื่อ รายละเอียด สภาพของ จำนวนและจำนวนคงเหลือ สถานะ วิธีรับของ และตำแหน่งพิกัด\\
+Reservation & คำขอรับของ ผู้ขอ จำนวนที่ขอ ข้อความ และสถานะ ตั้งแต่รอพิจารณาจนถึงส่งมอบ\\
+Report & การรายงานประกาศไม่เหมาะสม เหตุผล และสถานะการตรวจสอบ\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+นอกจากนี้ระบบยังสร้างดัชนีสำคัญไว้ล่วงหน้า เช่น ดัชนีอีเมลแบบเอกลักษณ์ของผู้ใช้ ดัชนีค้นหาแบบเต็มข้อความบนชื่อและรายละเอียดประกาศ ดัชนี 2dsphere บนตำแหน่งรับของเพื่อการค้นหาตามระยะทาง และดัชนีเอกลักษณ์คู่ (ประกาศ, ผู้ขอ) บนคำขอรับเพื่อป้องกันการจองซ้ำจากผู้ใช้เดียวกัน
+
+\subsection{กระบวนการขอรับและส่งมอบของ}
+
+เมื่อผู้ใช้พบประกาศที่ต้องการจะยื่นคำขอรับพร้อมระบุจำนวนและข้อความ ระบบจะตรวจสอบว่าประกาศพร้อมรับคำขอ ผู้ขอไม่ใช่เจ้าของประกาศเอง และจำนวนที่ขอไม่เกินจำนวนคงเหลือ เจ้าของประกาศสามารถอนุมัติคำขอได้ โดยระบบจะลดจำนวนคงเหลือแบบอะตอมมิกเพื่อป้องกันการอนุมัติเกินจำนวนเมื่อมีหลายคำขอพร้อมกัน ตามเงื่อนไข
+\begin{center}
+$ A' = A - q \quad \text{เมื่อ} \quad A \geq q $
+\end{center}
+เมื่อ $A$ คือจำนวนคงเหลือ และ $q$ คือจำนวนที่ขออนุมัติ หากจำนวนคงเหลือเป็นศูนย์ ระบบจะเปลี่ยนสถานะประกาศเป็น reserved และเมื่อเจ้าของยืนยันว่าส่งมอบของแล้ว คำขอจะเปลี่ยนเป็น completed และประกาศจะถูกปิดเป็น completed ดังภาพที่ \ref{fig:flow}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  st/.style={draw, rounded corners=3pt, minimum width=2.6cm, minimum height=0.85cm,
+             align=center, font=\small, fill=orange!8},
+  arr/.style={-{Stealth[length=5pt]}, thick, gray!70}
+]
+  \node[st] (p) {pending\\รอพิจารณา};
+  \node[st, right=1.0cm of p] (a) {approved\\อนุมัติ};
+  \node[st, right=1.0cm of a] (c) {completed\\ส่งมอบแล้ว};
+  \node[st, below=0.8cm of a, fill=red!6] (r) {rejected\\ปฏิเสธ};
+  \node[st, below=0.8cm of p, fill=red!6] (x) {cancelled\\ยกเลิก};
+  \draw[arr] (p) -- (a);
+  \draw[arr] (a) -- (c);
+  \draw[arr] (p) -- (r);
+  \draw[arr] (a) -- (r);
+  \draw[arr] (p) -- (x);
+  \draw[arr] (a) -- (x);
+\end{tikzpicture}
+\caption{สถานะของคำขอรับของ (Reservation)}
+\label{fig:flow}
+\end{figure}
+
+\section{การทดสอบระบบ}
+
+การทดสอบใช้วิธีทดสอบการทำงานจริง (Smoke Test) โดยเรียกใช้ API ผ่านเครื่องมือ curl ตามลำดับสถานการณ์การใช้งานจริง ตั้งแต่การสมัครสมาชิกจนถึงการปิดรายการ โดยกำหนดเกณฑ์การผ่านจากค่ารหัสสถานะ HTTP และค่าข้อมูลที่ระบบตอบกลับ เช่น การสมัครสำเร็จต้องได้รหัส 201 การเข้าถึงโดยไม่ยืนยันตัวตนต้องได้รหัส 401 และการจองซ้ำต้องได้รหัส 409 ทั้งนี้ทดสอบครอบคลุม 10 สถานการณ์ดังแสดงในบทที่ 4
+
+\chapter{ผลการดำเนินงาน}
+
+จากการพัฒนาตามที่ออกแบบไว้ ระบบสามารถทำงานได้ครบทุกส่วน ผลการดำเนินงานสรุปได้ดังนี้
+
+\section{ผลการพัฒนาระบบ}
+
+ระบบพัฒนาเสร็จสมบูรณ์โดยแบ่ง API ออกเป็น 6 กลุ่ม รวม 20 Endpoint ดังแสดงในตารางที่ \ref{tab:api} พร้อมเอกสารอัตโนมัติที่เข้าใช้งานได้ผ่านหน้า Swagger UI และสามารถเชื่อมต่อกับฐานข้อมูล MongoDB Atlas บนคลาวด์ได้จริง นอกจากนี้ยังพัฒนาหน้าจอผู้ใช้ด้วยเทมเพลต EJS ครอบคลุมหน้ารวมประกาศ รายละเอียดประกาศ ฟอร์มลงประกาศ ฟอร์มยืนยันตัวตน และหน้าติดตามคำขอรับ โดยเส้นทางหน้าเว็บทั้งหมดแสดงรายการในภาคผนวก C
+
+\begin{table}[htbp]
+\centering
+\caption{กลุ่ม API และหน้าที่หลักของแต่ละกลุ่ม}
+\label{tab:api}
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{กลุ่ม} & \textbf{จำนวน} & \textbf{หน้าที่หลัก}\\
+\midrule
+Auth & 5 & สมัครสมาชิก เข้าสู่ระบบ ดูข้อมูลตนเอง ออกจากระบบ เปลี่ยนรหัสผ่าน\\
+Users & 6 & จัดการข้อมูลส่วนตัว ดูประกาศของตนเอง และจัดการผู้ใช้สำหรับผู้ดูแลระบบ\\
+Categories & 5 & จัดการหมวดหมู่ของแบ่งปัน แก้ไขได้โดยผู้ดูแลระบบ\\
+Listings & 6 & ลงประกาศ ค้นหา แก้ไข และยกเลิกประกาศ (Soft Delete)\\
+Reservations & 5 & ยื่นคำขอรับ อนุมัติ ปฏิเสธ ยกเลิก และยืนยันการส่งมอบ\\
+Reports & 3 & รายงานประกาศไม่เหมาะสม และตรวจสอบโดยผู้ดูแลระบบ\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{ผลการทดสอบระบบ}
+
+ผลการทดสอบทั้ง 10 สถานการณ์แสดงในตารางที่ \ref{tab:test} พบว่าทุกสถานการณ์ผ่านตามเกณฑ์ที่กำหนดไว้
+
+\begin{table}[htbp]
+\centering
+\caption{ผลการทดสอบระบบในแต่ละสถานการณ์}
+\label{tab:test}
+\begin{tabularx}{\textwidth}{c X c c}
+\toprule
+\textbf{ลำดับ} & \textbf{สถานการณ์ทดสอบ} & \textbf{ผลที่คาดหวัง} & \textbf{ผลจริง}\\
+\midrule
+1 & สมัครสมาชิกและเข้าสู่ระบบ & 201 / 200 & ผ่าน\\
+2 & เข้าถึงข้อมูลโดยไม่ยืนยันตัวตน & 401 & ผ่าน\\
+3 & ลงประกาศพร้อมตำแหน่งพิกัด & 201 & ผ่าน\\
+4 & ค้นหาประกาศตามหมวดหมู่และระยะทาง & พบประกาศ & ผ่าน\\
+5 & ยื่นคำขอรับของ & 201 & ผ่าน\\
+6 & ผู้ใช้เดียวกันยื่นคำขอซ้ำ & 409 & ผ่าน\\
+7 & อนุมัติคำขอ ลดจำนวนคงเหลือ & จำนวนลดลง & ผ่าน\\
+8 & ปฏิเสธคำขอที่อนุมัติแล้ว คืนจำนวน & จำนวนคืน & ผ่าน\\
+9 & ยืนยันส่งมอบและปิดรายการ & completed & ผ่าน\\
+10 & ผู้ใช้ทั่วไปเรียกใช้งานส่วนผู้ดูแลระบบ & 403 & ผ่าน\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+จากตารางที่ \ref{tab:test} จะเห็นว่าระบบทำงานได้ตามที่ออกแบบไว้ทุกสถานการณ์ โดยเฉพาะการป้องกันการจองซ้ำด้วยดัชนีเอกลักษณ์ซึ่งระบบปฏิเสธคำขอที่ซ้ำอัตโนมัติ และการอนุมัติที่ลดจำนวนคงเหลือแบบอะตอมมิก ซึ่งป้องกันปัญหาการอนุมัติเกินจำนวนของที่มีอยู่แม้มีหลายคำขอเกิดขึ้นพร้อมกัน นอกจากนี้การค้นหาตามระยะทางสามารถค้นพบประกาศภายในรัศมีที่กำหนดได้ถูกต้อง
+
+สำหรับหน้าจอผู้ใช้ EJS ได้ทดสอบการแสดงผลของทุกหน้า การเข้าสู่ระบบและสมัครสมาชิกผ่านฟอร์ม การลงประกาศและยื่นคำขอรับผ่านหน้าเว็บ ตลอดจนการแสดงข้อความแจ้งเตือนเมื่อเกิดข้อผิดพลาด พบว่าหน้าเว็บทำงานได้ถูกต้องเชื่อมโยงกับส่วนหลังบ้านอย่างสมบูรณ์ และสิทธิ์การเข้าถึงแต่ละหน้าสอดคล้องกับสถานะการเข้าสู่ระบบของผู้ใช้
+
+\chapter{สรุปผลการดำเนินงาน อภิปรายผล และข้อเสนอแนะ}
+
+การศึกษาครั้งนี้เป็นการพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้ด้วยสถาปัตยกรรม REST API ร่วมกับฐานข้อมูล MongoDB ซึ่งสามารถสรุปผล อภิปรายผล และข้อเสนอแนะ ดังนี้
+
+\section{สรุปผลการดำเนินงาน}
+
+คณะผู้จัดทำสามารถพัฒนาระบบครบตามวัตถุประสงค์ทั้ง 3 ข้อ ได้แก่ 1) ระบบลงประกาศแบ่งปันของเหลือใช้ที่ผู้ใช้สามารถระบุรายละเอียด สภาพของ จำนวน วิธีรับของ และตำแหน่งพิกัดได้ 2) ระบบขอรับ จอง อนุมัติ และปิดรายการที่มีสถานะชัดเจน พร้อมกลไกป้องกันการจองซ้ำและการอนุมัติเกินจำนวน และ 3) REST API จำนวน 20 Endpoint ใน 6 กลุ่ม พร้อมเอกสารอัตโนมัติด้วย Swagger ผลการทดสอบทั้ง 10 สถานการณ์ผ่านตามเกณฑ์ที่กำหนด
+
+\section{อภิปรายผล}
+
+จากผลการพัฒนาและทดสอบ พบว่าการออกแบบระบบโดยแยกคำขอรับออกเป็นคอลเลกชันต่างหากช่วยให้การจัดการสถานะของรายการง่ายขึ้นอย่างชัดเจน สามารถเพิ่มสถานะใหม่หรือปรับกติกาการเปลี่ยนสถานะได้โดยไม่กระทบข้อมูลประกาศ สอดคล้องกับหลักการออกแบบฐานข้อมูลเชิงสัมพันธ์ที่ควรแยกข้อมูลตามหน้าที่การทำงาน อีกทั้งการใช้ดัชนีเอกลักษณ์ของฐานข้อมูลเพื่อป้องกันการจองซ้ำมีความน่าเชื่อถือมากกว่าการตรวจสอบด้วยโค้ดเพียงอย่างเดียว เนื่องจากฐานข้อมูลรับประกันความถูกต้องในระดับพื้นที่จัดเก็บข้อมูล
+
+\vspace{0.4em}
+
+การลดจำนวนคงเหลือแบบอะตอมมิกด้วยเงื่อนไขในคำสั่งอัปเดตเดียว ช่วยแก้ปัญหาการแข่งกันอนุมัติ (Race Condition) ที่อาจเกิดขึ้นเมื่อมีหลายคำขอถูกอนุมัติพร้อมกัน ทำให้จำนวนของคงเหลือถูกต้องเสมอ ซึ่งเป็นประเด็นสำคัญของระบบแบ่งปันทรัพยากรที่มีผู้ใช้หลายคนเข้าใช้พร้อมกัน และการเลือกใช้ Session แทน Token ทำให้การควบคุมการเข้าสู่ระบบ เช่น การระงับบัญชีหรือการบังคับออกจากระบบ ทำได้ทันทีจากฝั่งเซิร์ฟเวอร์
+
+\vspace{0.4em}
+
+อย่างไรก็ตาม ระบบในขั้นตอนนี้ยังมีข้อจำกัดด้านการอัปโหลดรูปภาพและการแจ้งเตือนผู้ใช้ ซึ่งเป็นสิ่งที่มีผลต่อประสบการณ์การใช้งานจริง จำเป็นต้องพัฒนาต่อเพื่อให้ระบบใช้งานได้จริงในระดับชุมชน
+
+\section{ข้อเสนอแนะสำหรับการวิจัยครั้งต่อไป}
+
+\subsection{ข้อเสนอแนะสำหรับการนำผลงานไปใช้}
+
+ผู้ที่ประสงค์จะนำระบบนี้ไปพัฒนาต่อ หน้าจอผู้ใช้ที่พัฒนาด้วย EJS สามารถนำไปปรับปรุงรูปลักษณ์และประสบการณ์การใช้งานต่อได้ทันที หรือหากต้องการยกระดับสู่แอปพลิเคชันมือถือหรือเฟรมเวิร์กฝั่งหน้าแบบ Single Page Application ก็สามารถเชื่อมต่อกับ REST API ที่พัฒนาไว้ได้โดยตรงโดยอ้างอิงจากเอกสาร Swagger รวมถึงสามารถเพิ่มเติมระบบจัดการข้อความระหว่างผู้ใช้ และระบบประเมินความน่าเชื่อถือของผู้ใช้ เพื่อเสริมสร้างความเชื่อมั่นในชุมชนผู้ใช้ให้สูงขึ้น
+
+\subsection{ข้อเสนอแนะในการศึกษาครั้งถัดไป}
+
+ในการศึกษาครั้งถัดไปควรพัฒนาระบบอัปโหลดรูปภาพประกอบประกาศโดยตรง ระบบแจ้งเตือนเมื่อมีคำขอรับใหม่ผ่านอีเมลหรือแอปพลิเคชันส่งข้อความ การประเมินความพึงพอใจของผู้ใช้จริงด้วยแบบประเมินมาตรฐาน และการทดสอบประสิทธิภาพเมื่อมีผู้ใช้จำนวนมากพร้อมกัน อีกทั้งควรศึกษาการยืนยันตัวตนแบบสองขั้น (Two-Factor Authentication) เพื่อเพิ่มความปลอดภัยของบัญชีผู้ใช้
+
+% ============================================================
+% บรรณานุกรม
+% ============================================================
+\begin{thebibliography}{9}
+\addcontentsline{toc}{chapter}{บรรณานุกรม}
+
+\bibitem{botsman2010}
+Botsman, R., \& Rogers, R. (2010). \textit{What's Mine Is Yours: The Rise of Collaborative Consumption}. New York: HarperBusiness.
+
+\bibitem{fielding2000}
+Fielding, R. T. (2000). \textit{Architectural Styles and the Design of Network-based Software Architectures} [Doctoral dissertation, University of California, Irvine]. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://ics.uci.edu/~fielding/pubs/dissertation/fielding_dissertation.pdf}
+
+\bibitem{hamari2016}
+Hamari, J., Sj\"oklint, M., \& Ukkonen, A. (2016). The sharing economy: Why people participate in collaborative consumption. \textit{Journal of the Association for Information Science and Technology}, 67(9), 2047--2059.
+
+\bibitem{express2025}
+Express. (2025). \textit{Express -- Node.js web application framework}. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://expressjs.com/}
+
+\bibitem{mongodb2025}
+MongoDB. (2025). \textit{MongoDB Manual: Geospatial Queries}. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://www.mongodb.com/docs/manual/geospatial-queries/}
+
+\bibitem{mongoose2025}
+Mongoose. (2025). \textit{Mongoose ODM Documentation}. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://mongoosejs.com/docs/}
+
+\bibitem{expresssession2025}
+OpenJS Foundation. (2025). \textit{express-session}. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://www.npmjs.com/package/express-session}
+
+\bibitem{owasp2024}
+OWASP Foundation. (2024). \textit{Session Management Cheat Sheet}. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://cheatsheetseries.owasp.org/cheatsheets/Session\_Management\_Cheat\_Sheet.html}
+
+\bibitem{openapi2024}
+OpenAPI Initiative. (2024). \textit{OpenAPI Specification 3.0.3}. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://spec.openapis.org/oas/v3.0.3}
+
+\bibitem{swaggersd}
+SmartBear Software. (2025). \textit{swagger-ui-express}. ค้นเมื่อ 6 ตุลาคม 2568, จาก \url{https://www.npmjs.com/package/swagger-ui-express}
+
+\end{thebibliography}
+
+% ============================================================
+% ภาคผนวก
+% ============================================================
+\appendix
+\renewcommand{\chapterthainame}{ภาคผนวก}
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchappresnum}{ภาคผนวก~}}
+\chapter{ตัวอย่างการเรียกใช้ API}
+
+ตัวอย่างต่อไปนี้เป็นการเรียกใช้ API หลักของระบบ โดยทำงานบนเซิร์ฟเวอร์ที่ทำงานอยู่ที่ที่อยู่ http://localhost:3000
+
+\section*{1.1 สมัครสมาชิก}
+
+\begin{lstlisting}
+POST /api/v1/auth/register
+Content-Type: application/json
+
+{
+  "name": "Somchai",
+  "email": "somchai@example.com",
+  "password": "password123",
+  "phone": "0812345678"
+}
+
+Response: 201 Created
+{
+  "success": true,
+  "data": { "user": { "id": "...", "name": "Somchai" } }
+}
+\end{lstlisting}
+
+\section*{1.2 ลงประกาศของแบ่งปัน}
+
+\begin{lstlisting}
+POST /api/v1/listings
+Content-Type: application/json
+
+{
+  "title": "Desk",
+  "description": "Good condition, minor scratches",
+  "category": "furniture",
+  "condition": "good",
+  "quantity": 1,
+  "pickup": {
+    "method": "pickup",
+    "location": { "type": "Point",
+                  "coordinates": [102.8236, 16.4322] },
+    "address": "Khon Kaen"
+  },
+  "expiresAt": "2026-10-20T00:00:00.000Z"
+}
+
+Response: 201 Created
+\end{lstlisting}
+
+\section*{1.3 ยื่นคำขอรับของ}
+
+\begin{lstlisting}
+POST /api/v1/listings/:listingId/reservations
+Content-Type: application/json
+
+{ "quantity": 1, "message": "I can pick up on Saturday" }
+
+Response: 201 Created
+\end{lstlisting}
+
+\chapter{โครงสร้างโปรเจกต์และวิธีการรันระบบ}
+
+\section*{2.1 โครงสร้างโปรเจกต์}
+
+\begin{lstlisting}
+report/..../src/
+  config/       database connection, Swagger config
+  controllers/  business logic for each resource
+  middlewares/  auth (session), admin, error handler
+  models/       User, Category, Listing, Reservation, Report
+  routes/       auth, users, categories, listings,
+                reservations, reports
+  views/        EJS templates for web UI pages
+  public/       CSS stylesheets
+  seed.js       seed 7 default categories
+server.js       entry point
+.env            environment variables (not committed)
+\end{lstlisting}
+
+\section*{2.2 คำสั่งการติดตั้งและการรันระบบ}
+
+\begin{lstlisting}
+npm install        install dependencies
+npm run seed       insert 7 default categories
+npm run dev        start server with auto-reload
+\end{lstlisting}
+
+เมื่อระบบทำงานแล้ว สามารถเข้าดูเอกสาร API ได้ที่ http://localhost:3000/api-docs และตรวจสอบสถานะเซิร์ฟเวอร์ได้ที่ http://localhost:3000/health
+
+\chapter{ตาราง Endpoint ของระบบทั้งหมด}
+
+\begin{longtable}{l l p{6.2cm}}
+\caption{รายการ Endpoint ทั้งหมดของระบบ}\\
+\toprule
+\textbf{วิธี} & \textbf{เส้นทาง} & \textbf{คำอธิบาย}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{วิธี} & \textbf{เส้นทาง} & \textbf{คำอธิบาย}\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+POST & /auth/register & สมัครสมาชิก\\
+POST & /auth/login & เข้าสู่ระบบ\\
+GET & /auth/me & ดูข้อมูลตนเอง\\
+POST & /auth/logout & ออกจากระบบ\\
+PATCH & /auth/password & เปลี่ยนรหัสผ่าน\\
+GET & /users/me & ดูข้อมูลส่วนตัว\\
+PATCH & /users/me & แก้ไขข้อมูลส่วนตัว\\
+DELETE & /users/me & ปิดบัญชี (Soft Delete)\\
+GET & /users/me/listings & ประกาศที่ตนเองลง\\
+GET & /users & รายชื่อผู้ใช้ (ผู้ดูแลระบบ)\\
+GET & /users/:id & ดูข้อมูลผู้ใช้ (ผู้ดูแลระบบ)\\
+PATCH & /users/:id/status & เปิด/ปิดบัญชี (ผู้ดูแลระบบ)\\
+GET & /categories & ดูหมวดหมู่ทั้งหมด\\
+GET & /categories/:id & ดูหมวดหมู่เดียว\\
+POST & /categories & สร้างหมวดหมู่ (ผู้ดูแลระบบ)\\
+PATCH & /categories/:id & แก้ไขหมวดหมู่ (ผู้ดูแลระบบ)\\
+DELETE & /categories/:id & ลบหมวดหมู่ (ผู้ดูแลระบบ)\\
+GET & /listings & ค้นหาประกาศ (หมวดหมู่, ระยะทาง, คำค้น)\\
+GET & /listings/:id & ดูประกาศเดียว\\
+POST & /listings & ลงประกาศ\\
+PATCH & /listings/:id & แก้ไขประกาศ (เจ้าของ/ผู้ดูแลระบบ)\\
+DELETE & /listings/:id & ยกเลิกประกาศ\\
+POST & /listings/:id/reservations & ยื่นคำขอรับของ\\
+GET & /listings/:id/reservations & ดูรายชื่อผู้ขอ (เจ้าของ)\\
+POST & /listings/:id/reports & รายงานประกาศ\\
+GET & /reservations/my & คำขอของฉัน\\
+PATCH & /reservations/:id/approve & อนุมัติคำขอ (เจ้าของ)\\
+PATCH & /reservations/:id/reject & ปฏิเสธคำขอ (เจ้าของ)\\
+PATCH & /reservations/:id/cancel & ยกเลิกคำขอ (ผู้ขอ)\\
+PATCH & /reservations/:id/complete & ยืนยันส่งมอบ (เจ้าของ)\\
+GET & /reports & รายการรายงาน (ผู้ดูแลระบบ)\\
+GET & /reports/:id & ดูรายงานเดียว (ผู้ดูแลระบบ)\\
+PATCH & /reports/:id & อัปเดตสถานะรายงาน (ผู้ดูแลระบบ)\\
+\end{longtable}
+
+\section*{เส้นทางหน้าเว็บ (EJS)}
+
+\noindent\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{วิธี} & \textbf{เส้นทาง} & \textbf{คำอธิบาย}\\
+\midrule
+GET & / & หน้ารวมประกาศ พร้อมค้นหาตามหมวดหมู่และคำค้นหา\\
+GET & /listings/:id & หน้ารายละเอียดประกาศ (ฟอร์มขอรับ หรือจัดการคำขอ)\\
+GET & /listings/new & ฟอร์มลงประกาศใหม่\\
+GET & /login & ฟอร์มเข้าสู่ระบบ\\
+GET & /register & ฟอร์มสมัครสมาชิก\\
+GET & /my/listings & ประกาศของฉัน\\
+GET & /my/reservations & คำขอรับของฉัน\\
+POST & /login & เข้าสู่ระบบจากฟอร์ม\\
+POST & /register & สมัครสมาชิกจากฟอร์ม\\
+POST & /logout & ออกจากระบบ\\
+POST & /listings & สร้างประกาศจากฟอร์ม\\
+POST & /listings/:id/delete & ยกเลิกประกาศ (เจ้าของ)\\
+POST & /listings/:id/reservations & ยื่นคำขอรับของ\\
+POST & /reservations/:id/approve & อนุมัติคำขอ (เจ้าของ)\\
+POST & /reservations/:id/reject & ปฏิเสธคำขอ (เจ้าของ)\\
+POST & /reservations/:id/cancel & ยกเลิกคำขอ (ผู้ขอ)\\
+POST & /reservations/:id/complete & ยืนยันส่งมอบ (เจ้าของ)\\
+\bottomrule
+\end{tabularx}
+
+\end{document}
