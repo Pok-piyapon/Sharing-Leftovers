@@ -1,0 +1,73 @@
+<%
+  // ตรวจสอบและกำหนดค่าเริ่มต้นสำหรับ Listing Card
+  const item = typeof listing !== 'undefined' ? listing : {};
+  const id = item._id || '#';
+  const title = item.title || 'ไม่มีชื่อสิ่งของ';
+  const imgUrl = (item.images && item.images.length > 0) ? item.images[0] : 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&auto=format&fit=crop&q=60';
+  const status = item.status || 'available';
+  const categoryName = (item.category && item.category.name) ? item.category.name : (typeof item.categoryName !== 'undefined' ? item.categoryName : 'ของใช้ทั่วไป');
+  const categoryIcon = (item.category && item.category.icon) ? item.category.icon : '📦';
+  
+  // แปลงสถานะเป็นข้อความภาษาไทยและชื่อคลาส CSS
+  const statusConfig = {
+    available: { text: 'พร้อมรับ', class: 'badge-available' },
+    reserved: { text: 'จองเต็มแล้ว', class: 'badge-reserved' },
+    completed: { text: 'ส่งมอบแล้ว', class: 'badge-completed' },
+    cancelled: { text: 'ยกเลิกแล้ว', class: 'badge-cancelled' },
+    expired: { text: 'หมดอายุ', class: 'badge-expired' }
+  };
+  const statusInfo = statusConfig[status] || { text: status, class: 'badge-available' };
+
+  // สภาพสินค้าภาษาไทย
+  const conditionMap = {
+    new: 'ใหม่',
+    like_new: 'เหมือนใหม่',
+    good: 'ดี',
+    fair: 'พอใช้',
+    poor: 'มีตำหนิ'
+  };
+  const conditionText = conditionMap[item.condition] || item.condition || 'ดี';
+
+  const available = typeof item.availableQuantity !== 'undefined' ? item.availableQuantity : 1;
+  const total = typeof item.quantity !== 'undefined' ? item.quantity : 1;
+  const area = (item.pickup && item.pickup.area) 
+    ? `${item.pickup.area.subdistrict || ''} ${item.pickup.area.district || ''} ${item.pickup.area.province || ''}`.trim()
+    : (item.areaText || 'พื้นที่รอบมหาวิทยาลัย');
+%>
+
+<div class="card listing-card">
+  <!-- ส่วนรูปภาพ Aspect Ratio 4:3 พร้อม Badge สถานะด้านบน -->
+  <a href="/listings/<%= id %>" class="listing-card-img-wrap" aria-label="ดูรายละเอียด <%= title %>">
+    <img 
+      src="<%= imgUrl %>" 
+      alt="<%= title %>" 
+      class="listing-card-img" 
+      loading="lazy"
+      onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&auto=format&fit=crop&q=60';"
+    >
+    <div class="listing-card-badge-overlay">
+      <span class="badge <%= statusInfo.class %>"><%= statusInfo.text %></span>
+    </div>
+  </a>
+
+  <!-- เนื้อหาของการ์ด -->
+  <div class="listing-card-body">
+    <div class="listing-card-meta">
+      <span><%= categoryIcon %> <%= categoryName %></span>
+      <span class="chip" style="padding: 2px 8px; font-size: 0.75rem;">สภาพ: <%= conditionText %></span>
+    </div>
+
+    <a href="/listings/<%= id %>" style="color: inherit; text-decoration: none;">
+      <h3 class="listing-card-title" title="<%= title %>"><%= title %></h3>
+    </a>
+
+    <div class="listing-card-quantity">
+      เหลือ <%= available %> จาก <%= total %> ชิ้น
+    </div>
+
+    <div class="listing-card-footer">
+      <span>📍 <%= area %></span>
+      <span>⏳ 3 วันที่เหลือ</span>
+    </div>
+  </div>
+</div>

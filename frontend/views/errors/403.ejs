@@ -1,0 +1,20 @@
+<%- include('../partials/head', { title: '403 ไม่มีสิทธิ์เข้าถึง' }) %>
+<%- include('../partials/header') %>
+
+<main class="main-content">
+  <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 50vh;">
+    <div class="empty-state" style="max-width: 520px; border-style: solid; padding: var(--space-8);">
+      <div style="font-size: 4.5rem; line-height: 1; margin-bottom: var(--space-2);">🚫</div>
+      <h1 class="empty-state-title" style="font-size: 2rem;">403 ปฏิเสธการเข้าถึง</h1>
+      <p class="empty-state-desc">
+        คุณไม่มีสิทธิ์ในการเปิดดูหรือแก้ไขข้อมูลในหน้านี้ (เช่น ข้อมูลเฉพาะของผู้ดูแลระบบ หรือข้อมูลส่วนบุคคลของสมาชิกรายอื่น)
+      </p>
+      <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
+        <a href="/" class="btn btn-primary">กลับสู่หน้าแรก</a>
+        <a href="/auth" class="btn btn-secondary">เข้าสู่ระบบด้วยบัญชีอื่น</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

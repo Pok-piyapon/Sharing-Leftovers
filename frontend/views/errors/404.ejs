@@ -1,0 +1,20 @@
+<%- include('../partials/head', { title: '404 ไม่พบหน้าที่ต้องการ' }) %>
+<%- include('../partials/header') %>
+
+<main class="main-content">
+  <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 50vh;">
+    <div class="empty-state" style="max-width: 520px; border-style: solid; padding: var(--space-8);">
+      <div style="font-size: 4.5rem; line-height: 1; margin-bottom: var(--space-2);">🔍</div>
+      <h1 class="empty-state-title" style="font-size: 2rem;">404 ไม่พบหน้านี้</h1>
+      <p class="empty-state-desc">
+        หน้าที่คุณกำลังค้นหาอาจถูกย้าย ลบออกไปแล้ว หรือคุณอาจพิมพ์ที่อยู่ URL ไม่ถูกต้อง
+      </p>
+      <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
+        <a href="/" class="btn btn-primary">กลับสู่หน้าแรก</a>
+        <a href="/listings" class="btn btn-outline">ค้นหาสิ่งของ</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
