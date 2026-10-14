@@ -33,7 +33,7 @@
 \widowpenalty=10000
 \clubpenalty=10000
 \usepackage{setspace}
-\onehalfspacing
+\setstretch{1.15}
 
 % ---------- แพ็กเกจทั่วไป ----------
 \usepackage{graphicx}
@@ -57,8 +57,8 @@
 % ---------- รูปแบบหัวบท (บทที่ N / ชื่อบท แบบกึ่งกลาง) ----------
 \newcommand{\chapterthainame}{บทที่}
 \titleformat{\chapter}[display]
-  {\centering\bfseries\Large}
-  {\chapterthainame\ \thechapter}{0.6em}{\bfseries\Large}
+  {\centering\bfseries\fontsize{18pt}{24pt}\selectfont}
+  {\chapterthainame\ \thechapter}{0.6em}{\bfseries\fontsize{18pt}{24pt}\selectfont}
 \titlespacing*{\chapter}{0pt}{-30pt}{28pt}
 % หัวข้อรองเป็นตัวหนาขนาดเท่าตัวอักษรปกติ ตาม Format
 \titleformat{\section}{\bfseries\normalsize}{\thesection}{0.8em}{}
@@ -159,156 +159,65 @@
 \begin{titlepage}
 \thispagestyle{empty}
 \begin{center}
-  \vspace*{0.2cm}
-  \includegraphics[width=2.8cm]{kku_logo.png}\\[0.5cm]
+  \vspace*{0.1cm}
+  \includegraphics[width=2.4cm]{kku_logo.png}\\[0.2cm]
 
-  {\bfseries\fontsize{26pt}{34pt}\selectfont
+  \vspace{0.2cm}
+
+  {\bfseries\fontsize{26pt}{32pt}\selectfont
   การพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้\\
-  โดยใช้สถาปัตยกรรม REST API ร่วมกับ\\
-  ฐานข้อมูล MongoDB\par}
-  \vspace{0.6cm}
+  โดยใช้สถาปัตยกรรม REST API ร่วมกับฐานข้อมูล MongoDB\par}
+  \vspace{0.2cm}
+  {\bfseries\fontsize{19pt}{24pt}\selectfont
+  Development of a Web-Based Sharing Platform for Unused\\
+  Household Items Using REST API Architecture with MongoDB Database\par}
+  \vspace{0.3cm}
 
-  {\bfseries\fontsize{17pt}{24pt}\selectfont
-  DEVELOPMENT OF A WEB-BASED SHARING PLATFORM\\
-  FOR UNUSED HOUSEHOLD ITEMS USING REST API\\
-  ARCHITECTURE WITH MONGODB DATABASE\par}
-  \vspace{0.7cm}
+  {\bfseries\fontsize{22pt}{27pt}\selectfont
+  โดย\\[0.2em]
+  673380284-4 \ นายพงศ์อนันต์ วงศ์ศรี\\
+  673380050-9 \ นายปิยพนธ์ แก้วเก็บคำ\\
+  673380517-7 \ นายอภิวิชญ์ เอกะ\\
+  673380285-2 \ นายพิสิษฐ์ ทรัพย์อุดมโชติ\par}
 
-  \begin{tabular}{lll}
-    {\bfseries นาย} & {\bfseries พงศ์อนันต์ วงศ์ศรี} & {\bfseries 673380284-4}\\[0.15em]
-    {\bfseries นาย} & {\bfseries ปิยพนธ์ แก้วเก็บคำ} & {\bfseries 673380050-9}\\[0.15em]
-    {\bfseries นาย} & {\bfseries อภิวิชญ์ เอกะ} & {\bfseries 673380517-7}\\[0.15em]
-    {\bfseries นาย} & {\bfseries พิสิษฐ์ ทรัพย์อุดมโชติ} & {\bfseries 673380285-2}\\
-  \end{tabular}
+  \vspace{0.3cm}
+  {\bfseries\fontsize{22pt}{27pt}\selectfont
+  อาจารย์ที่ปรึกษา\\[0.2em]
+  รองศาสตราจารย์ ดร.งามนิจ อาจอินทร์\par}
 
+  \vspace{0.5cm}
   \vfill
-  {\bfseries\fontsize{14pt}{20pt}\selectfont
-  คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์\\
+  {\bfseries\fontsize{17pt}{22pt}\selectfont
+  รายงานฉบับนี้เป็นส่วนหนึ่งของการศึกษา\\
+  วิชา CP363205 ภาษาอนุกรมข้อมูลและการประยุกต์\\
+  หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิชาวิทยาการคอมพิวเตอร์\\
+  วิทยาลัยการคอมพิวเตอร์\\
   มหาวิทยาลัยขอนแก่น\\
-  พ.ศ. 2568\par}
+  ปีการศึกษา 2568\par}
+  \vspace*{0.1cm}
 \end{center}
 \end{titlepage}
 
-% ============================================================
-% หน้าข้อมูลโครงงาน (ภาษาไทย) — เริ่มเลขหน้าไทย ก
-% ============================================================
 \clearpage
 \setcounter{page}{1}
 \pagestyle{front}
 
-\noindent\begin{tabular}{@{}p{5.0cm}@{}>{\raggedright\arraybackslash}p{10.9cm}@{}}
-{\bfseries ชื่อโครงงาน} &
-การพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้โดยใช้สถาปัตยกรรม REST API ร่วมกับฐานข้อมูล MongoDB\\
-\end{tabular}
-
-\vspace{0.8em}
-\noindent{\bfseries ชื่อผู้จัดทำ}
-
-\vspace{0.2em}
-\noindent\begin{tabular}{@{}l l l@{}}
-นาย & พงศ์อนันต์ วงศ์ศรี & รหัสประจำตัว 673380284-4\\
-นาย & ปิยพนธ์ แก้วเก็บคำ & รหัสประจำตัว 673380050-9\\
-นาย & อภิวิชญ์ เอกะ & รหัสประจำตัว 673380517-7\\
-นาย & พิสิษฐ์ ทรัพย์อุดมโชติ & รหัสประจำตัว 673380285-2\\
-\end{tabular}
-
-\vspace{0.8em}
-\noindent\begin{tabular}{@{}p{5.0cm}@{}l@{}}
-{\bfseries อาจารย์ที่ปรึกษา} & รองศาสตราจารย์ ดร.งามนิจ อาจอินทร์\\[0.4em]
-{\bfseries ปีการศึกษา} & 2568\\
-\end{tabular}
-
-\newpage
-
 % ============================================================
-% บทคัดย่อ (ภาษาไทย)
+% คำนำ
 % ============================================================
 \begin{center}
-  {\bfseries\large บทคัดย่อ}
+  {\bfseries\large คำนำ}
 \end{center}
 
-ปัญหาของเหลือใช้ในครัวเรือน เช่น เฟอร์นิเจอร์ เครื่องใช้ไฟฟ้า เสื้อผ้า และของใช้ในบ้านที่ยังสภาพดีแต่ไม่ได้รับการใช้งาน เป็นปัญหาที่พบได้บ่อย โดยส่วนใหญ่เจ้าของมักเลือกทิ้งหรือฝากขายตามกลุ่มซื้อขายออนไลน์ทั่วไป ซึ่งมีขั้นตอนยุ่งยากและไม่มีระบบติดตามสถานะที่ชัดเจน จากปัญหาดังกล่าวคณะผู้จัดทำจึงได้พัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้ เพื่อ 1) พัฒนาระบบลงประกาศและแบ่งปันของเหลือใช้ที่ผู้ใช้สามารถลงประกาศได้โดยไม่มีค่าใช้จ่าย 2) พัฒนาระบบขอรับ จอง อนุมัติ และปิดรายการเมื่อส่งมอบของแล้วอย่างเป็นระบบ และ 3) ออกแบบ REST API พร้อมเอกสารประกอบอัตโนมัติรองรับการนำไปพัฒนาต่อยอดในอนาคต
-
-\vspace{0.8em}
-
-ระบบพัฒนาด้วย Node.js ร่วมกับเฟรมเวิร์ก Express.js สำหรับพัฒนา REST API และใช้ MongoDB Atlas เป็นฐานข้อมูลบนคลาวด์ผ่านไลบรารี Mongoose โดยออกแบบโครงสร้างข้อมูลหลัก 5 ส่วน ได้แก่ ผู้ใช้ (User) หมวดหมู่ (Category) ประกาศ (Listing) การขอรับ (Reservation) และการรายงาน (Report) การยืนยันตัวตนใช้ระบบ Session ที่จัดเก็บในฐานข้อมูล รองรับการค้นหาของตามระยะทางด้วยดัชนีเชิงภูมิศาสตร์ (Geospatial Index) และจัดทำเอกสาร API อัตโนมัติด้วย Swagger UI
-
-\vspace{0.8em}
-
-ผลการดำเนินงานพบว่า ระบบสามารถรองรับการทำงานครบทั้ง 8 กลุ่ม API รวม 38 Endpoint และผ่านการทดสอบทั้งหมด 10 สถานการณ์ เช่น การสมัครสมาชิก การลงประกาศ การป้องกันการจองซ้ำด้วยดัชนีเอกลักษณ์ การอนุมัติที่ลดจำนวนของคงเหลือแบบอะตอมมิก และการค้นหาตามระยะทาง ผลการทดสอบทั้งหมดเป็นไปตามที่ออกแบบไว้ แสดงให้เห็นว่าระบบที่พัฒนาขึ้นสามารถใช้เป็นรากฐานของแพลตฟอร์มแบ่งปันของเหลือใช้ที่สมบูรณ์ต่อไปได้
-
-\vspace{0.8em}
-\noindent{\bfseries คำสำคัญ:} แบ่งปันของเหลือใช้, REST API, MongoDB, เศรษฐกิจแบ่งปัน
-
-\newpage
-
-% ============================================================
-% หน้าข้อมูลโครงงาน (ภาษาอังกฤษ)
-% ============================================================
-\begin{flushleft}
-\noindent\begin{tabular}{@{}p{5.0cm}@{}>{\raggedright\arraybackslash}p{10.9cm}@{}}
-{\bfseries Project Title} &
-Development of a web-based sharing platform for unused household items using REST API architecture with MongoDB database\\
-\end{tabular}
-
-\vspace{0.8em}
-\noindent{\bfseries Author}
-
-\vspace{0.2em}
-\noindent\begin{tabular}{@{}l l l@{}}
-Mr. & Phong-anan Wongsri & Student-ID 673380284-4\\
-Mr. & Piyapon Keawkebkam & Student-ID 673380050-9\\
-Mr. & Apiwit Eka & Student-ID 673380517-7\\
-Mr. & Pisit Sapudomchot & Student-ID 673380285-2\\
-\end{tabular}
-
-\vspace{0.8em}
-\noindent\begin{tabular}{@{}p{5.0cm}@{}l@{}}
-{\bfseries Project Advisor} & Assoc. Prof. Dr. Ngamnit Art-in\\[0.4em]
-{\bfseries Academic Year} & 2025\\
-\end{tabular}
-\end{flushleft}
-
-\newpage
-
-% ============================================================
-% ABSTRACT
-% ============================================================
-\begin{center}
-  {\bfseries\large ABSTRACT}
-\end{center}
-
-Unused household items such as furniture, appliances, clothing, and other goods that are still in good condition but no longer in use are a common problem. Most owners choose to throw them away or sell them in general online groups, which involves complicated procedures and lacks a clear tracking system. For these reasons, the authors developed a web-based sharing platform for unused items in order to: 1) develop a system that allows users to post and share unused items free of charge; 2) develop a systematic request, reservation, approval, and completion process when items are delivered; and 3) design a REST API with automatic documentation to support future development.
-
-\vspace{0.8em}
-
-This system was developed using Node.js with the Express.js framework, and MongoDB Atlas as the database through the Mongoose library. The data structure was designed into five main collections: User, Category, Listing, Reservation, and Report. Authentication uses a session system stored in the database instead of tokens, supports distance-based item searching with a geospatial index, and generates API documentation automatically with Swagger UI.
-
-\vspace{0.3em}
-
-The results showed that the system supports all eight API groups (38 endpoints in total), a 19-page server-rendered web interface including a full admin back-office, and passed all ten test scenarios, such as registration, login, duplicate-reservation prevention, atomic quantity reduction on approval, and distance-based searching. All test results behaved as designed, demonstrating that the system can serve as the foundation of a complete sharing platform for unused items.
-
-\vspace{0.8em}
-\noindent{\bfseries Keywords:} Sharing Unused Items, REST API, MongoDB, Sharing Economy
-
-\newpage
-
-% ============================================================
-% กิตติกรรมประกาศ
-% ============================================================
-\begin{center}
-  {\bfseries\large กิตติกรรมประกาศ}
-\end{center}
-
-การศึกษาค้นคว้าเล่มนี้สำเร็จลุล่วงได้เป็นอย่างดี ด้วยความกรุณาของรองศาสตราจารย์ ดร.งามนิจ อาจอินทร์ อาจารย์ที่ปรึกษาซึ่งได้ให้คำแนะนำและตรวจแก้ไขข้อบกพร่องมาโดยตลอดตั้งแต่เริ่มจนสำเร็จเรียบร้อย คณะผู้จัดทำจึงขอกราบขอบพระคุณด้วยความเคารพอย่างสูงไว้ ณ โอกาสนี้
+รายงานฉบับนี้จัดทำขึ้นเพื่อประกอบรายวิชา CP363205 ภาษาอนุกรมข้อมูลและการประยุกต์ โดยมีวัตถุประสงค์เพื่อนำเสนอรายละเอียดการพัฒนาโครงงาน \textquotedblleft การพัฒนาระบบเว็บแอปพลิเคชันแบ่งปันของเหลือใช้โดยใช้สถาปัตยกรรม REST API ร่วมกับฐานข้อมูล MongoDB\textquotedblright\ ตั้งแต่ความเป็นมาและที่มาของปัญหา วัตถุประสงค์ ทฤษฎีและเครื่องมือที่ใช้ โครงสร้างข้อมูล JSON โครงสร้าง API ขอบเขตและฟังก์ชันของระบบ ไปจนถึงผลการดำเนินงานและผลการทดสอบระบบจริง
 
 \vspace{0.6em}
 
-ขอขอบพระคุณนักศึกษาและบุคลากรคณะวิศวกรรมศาสตร์ มหาวิทยาลัยขอนแก่น ที่ให้ความอนุเคราะห์อำนวยความสะดวกในการศึกษาหาข้อมูลและทดสอบระบบ ขอบคุณเพื่อน ๆ ในกลุ่มที่ให้ความร่วมมือในการศึกษาค้นคว้าครั้งนี้ จนทำให้การศึกษาค้นคว้าครั้งนี้สำเร็จลุล่วงด้วยดี
+เนื้อหาภายในเล่มแบ่งออกเป็น 5 บท ได้แก่ บทนำ วรรณกรรมและงานวิจัยที่เกี่ยวข้อง อุปกรณ์และวิธีดำเนินการ ผลการดำเนินงาน และสรุปผลการดำเนินงาน อภิปรายผล และข้อเสนอแนะ พร้อมภาคผนวกแสดงตัวอย่างการเรียกใช้ API โครงสร้างโปรเจกต์ ตาราง Endpoint ทั้งหมดของระบบ และภาพหน้าจอการทำงานจริงของระบบ
 
 \vspace{0.6em}
 
-ขอขอบพระคุณทุก ๆ ท่านที่ให้การสนับสนุนและให้กำลังใจในการศึกษาครั้งนี้ อนึ่ง จากการศึกษาค้นคว้าฉบับนี้สามารถก่อให้เกิดความรู้และข้อคิดที่มีประโยชน์แก่การพัฒนาระบบแบ่งปันของเหลือใช้ คณะผู้จัดทำขอมอบความดีครั้งนี้ให้อาจารย์ตลอดจนผู้ให้ความรู้ทางเอกสารอ้างอิงทุกท่านที่คณะผู้จัดทำใช้อ้างอิงในการค้นคว้าฉบับนี้ หากการศึกษาค้นคว้าฉบับนี้มีข้อผิดพลาดหรือข้อบกพร่องประการใด คณะผู้จัดทำขอน้อมรับไว้ด้วยความขอบพระคุณอย่างสูง
+คณะผู้จัดทำหวังเป็นอย่างยิ่งว่ารายงานฉบับนี้จะเป็นประโยชน์ต่อผู้ที่สนใจศึกษาการพัฒนาเว็บแอปพลิเคชันด้วยสถาปัตยกรรม REST API และฐานข้อมูล MongoDB หากมีข้อผิดพลาดประการใด คณะผู้จัดทำขอน้อมรับไว้เพื่อปรับปรุงแก้ไขต่อไป
 
 \vspace{1.2em}
 \begin{flushright}
@@ -321,12 +230,10 @@ The results showed that the system supports all eight API groups (38 endpoints i
 % สารบัญ
 % ============================================================
 % แทรกรายการหน้าพรีเฟส (เลขหน้าแบบไทย) ไว้ต้นไฟล์ .toc
-\addtocontents{toc}{\protect\noindent บทคัดย่อ (ภาษาไทย)\protect\dotfill ข\protect\par}
-\addtocontents{toc}{\protect\noindent บทคัดย่อ (ภาษาอังกฤษ)\protect\dotfill ง\protect\par}
-\addtocontents{toc}{\protect\noindent กิตติกรรมประกาศ\protect\dotfill จ\protect\par}
-\addtocontents{toc}{\protect\noindent สารบัญ\protect\dotfill ฉ\protect\par}
-\addtocontents{toc}{\protect\noindent สารบัญตาราง\protect\dotfill ซ\protect\par}
-\addtocontents{toc}{\protect\noindent สารบัญภาพ\protect\dotfill ฌ\protect\par}
+\addtocontents{toc}{\protect\noindent คำนำ\protect\dotfill ก\protect\par}
+\addtocontents{toc}{\protect\noindent สารบัญ\protect\dotfill ข\protect\par}
+\addtocontents{toc}{\protect\noindent สารบัญตาราง\protect\dotfill ง\protect\par}
+\addtocontents{toc}{\protect\noindent สารบัญภาพ\protect\dotfill จ\protect\par}
 \addtocontents{toc}{\protect\vspace{1.2em}}
 \addtocontents{toc}{\protect\noindent{\bfseries หน้าที่}\protect\par}
 \addtocontents{toc}{\protect\vspace{0.3em}}
@@ -398,6 +305,17 @@ The results showed that the system supports all eight API groups (38 endpoints i
 \subsection{ขอบเขต}
 
 โครงงานนี้มุ่งเน้นการพัฒนาส่วนของ REST API สำหรับระบบแบ่งปันของเหลือใช้ ครอบคลุมการทำงานหลัก 3 เรื่อง ได้แก่ 1) ผู้ใช้สามารถลงทะเบียน เข้าสู่ระบบ และลงประกาศของเหลือใช้พร้อมระบุจำนวน สภาพของ วิธีการรับของ และตำแหน่งที่ตั้ง โดยเลือกจังหวัด อำเภอ และตำบลจากรายการข้อมูลภูมิศาสตร์ของประเทศไทย และอัปโหลดรูปภาพประกอบประกาศได้ทั้งจากไฟล์ในเครื่องหรือระบุเป็นลิงก์ URL 2) ผู้ใช้อื่นสามารถค้นหาประกาศด้วยหมวดหมู่ คำค้นหา และระยะทาง พร้อมยื่นคำขอรับของ และ 3) เจ้าของประกาศสามารถอนุมัติ ปฏิเสธ และยืนยันการส่งมอบเพื่อปิดรายการ รวมถึงระบบรายงานประกาศไม่เหมาะสมและระบบหลังบ้านสำหรับผู้ดูแลระบบ (Admin Back-office) สำหรับจัดการผู้ใช้ ประกาศ หมวดหมู่ และรายงานปัญหา ทั้งนี้ระบบยังพัฒนาหน้าจอผู้ใช้ (User Interface) ด้วยเทมเพลต EJS ฝั่งเซิร์ฟเวอร์ร่วมกับไลบรารี Semantic UI ครบทั้ง 19 เส้นทางหน้าเว็บ ครอบคลุมหน้ารวมประกาศ รายละเอียดประกาศ ฟอร์มลงประกาศ ฟอร์มยืนยันตัวตน และหน้าจัดการระบบของผู้ดูแลระบบ
+
+\subsection{ฟังก์ชันของระบบแบ่งตามผู้ใช้งาน}
+
+เพื่อให้เห็นขอบเขตของงานอย่างชัดเจน ฟังก์ชันของระบบแบ่งตามประเภทผู้ใช้งานได้ดังนี้
+
+\begin{enumerate}[label=1.4.\arabic*, leftmargin=4.2em, itemsep=0.3em]
+  \item \textbf{ผู้เยี่ยมชม (Guest)} -- ดูรายการประกาศและค้นหาประกาศได้ (เห็นเฉพาะพื้นที่โดยประมาณ ไม่เห็นเบอร์โทรหรือที่อยู่ละเอียด) สมัครสมาชิกและเข้าสู่ระบบ
+  \item \textbf{สมาชิก/ผู้ขอรับของ (User)} -- ทำทุกอย่างที่ผู้เยี่ยมชมทำได้ เพิ่มเติมคือ ยื่นคำขอรับของ ยกเลิกคำขอของตนเอง ติดตามสถานะคำขอ ดูการแจ้งเตือน และแก้ไขข้อมูลส่วนตัว/รหัสผ่าน
+  \item \textbf{เจ้าของประกาศ (Owner)} -- ลงประกาศใหม่ แก้ไขหรือยกเลิกประกาศของตนเอง (เมื่อยังไม่มีผู้ยื่นคำขอ) ดูรายชื่อผู้ยื่นคำขอของแต่ละประกาศ อนุมัติ ปฏิเสธ และยืนยันการส่งมอบของแต่ละคำขอ
+  \item \textbf{ผู้ดูแลระบบ (Admin)} -- จัดการหมวดหมู่สิ่งของ (เพิ่ม แก้ไข ปิดใช้งาน) จัดการผู้ใช้ (ระงับ/ยกเลิกระงับบัญชีพร้อมเหตุผล) ตรวจสอบและจัดการรายงานประกาศไม่เหมาะสม ยกเลิกประกาศที่ไม่เหมาะสม และดูสรุปภาพรวมระบบ โดยไม่สามารถแก้ไขเนื้อหาประกาศหรืออนุมัติ/ปฏิเสธคำขอแทนเจ้าของประกาศได้
+\end{enumerate}
 
 \subsection{ข้อจำกัด}
 
@@ -535,23 +453,23 @@ Report & การรายงานประกาศไม่เหมาะ�
 \centering
 \caption{พจนานุกรมข้อมูลคอลเลกชัน User}
 \label{tab:dd-user}
-\begin{tabularx}{\textwidth}{l l l X}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{2.3cm} X}
 \toprule
 \textbf{ฟิลด์} & \textbf{ชนิดข้อมูล} & \textbf{ข้อกำหนด} & \textbf{คำอธิบาย}\\
 \midrule
-\_id & ObjectId & Primary Key & รหัสเอกลักษณ์ของผู้ใช้ (สร้างอัตโนมัติ)\\
-name & String & จำเป็น & ชื่อ-นามสกุลผู้ใช้\\
-email & String & จำเป็น, ไม่ซ้ำ & อีเมลสำหรับเข้าสู่ระบบ (lowercase, มีดัชนีเอกลักษณ์)\\
-passwordHash & String & จำเป็น & รหัสผ่านที่เข้ารหัสด้วย bcrypt (ไม่ส่งออกให้ไคลเอนต์)\\
-phone & String & ไม่บังคับ & เบอร์โทรศัพท์ติดต่อ\\
+\_id & ObjectId & Primary Key & รหัสผู้ใช้ (สร้างอัตโนมัติ)\\
+name & String & จำเป็น & ชื่อ-นามสกุล\\
+email & String & จำเป็น, ไม่ซ้ำ & อีเมลเข้าสู่ระบบ (unique)\\
+passwordHash & String & จำเป็น & รหัสผ่านเข้ารหัสด้วย bcrypt\\
+phone & String & ไม่บังคับ & เบอร์โทรศัพท์\\
 avatarUrl & String & ไม่บังคับ & ลิงก์รูปโปรไฟล์\\
-role & String (enum) & default: user & บทบาท: user หรือ admin (เปลี่ยนได้เฉพาะระดับฐานข้อมูล)\\
-location & GeoJSON Point & ไม่บังคับ & พิกัดตำแหน่งปัจจุบันของผู้ใช้ (ดัชนี 2dsphere)\\
-address.province/district/subdistrict & String & ไม่บังคับ & ที่อยู่ จังหวัด/อำเภอ/ตำบล\\
-isActive & Boolean & default: true & สถานะบัญชี (false = ถูกระงับการใช้งาน)\\
-banReason & String & ไม่บังคับ & เหตุผลที่ถูกระงับการใช้งาน (กรอกโดยผู้ดูแลระบบ)\\
-bannedAt & Date & ไม่บังคับ & วันเวลาที่ถูกระงับการใช้งาน\\
-createdAt / updatedAt & Date & อัตโนมัติ & วันเวลาสร้าง/แก้ไขข้อมูลล่าสุด\\
+role & String (enum) & default: user & บทบาท: user หรือ admin\\
+location & GeoJSON Point & ไม่บังคับ & พิกัดผู้ใช้ (ดัชนี 2dsphere)\\
+address.\allowbreak province/\allowbreak district/\allowbreak subdistrict & String & ไม่บังคับ & ที่อยู่ จังหวัด/อำเภอ/ตำบล\\
+isActive & Boolean & default: true & สถานะบัญชี (false = ถูกระงับ)\\
+banReason & String & ไม่บังคับ & เหตุผลที่ถูกระงับ\\
+bannedAt & Date & ไม่บังคับ & วันที่ถูกระงับ\\
+createdAt / updatedAt & Date & อัตโนมัติ & วันที่สร้าง/แก้ไข\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -560,17 +478,17 @@ createdAt / updatedAt & Date & อัตโนมัติ & วันเวล�
 \centering
 \caption{พจนานุกรมข้อมูลคอลเลกชัน Category}
 \label{tab:dd-category}
-\begin{tabularx}{\textwidth}{l l l X}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{2.3cm} X}
 \toprule
 \textbf{ฟิลด์} & \textbf{ชนิดข้อมูล} & \textbf{ข้อกำหนด} & \textbf{คำอธิบาย}\\
 \midrule
-\_id & ObjectId & Primary Key & รหัสเอกลักษณ์ของหมวดหมู่\\
-name & String & จำเป็น & ชื่อหมวดหมู่ (เช่น อาหาร, เสื้อผ้า)\\
-slug & String & จำเป็น, ไม่ซ้ำ & ชื่อย่อภาษาอังกฤษสำหรับอ้างอิงใน URL/Query\\
+\_id & ObjectId & Primary Key & รหัสหมวดหมู่\\
+name & String & จำเป็น & ชื่อหมวดหมู่\\
+slug & String & จำเป็น, ไม่ซ้ำ & ชื่อย่ออ้างอิงใน URL\\
 description & String & ไม่บังคับ & คำอธิบายหมวดหมู่\\
-icon & String & ไม่บังคับ & สัญลักษณ์ประจำหมวดหมู่ (emoji)\\
-isActive & Boolean & default: true & สถานะเปิด/ปิดใช้งาน (Soft Delete เมื่อมีประกาศอ้างอิงอยู่)\\
-createdAt / updatedAt & Date & อัตโนมัติ & วันเวลาสร้าง/แก้ไขข้อมูลล่าสุด\\
+icon & String & ไม่บังคับ & ไอคอนหมวดหมู่ (emoji)\\
+isActive & Boolean & default: true & เปิด/ปิดใช้งาน (Soft Delete)\\
+createdAt / updatedAt & Date & อัตโนมัติ & วันที่สร้าง/แก้ไข\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -579,27 +497,27 @@ createdAt / updatedAt & Date & อัตโนมัติ & วันเวล�
 \centering
 \caption{พจนานุกรมข้อมูลคอลเลกชัน Listing}
 \label{tab:dd-listing}
-\begin{tabularx}{\textwidth}{l l l X}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{2.3cm} X}
 \toprule
 \textbf{ฟิลด์} & \textbf{ชนิดข้อมูล} & \textbf{ข้อกำหนด} & \textbf{คำอธิบาย}\\
 \midrule
-\_id & ObjectId & Primary Key & รหัสเอกลักษณ์ของประกาศ\\
+\_id & ObjectId & Primary Key & รหัสประกาศ\\
 owner & ObjectId (ref: User) & จำเป็น & ผู้ลงประกาศ\\
-category & ObjectId (ref: Category) & จำเป็น & หมวดหมู่ของสิ่งของ\\
+category & ObjectId (ref: Category) & จำเป็น & หมวดหมู่สิ่งของ\\
 title & String & จำเป็น & ชื่อสิ่งของ\\
-description & String & จำเป็น & รายละเอียดสิ่งของ (บังคับกรอกเพื่อความโปร่งใส)\\
-images & [String] & 1--5 รายการ & ลิงก์รูปภาพ (URL ภายนอก หรือไฟล์ที่อัปโหลดเข้าระบบ)\\
+description & String & จำเป็น & รายละเอียดสิ่งของ\\
+images & [String] & 1--5 รายการ & ลิงก์รูปภาพ (URL/อัปโหลด)\\
 condition & String (enum) & จำเป็น & สภาพ: new, like\_new, good, fair, poor\\
-quantity & Number & default: 1, min: 1 & จำนวนทั้งหมดที่ลงประกาศ\\
-availableQuantity & Number & default: 1, min: 0 & จำนวนคงเหลือที่ยังไม่ถูกอนุมัติ\\
+quantity & Number & default: 1, min: 1 & จำนวนทั้งหมด\\
+availableQuantity & Number & default: 1, min: 0 & จำนวนคงเหลือ\\
 status & String (enum) & default: available & available, reserved, completed, cancelled, expired\\
-pickup.method & String (enum) & fixed: pickup & วิธีรับของ (รับด้วยตนเองเท่านั้น)\\
-pickup.location & GeoJSON Point & ไม่บังคับ & พิกัดจุดนัดรับ (ดัชนี 2dsphere, ปกปิดจนกว่าจะได้รับอนุมัติ)\\
-pickup.address & String & ไม่บังคับ & ที่อยู่ละเอียดจุดนัดรับ (ปกปิดจนกว่าจะได้รับอนุมัติ)\\
-pickup.area.province/district/subdistrict & String & จำเป็น & พื้นที่โดยประมาณที่แสดงต่อสาธารณะ\\
-expiresAt & Date & ไม่บังคับ & วันหมดอายุของประกาศ\\
-viewCount & Number & default: 0 & จำนวนครั้งที่ถูกเปิดดู\\
-createdAt / updatedAt & Date & อัตโนมัติ & วันเวลาสร้าง/แก้ไขข้อมูลล่าสุด\\
+pickup.method & String (enum) & fixed: pickup & วิธีรับของ (pickup เท่านั้น)\\
+pickup.location & GeoJSON Point & ไม่บังคับ & พิกัดนัดรับ (ปกปิดจนอนุมัติ)\\
+pickup.address & String & ไม่บังคับ & ที่อยู่นัดรับ (ปกปิดจนอนุมัติ)\\
+pickup.area.\allowbreak province/\allowbreak district/\allowbreak subdistrict & String & จำเป็น & พื้นที่โดยประมาณ (สาธารณะ)\\
+expiresAt & Date & ไม่บังคับ & วันหมดอายุประกาศ\\
+viewCount & Number & default: 0 & จำนวนครั้งที่เปิดดู\\
+createdAt / updatedAt & Date & อัตโนมัติ & วันที่สร้าง/แก้ไข\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -608,19 +526,19 @@ createdAt / updatedAt & Date & อัตโนมัติ & วันเวล�
 \centering
 \caption{พจนานุกรมข้อมูลคอลเลกชัน Reservation}
 \label{tab:dd-reservation}
-\begin{tabularx}{\textwidth}{l l l X}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{2.3cm} X}
 \toprule
 \textbf{ฟิลด์} & \textbf{ชนิดข้อมูล} & \textbf{ข้อกำหนด} & \textbf{คำอธิบาย}\\
 \midrule
-\_id & ObjectId & Primary Key & รหัสเอกลักษณ์ของคำขอรับ\\
-listing & ObjectId (ref: Listing) & จำเป็น & ประกาศที่ยื่นคำขอ\\
-requester & ObjectId (ref: User) & จำเป็น & ผู้ยื่นคำขอรับ\\
+\_id & ObjectId & Primary Key & รหัสคำขอรับ\\
+listing & ObjectId (ref: Listing) & จำเป็น & ประกาศที่ขอรับ\\
+requester & ObjectId (ref: User) & จำเป็น & ผู้ยื่นคำขอ\\
 quantity & Number & default: 1, min: 1 & จำนวนที่ขอรับ\\
-message & String & ไม่บังคับ & ข้อความถึงเจ้าของประกาศ\\
+message & String & ไม่บังคับ & ข้อความถึงเจ้าของ\\
 status & String (enum) & default: pending & pending, approved, rejected, cancelled, completed\\
-approvedAt / completedAt / cancelledAt & Date & ไม่บังคับ & วันเวลาที่เปลี่ยนสถานะในแต่ละขั้น\\
-isReadByRequester & Boolean & default: true & สถานะอ่านของผู้ขอ (false เมื่อเจ้าของเพิ่งเปลี่ยนสถานะ ใช้แสดง Badge แจ้งเตือน)\\
-createdAt / updatedAt & Date & อัตโนมัติ & วันเวลาสร้าง/แก้ไขข้อมูลล่าสุด\\
+approvedAt / completedAt / cancelledAt & Date & ไม่บังคับ & วันที่เปลี่ยนสถานะ\\
+isReadByRequester & Boolean & default: true & สถานะอ่าน (ใช้แสดง Badge)\\
+createdAt / updatedAt & Date & อัตโนมัติ & วันที่สร้าง/แก้ไข\\
 \bottomrule
 \end{tabularx}
 \\[0.3em]
@@ -631,20 +549,84 @@ createdAt / updatedAt & Date & อัตโนมัติ & วันเวล�
 \centering
 \caption{พจนานุกรมข้อมูลคอลเลกชัน Report}
 \label{tab:dd-report}
-\begin{tabularx}{\textwidth}{l l l X}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{2.3cm} X}
 \toprule
 \textbf{ฟิลด์} & \textbf{ชนิดข้อมูล} & \textbf{ข้อกำหนด} & \textbf{คำอธิบาย}\\
 \midrule
-\_id & ObjectId & Primary Key & รหัสเอกลักษณ์ของรายงาน\\
+\_id & ObjectId & Primary Key & รหัสรายงาน\\
 reporter & ObjectId (ref: User) & จำเป็น & ผู้แจ้งรายงาน\\
 listing & ObjectId (ref: Listing) & จำเป็น & ประกาศที่ถูกรายงาน\\
 reason & String (enum) & จำเป็น & spam, inappropriate, fraud, illegal, wrong\_information, other\\
-description & String & ไม่บังคับ & รายละเอียดเพิ่มเติมของการรายงาน\\
+description & String & ไม่บังคับ & รายละเอียดเพิ่มเติม\\
 status & String (enum) & default: pending & pending, reviewing, resolved, rejected\\
-createdAt / updatedAt & Date & อัตโนมัติ & วันเวลาสร้าง/แก้ไขข้อมูลล่าสุด\\
+createdAt / updatedAt & Date & อัตโนมัติ & วันที่สร้าง/แก้ไข\\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\subsection{โครงสร้างข้อมูล JSON (JSON Map Structure)}
+
+เนื่องจาก MongoDB จัดเก็บข้อมูลในรูปแบบ BSON ซึ่งมีโครงสร้างตรงกับ JSON และ REST API ของระบบรับส่งข้อมูลทั้งหมดเป็น JSON จากพจนานุกรมข้อมูลในหัวข้อที่ผ่านมา จึงสามารถสรุปโครงสร้าง JSON ของเอกสารหลักที่ระบบใช้งานจริงได้ดังตัวอย่างต่อไปนี้
+
+ตัวอย่างเอกสาร JSON ของคอลเลกชัน Listing (ประกาศของแบ่งปัน):
+\begin{lstlisting}
+{
+  "_id": "6700a1b2c3d4e5f6a7b8c9d0",
+  "owner": "66ff...u1",
+  "category": "66ff...c3",
+  "title": "Wooden Chair - Good Condition",
+  "description": "Solid wood chair, still fully usable, free to a good home",
+  "images": ["/assets/uploads/1699999999-chair.jpg"],
+  "condition": "good",
+  "quantity": 1,
+  "availableQuantity": 1,
+  "status": "available",
+  "pickup": {
+    "method": "pickup",
+    "area": { "province": "Khon Kaen", "district": "Mueang Khon Kaen", "subdistrict": "Nai Mueang" },
+    "location": { "type": "Point", "coordinates": [102.8333, 16.4322] }
+  },
+  "expiresAt": null,
+  "viewCount": 12,
+  "createdAt": "2026-09-01T03:12:00.000Z",
+  "updatedAt": "2026-09-01T03:12:00.000Z"
+}
+\end{lstlisting}
+
+ตัวอย่างเอกสาร JSON ของคอลเลกชัน Reservation (คำขอรับของ):
+\begin{lstlisting}
+{
+  "_id": "6700b2c3d4e5f6a7b8c9d0e1",
+  "listing": "6700a1b2c3d4e5f6a7b8c9d0",
+  "requester": "66ff...u2",
+  "quantity": 1,
+  "message": "Interested in the chair, can I pick it up on Saturday?",
+  "status": "pending",
+  "isReadByRequester": true,
+  "createdAt": "2026-09-02T08:40:00.000Z",
+  "updatedAt": "2026-09-02T08:40:00.000Z"
+}
+\end{lstlisting}
+
+จะเห็นได้ว่าความสัมพันธ์ระหว่างคอลเลกชันอ้างอิงกันด้วย \texttt{ObjectId} (เช่น \texttt{listing} และ \texttt{requester} ใน Reservation อ้างอิงกลับไปยัง \texttt{\_id} ของ Listing และ User ตามลำดับ) ซึ่งเป็นรูปแบบเดียวกับที่แสดงในตารางที่ \ref{tab:dd-user} ถึงตารางที่ \ref{tab:dd-report}
+
+\subsection{โครงสร้าง API (API Map Structure)}
+
+ระบบออกแบบเส้นทาง REST API ทั้งหมดให้ขึ้นต้นด้วย \texttt{/api/v1} และแบ่งกลุ่มตามทรัพยากร (Resource-based Routing) รวม 8 กลุ่ม ดังแผนผังต่อไปนี้
+
+\begin{lstlisting}
+/api/v1
+|-- /auth           (register, login, logout, me, change password)
+|-- /users           (profile, my listings, manage users -- admin only)
+|-- /categories       (list / create / update / disable categories)
+|-- /listings         (create, search, update, cancel a listing)
+|-- /reservations      (request, approve, reject, cancel, complete, unread)
+|-- /reports          (report a listing, review by admin)
+|-- /admin           (system overview stats -- admin only)
+`-- /uploads          (upload an image file)
+\end{lstlisting}
+
+แต่ละกลุ่มยึดรูปแบบ HTTP Method ตามหลัก REST คือ \texttt{GET} สำหรับอ่านข้อมูล \texttt{POST} สำหรับสร้างข้อมูลใหม่ \texttt{PATCH} สำหรับแก้ไขบางส่วน และ \texttt{DELETE}/การเปลี่ยนสถานะสำหรับยกเลิกข้อมูล รวมทั้งสิ้น 38 Endpoint ตามที่สรุปไว้ในตารางที่ \ref{tab:api} พร้อมตัวอย่างคำขอ/ผลลัพธ์ในภาคผนวก A และรายละเอียดครบทุก Endpoint ในภาคผนวก C
 
 \subsection{กระบวนการขอรับและส่งมอบของ}
 
@@ -676,6 +658,30 @@ $ A' = A - q \quad \text{เมื่อ} \quad A \geq q $
 \caption{สถานะของคำขอรับของ (Reservation)}
 \label{fig:flow}
 \end{figure}
+
+\section{ข้อมูลจำเพาะของระบบที่ใช้ทดสอบและนำเสนอ (System Specifications)}
+
+ตารางที่ \ref{tab:spec} แสดงข้อมูลจำเพาะของเครื่องและซอฟต์แวร์ที่คณะผู้จัดทำใช้ในการพัฒนา ทดสอบ และนำเสนอระบบจริง
+
+\begin{table}[htbp]
+\centering
+\caption{ข้อมูลจำเพาะของระบบที่ใช้ทดสอบและนำเสนอ}
+\label{tab:spec}
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{รายการ} & \textbf{รายละเอียด}\\
+\midrule
+ระบบปฏิบัติการ & Windows 11\\
+Runtime ฝั่งเซิร์ฟเวอร์ & Node.js เวอร์ชัน 24\\
+เฟรมเวิร์กฝั่งเซิร์ฟเวอร์ & Express.js เวอร์ชัน 5.2\\
+ตัวจัดการฐานข้อมูล & Mongoose เวอร์ชัน 9.11 เชื่อมต่อกับ MongoDB Atlas (คลาวด์)\\
+เบราว์เซอร์ที่ใช้ทดสอบ & Google Chrome เวอร์ชันล่าสุด\\
+พอร์ตที่ให้บริการ & \texttt{http://localhost:3000} (REST API และหน้าเว็บ) และ \texttt{http://localhost:3000/api-docs} (เอกสาร Swagger)\\
+เครื่องมือทดสอบ API & curl และ Swagger UI\\
+เครื่องมือพัฒนา & Visual Studio Code และ Git Bash\\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{การทดสอบระบบ}
 
@@ -715,16 +721,23 @@ Uploads & 1 & รับและจัดเก็บไฟล์รูปภา
 
 ก่อนเริ่มพัฒนาต่อในช่วงท้ายของโครงงาน คณะผู้จัดทำได้ทบทวนระบบที่พัฒนาไว้เดิมอย่างละเอียด โดยเปรียบเทียบพฤติกรรมจริงของโค้ดกับกฎทางธุรกิจที่ออกแบบไว้ในเอกสารข้อกำหนด พบข้อบกพร่องสำคัญหลายจุดทั้งด้านความปลอดภัยและตรรกะการทำงาน รวมถึงพบว่าหน้าจอผู้ใช้ (Web UI) ยังพัฒนาไม่ครบตามที่ออกแบบไว้ จึงดำเนินการแก้ไขและพัฒนาเพิ่มเติมจนครบถ้วน สรุปได้ดังตารางที่ \ref{tab:gap}
 
-\begin{table}[htbp]
-\centering
-\caption{สรุปข้อบกพร่องที่ตรวจพบและการแก้ไข/พัฒนาเพิ่มเติม}
-\label{tab:gap}
-\begin{tabularx}{\textwidth}{l X X}
+{\small
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{6.0cm} >{\raggedright\arraybackslash}p{6.0cm}}
+\caption{สรุปข้อบกพร่องที่ตรวจพบและการแก้ไข/พัฒนาเพิ่มเติม}\label{tab:gap}\\
 \toprule
 \textbf{ด้าน} & \textbf{สภาพก่อนปรับปรุง} & \textbf{การแก้ไข/พัฒนาเพิ่มเติม}\\
 \midrule
+\endfirsthead
+\multicolumn{3}{l}{\small\textit{(ต่อจากหน้าก่อน) ตารางที่ \thetable: สรุปข้อบกพร่องที่ตรวจพบและการแก้ไข/พัฒนาเพิ่มเติม}}\\
+\toprule
+\textbf{ด้าน} & \textbf{สภาพก่อนปรับปรุง} & \textbf{การแก้ไข/พัฒนาเพิ่มเติม}\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
 ความปลอดภัย: สิทธิ์ผู้ใช้ &
-\texttt{PATCH /users/:id/status} ยอมรับฟิลด์ \texttt{role} ทำให้สามารถเลื่อนสิทธิ์ผู้ใช้เป็นผู้ดูแลระบบผ่าน API ได้โดยตรง &
+\texttt{PATCH /users/\allowbreak{}:id/\allowbreak{}status} ยอมรับฟิลด์ \texttt{role} ทำให้สามารถเลื่อนสิทธิ์ผู้ใช้เป็นผู้ดูแลระบบผ่าน API ได้โดยตรง &
 แก้ไขให้ Endpoint นี้รับเฉพาะ \texttt{isActive} และ \texttt{reason} เท่านั้น การกำหนดบทบาทผู้ดูแลระบบทำได้เฉพาะระดับฐานข้อมูลโดยตรง\\
 ความปลอดภัย: บัญชีถูกระงับ &
 Middleware ตรวจสอบสิทธิ์ (\texttt{requireAuth}) อ้างอิงข้อมูลจาก Session เท่านั้น ผู้ใช้ที่ถูกระงับการใช้งานแล้วยังคงใช้งานต่อได้จนกว่า Session จะหมดอายุ &
@@ -762,9 +775,8 @@ Middleware ตรวจสอบสิทธิ์ (\texttt{requireAuth}) อ้
 รูปลักษณ์หน้าจอ &
 ใช้ชุดสไตล์ CSS และสัญลักษณ์ Emoji ที่พัฒนาขึ้นเอง &
 ออกแบบใหม่ทั้งระบบด้วยไลบรารี Semantic UI ไอคอน Font Awesome และฟอนต์ Kanit เพื่อความสม่ำเสมอของส่วนติดต่อผู้ใช้\\
-\bottomrule
-\end{tabularx}
-\end{table}
+\end{longtable}
+}
 
 ข้อบกพร่องด้านความปลอดภัยและตรรกะทางธุรกิจข้างต้นถูกตรวจสอบยืนยันซ้ำด้วยการทดสอบจริงผ่านเบราว์เซอร์และการเรียก API โดยตรงหลังการแก้ไขทุกจุด เพื่อยืนยันว่าพฤติกรรมของระบบเป็นไปตามกฎที่ออกแบบไว้แล้วจริง
 
@@ -876,6 +888,7 @@ SmartBear Software. (2025). \textit{swagger-ui-express}. ค้นเมื่�
 
 ตัวอย่างต่อไปนี้เป็นการเรียกใช้ API หลักของระบบ โดยทำงานบนเซิร์ฟเวอร์ที่ทำงานอยู่ที่ที่อยู่ http://localhost:3000
 
+\noindent\begin{minipage}{\linewidth}
 \section*{1.1 สมัครสมาชิก}
 
 \begin{lstlisting}
@@ -895,7 +908,9 @@ Response: 201 Created
   "data": { "user": { "id": "...", "name": "Somchai" } }
 }
 \end{lstlisting}
+\end{minipage}
 
+\noindent\begin{minipage}{\linewidth}
 \section*{1.2 ลงประกาศของแบ่งปัน}
 
 \begin{lstlisting}
@@ -919,7 +934,9 @@ Content-Type: application/json
 
 Response: 201 Created
 \end{lstlisting}
+\end{minipage}
 
+\noindent\begin{minipage}{\linewidth}
 \section*{1.3 ยื่นคำขอรับของ}
 
 \begin{lstlisting}
@@ -930,9 +947,11 @@ Content-Type: application/json
 
 Response: 201 Created
 \end{lstlisting}
+\end{minipage}
 
 \chapter{โครงสร้างโปรเจกต์และวิธีการรันระบบ}
 
+\noindent\begin{minipage}{\linewidth}
 \section*{2.1 โครงสร้างโปรเจกต์}
 
 \begin{lstlisting}
@@ -960,7 +979,9 @@ frontend/
 server.js       entry point
 .env            environment variables (not committed)
 \end{lstlisting}
+\end{minipage}
 
+\noindent\begin{minipage}{\linewidth}
 \section*{2.2 คำสั่งการติดตั้งและการรันระบบ}
 
 \begin{lstlisting}
@@ -968,6 +989,7 @@ npm install        install dependencies
 npm run seed       insert 7 default categories
 npm run dev        start server with auto-reload
 \end{lstlisting}
+\end{minipage}
 
 เมื่อระบบทำงานแล้ว สามารถเข้าดูเอกสาร API ได้ที่ http://localhost:3000/api-docs และตรวจสอบสถานะเซิร์ฟเวอร์ได้ที่ http://localhost:3000/health
 
