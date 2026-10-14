@@ -2,10 +2,13 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const ApiError = require("./ApiError");
 
+// หน้าที่: จับทุก request ที่ไม่ตรงกับ route ใดเลย แล้วส่งต่อเป็น 404 ให้ errorHandler จัดการ
 const notFoundHandler = (req, res, next) => {
   next(new ApiError(404, `ไม่พบ route: ${req.method} ${req.originalUrl}`));
 };
 
+// หน้าที่: Error-handling middleware กลางของแอป แปลง error แต่ละชนิด (Mongoose, Multer, JSON parse ฯลฯ)
+// ให้เป็น HTTP status code + ข้อความที่เหมาะสม แล้วตอบกลับเป็น JSON หรือ render หน้า error ตามชนิดของ request
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;

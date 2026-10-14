@@ -26,6 +26,7 @@ exports.createReport = async (req, res) => {
 
 // ---------- Admin ----------
 
+// หน้าที่: GET /reports — รายการรายงานทั้งหมดพร้อมแบ่งหน้า (เฉพาะผู้ดูแลระบบ) กรองตามสถานะ/เหตุผลได้
 exports.listReports = async (req, res) => {
   const page = Math.max(parseInt(req.query.page) || 1, 1);
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
@@ -50,6 +51,7 @@ exports.listReports = async (req, res) => {
   });
 };
 
+// หน้าที่: GET /reports/:id — ดูรายละเอียดรายงานเดียว (เฉพาะผู้ดูแลระบบ)
 exports.getReport = async (req, res) => {
   const report = await Report.findById(req.params.id)
     .populate("listing", "title description status owner images")
@@ -59,6 +61,7 @@ exports.getReport = async (req, res) => {
   res.json({ success: true, data: { report } });
 };
 
+// หน้าที่: PATCH /reports/:id — อัปเดตสถานะการตรวจสอบรายงาน (เฉพาะผู้ดูแลระบบ)
 exports.updateReport = async (req, res) => {
   const { status } = req.body;
 

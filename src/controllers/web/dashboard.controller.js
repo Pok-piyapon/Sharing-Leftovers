@@ -2,6 +2,7 @@ const Listing = require("../../models/Listing");
 const Reservation = require("../../models/Reservation");
 const reservationService = require("../../services/reservation.service");
 
+// หน้าที่: GET /dashboard — สรุปภาพรวมของผู้ใช้ (จำนวนประกาศเปิดอยู่ คำขอที่รอพิจารณา ประกาศ/คำขอล่าสุด)
 exports.index = async (req, res) => {
   const myListingIds = await Listing.find({ owner: req.user.id }).distinct("_id");
 

@@ -1,5 +1,6 @@
 const reservationService = require("../../services/reservation.service");
 
+// หน้าที่: GET /reservations/my — render หน้าคำขอรับของของฉัน พร้อมแบ่งหน้าและกรองตามสถานะ
 exports.myReservations = async (req, res) => {
   const { reservations, page, totalPages } = await reservationService.listMyReservations(req.user.id, req.query);
 

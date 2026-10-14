@@ -3,6 +3,7 @@ const Listing = require("../models/Listing");
 const ApiError = require("../middlewares/ApiError");
 const categoryService = require("../services/category.service");
 
+// หน้าที่: GET /categories — คืนหมวดหมู่ทั้งหมด พร้อมจำนวนประกาศที่ใช้แต่ละหมวด (usageCount)
 exports.listCategories = async (req, res) => {
   const filter = {};
   if (req.query.isActive !== undefined) {
@@ -14,12 +15,14 @@ exports.listCategories = async (req, res) => {
   res.json({ success: true, data: withUsage });
 };
 
+// หน้าที่: GET /categories/:id — ดูรายละเอียดหมวดหมู่เดียว
 exports.getCategory = async (req, res) => {
   const category = await Category.findById(req.params.id);
   if (!category) throw new ApiError(404, "ไม่พบ category นี้");
   res.json({ success: true, data: { category } });
 };
 
+// หน้าที่: POST /categories — สร้างหมวดหมู่ใหม่ (เฉพาะผู้ดูแลระบบ)
 exports.createCategory = async (req, res) => {
   const { name, slug, description, icon } = req.body;
 
@@ -31,6 +34,7 @@ exports.createCategory = async (req, res) => {
   res.status(201).json({ success: true, data: { category } });
 };
 
+// หน้าที่: PATCH /categories/:id — แก้ไขหมวดหมู่ (รับเฉพาะฟิลด์ใน allowed list เท่านั้น)
 exports.updateCategory = async (req, res) => {
   const allowed = ["name", "slug", "description", "icon", "isActive"];
   const updates = {};

@@ -1,3 +1,5 @@
+// โมเดล User: เก็บข้อมูลบัญชีผู้ใช้ (สมาชิกทั่วไปและผู้ดูแลระบบ) รหัสผ่านแบบเข้ารหัส
+// ตำแหน่งที่อยู่ปัจจุบัน (สำหรับค้นหาตามระยะทาง) และสถานะการถูกระงับใช้งาน
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -71,6 +73,7 @@ const userSchema = new mongoose.Schema(
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ location: "2dsphere" });
 
+// หน้าที่: ล้างฟิลด์ location ก่อนบันทึก ถ้าผู้ใช้ไม่ได้กรอกพิกัดมาครบ
 // 2dsphere ไม่ยอมรับ GeoJSON ที่ไม่มี coordinates — ตัด location ทิ้งถ้าไม่ได้กรอก
 userSchema.pre("validate", async function () {
   if (this.location && (!this.location.coordinates || this.location.coordinates.length !== 2)) {

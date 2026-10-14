@@ -4,7 +4,7 @@ const Listing = require("../models/Listing");
 const ApiError = require("../middlewares/ApiError");
 const reservationService = require("../services/reservation.service");
 
-// ขอรับของ (สร้าง reservation)
+// หน้าที่: POST /listings/:listingId/reservations — ยื่นคำขอรับของ (สร้าง reservation) พร้อมตรวจสอบเงื่อนไขทั้งหมด
 exports.createReservation = async (req, res) => {
   const { listingId } = req.params;
   const { quantity, message } = req.body;
@@ -51,7 +51,7 @@ exports.createReservation = async (req, res) => {
   res.status(201).json({ success: true, data: { reservation } });
 };
 
-// คำขอของฉัน (ในฐานะผู้ขอ)
+// หน้าที่: GET /reservations/my — คำขอทั้งหมดของผู้ใช้ปัจจุบันในฐานะผู้ขอ พร้อมแบ่งหน้า
 exports.getMyReservations = async (req, res) => {
   const { reservations, total, page, limit, totalPages } = await reservationService.listMyReservations(req.user.id, req.query);
   res.json({
@@ -61,7 +61,7 @@ exports.getMyReservations = async (req, res) => {
   });
 };
 
-// เจ้าของประกาศดูรายชื่อคนที่ขอรับ
+// หน้าที่: GET /listings/:listingId/reservations — เจ้าของประกาศ (หรือ admin) ดูรายชื่อผู้ขอทั้งหมดของประกาศนี้
 exports.getListingReservations = async (req, res) => {
   const { listingId } = req.params;
 
@@ -79,11 +79,13 @@ exports.getListingReservations = async (req, res) => {
 
 // ---------- Unread / notification badge (สำหรับผู้ขอ) ----------
 
+// หน้าที่: GET /reservations/unread-count — นับจำนวนคำขอของผู้ใช้ที่ยังไม่ได้อ่านการเปลี่ยนสถานะ (ใช้แสดง Badge)
 exports.getUnreadCount = async (req, res) => {
   const unreadCount = await Reservation.countDocuments({ requester: req.user.id, isReadByRequester: false });
   res.json({ success: true, unreadCount });
 };
 
+// หน้าที่: PATCH /reservations/:id/read — ทำเครื่องหมายคำขอรายการเดียวว่าอ่านแล้ว (เฉพาะผู้ขอของคำขอนั้น)
 exports.markRead = async (req, res) => {
   const reservation = await Reservation.findById(req.params.id);
   if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");
@@ -95,6 +97,7 @@ exports.markRead = async (req, res) => {
   res.json({ success: true, data: { reservation } });
 };
 
+// หน้าที่: PATCH /reservations/read-all — ทำเครื่องหมายคำขอทั้งหมดของผู้ใช้ว่าอ่านแล้วในครั้งเดียว
 exports.markAllRead = async (req, res) => {
   await Reservation.updateMany({ requester: req.user.id, isReadByRequester: false }, { isReadByRequester: true });
   res.json({ success: true });
@@ -102,7 +105,7 @@ exports.markAllRead = async (req, res) => {
 
 // ---------- การเปลี่ยนสถานะ ----------
 
-// คืน availableQuantity ให้ประกาศ (ใช้ตอน reject/cancel/cascade) — export ไว้ให้ listing.controller ใช้ซ้ำตอน cascade cancel
+// หน้าที่: คืน availableQuantity ให้ประกาศ (ใช้ตอน reject/cancel/cascade) — export ไว้ให้ listing.controller ใช้ซ้ำตอน cascade cancel
 const restoreQuantity = async (listingId, qty) => {
   const updated = await Listing.findByIdAndUpdate(
     listingId,
@@ -119,7 +122,7 @@ const restoreQuantity = async (listingId, qty) => {
 };
 exports.restoreQuantity = restoreQuantity;
 
-// เจ้าของอนุมัติ → หัก availableQuantity แบบ atomic ป้องกัน over-approve
+// หน้าที่: PATCH /reservations/:id/approve — เจ้าของอนุมัติคำขอ → หัก availableQuantity แบบ atomic ป้องกัน over-approve
 exports.approveReservation = async (req, res) => {
   const reservation = await Reservation.findById(req.params.id);
   if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");
@@ -163,6 +166,7 @@ exports.approveReservation = async (req, res) => {
   res.json({ success: true, data: { reservation, listing: updated } });
 };
 
+// หน้าที่: PATCH /reservations/:id/reject — เจ้าของปฏิเสธคำขอ คืนจำนวนคงเหลือถ้าเคยอนุมัติไปแล้ว
 exports.rejectReservation = async (req, res) => {
   const reservation = await Reservation.findById(req.params.id);
   if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");
@@ -190,7 +194,7 @@ exports.rejectReservation = async (req, res) => {
   res.json({ success: true, data: { reservation } });
 };
 
-// ผู้ขอยกเลิกคำขอของตัวเอง
+// หน้าที่: PATCH /reservations/:id/cancel — ผู้ขอยกเลิกคำขอของตัวเอง คืนจำนวนคงเหลือถ้าเคยอนุมัติไปแล้ว
 exports.cancelReservation = async (req, res) => {
   const reservation = await Reservation.findById(req.params.id);
   if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");
@@ -214,7 +218,7 @@ exports.cancelReservation = async (req, res) => {
   res.json({ success: true, data: { reservation } });
 };
 
-// เจ้าของยืนยันว่ามอบของแล้ว → ปิดรายการ
+// หน้าที่: PATCH /reservations/:id/complete — เจ้าของยืนยันว่ามอบของแล้ว → ปิดคำขอ และปิดประกาศถ้าส่งมอบครบทุกชิ้น
 exports.completeReservation = async (req, res) => {
   const reservation = await Reservation.findById(req.params.id);
   if (!reservation) throw new ApiError(404, "ไม่พบคำขอนี้");

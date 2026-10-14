@@ -2,6 +2,7 @@ const Listing = require("../models/Listing");
 const Category = require("../models/Category");
 const Reservation = require("../models/Reservation");
 
+// ตารางแปลงค่าพารามิเตอร์ sort จาก query string ให้เป็น Mongoose sort object
 const SORT_OPTIONS = {
   latest: { createdAt: -1 },
   oldest: { createdAt: 1 },
@@ -12,6 +13,7 @@ const SORT_OPTIONS = {
 // รองรับทั้ง URL ภายนอก (http/https) และไฟล์ที่อัปโหลดเข้าระบบเอง (/assets/uploads/...)
 const IMAGE_URL_RE = /^(https?:\/\/|\/assets\/uploads\/)/i;
 
+// หน้าที่: ค้นหา/กรอง/แบ่งหน้ารายการประกาศตามเงื่อนไขทั้งหมด (หมวดหมู่ สภาพ คำค้น ระยะทาง พื้นที่ สถานะ)
 // ใช้ร่วมกันทั้งจาก API controller (listing.controller.js) และ web controller (controllers/web/*)
 // เพื่อไม่ให้ query/business logic ซ้ำกันสองที่
 async function searchListings(query, user) {
@@ -87,6 +89,7 @@ async function searchListings(query, user) {
   return { listings, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
+// หน้าที่: ดึงรายละเอียดประกาศเดียว เพิ่ม viewCount และปกปิดข้อมูลติดต่อ/ที่อยู่ละเอียดตามสิทธิ์ผู้เรียกดู
 // Privacy by Design: mask เบอร์โทร/ที่อยู่ละเอียด/พิกัดจริง ให้เหลือเฉพาะ owner หรือ requester ที่ approved/completed
 async function getListingDetail(id, user) {
   const listing = await Listing.findByIdAndUpdate(id, { $inc: { viewCount: 1 } }, { new: true })

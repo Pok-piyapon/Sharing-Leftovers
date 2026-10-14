@@ -15,6 +15,8 @@ const ALLOWED_MIME_TO_EXT = {
   "image/gif": ".gif"
 };
 
+// หน้าที่: บอก multer ว่าให้เซฟไฟล์ที่ UPLOAD_DIR และตั้งชื่อไฟล์ใหม่แบบสุ่ม+timestamp
+// (กันชื่อไฟล์ชนกันและกันผู้ใช้ตั้งชื่อไฟล์ที่เป็นอันตราย เช่น path traversal)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
   filename: (req, file, cb) => {
@@ -23,6 +25,7 @@ const storage = multer.diskStorage({
   }
 });
 
+// หน้าที่: ปฏิเสธไฟล์ที่ mimetype ไม่ใช่รูปภาพที่รองรับ ก่อนที่ multer จะเซฟลงดิสก์
 const fileFilter = (req, file, cb) => {
   if (!ALLOWED_MIME_TO_EXT[file.mimetype]) {
     return cb(new ApiError(400, "รองรับเฉพาะไฟล์รูปภาพ JPEG, PNG, WEBP หรือ GIF เท่านั้น"));

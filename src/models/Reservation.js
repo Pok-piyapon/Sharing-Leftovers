@@ -1,3 +1,5 @@
+// โมเดล Reservation: คำขอรับของ 1 รายการ ผูกกับ Listing และผู้ขอ (requester) หนึ่งคน
+// ดัชนีคู่ (listing, requester) ด้านล่างบังคับว่าขอซ้ำกับประกาศเดียวกันไม่ได้ (Single Lifetime Reservation)
 const mongoose = require("mongoose");
 
 const reservationSchema = new mongoose.Schema(

@@ -21,6 +21,9 @@ const reportRoutes = require("./routes/report.routes");
 const adminRoutes = require("./routes/admin.routes");
 const uploadRoutes = require("./routes/upload.routes");
 
+// ไฟล์นี้ประกอบ (compose) Express app ทั้งหมด: ตั้งค่า view engine, middleware กลาง (CORS, session,
+// static files, attachLocals), mount เอกสาร Swagger, mount route ทั้ง 8 กลุ่มของ REST API และ route
+// หน้าเว็บ แล้วปิดท้ายด้วย error handler กลาง — ไม่มี business logic อยู่ในไฟล์นี้โดยตรง
 const app = express();
 
 app.set("view engine", "ejs");
@@ -65,6 +68,7 @@ app.use(attachLocals);
 // Swagger docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// หน้าที่: endpoint ตรวจสอบสถานะเซิร์ฟเวอร์ (health check) สำหรับ monitoring/uptime
 app.get("/health", (req, res) => {
   res.json({ success: true, status: "ok", uptime: process.uptime() });
 });

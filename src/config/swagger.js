@@ -1,3 +1,5 @@
+// หน้าที่: ตั้งค่า swagger-jsdoc ให้สแกนคอมเมนต์ @openapi ในไฟล์ routes/* แล้วประกอบเป็นเอกสาร OpenAPI
+// ผลลัพธ์ (module.exports ด้านล่าง) ถูกนำไปใช้กับ swagger-ui-express ที่ /api-docs ใน app.js
 const swaggerJsdoc = require("swagger-jsdoc");
 
 const options = {

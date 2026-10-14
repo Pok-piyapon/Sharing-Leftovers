@@ -1,6 +1,7 @@
 const Listing = require("../../models/Listing");
 const Reservation = require("../../models/Reservation");
 
+// หน้าที่: GET /users/me/listings — render หน้าประกาศของฉัน พร้อมจำนวนคำขอ pending และสถานะล็อกแก้ไขของแต่ละประกาศ
 exports.index = async (req, res) => {
   const page = Math.max(parseInt(req.query.page) || 1, 1);
   const limit = 20;

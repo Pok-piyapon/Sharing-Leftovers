@@ -34,6 +34,7 @@ const optionalAuth = async (req, res, next) => {
   }
 };
 
+// หน้าที่: ปิดกั้น route ที่ต้องเป็นผู้ดูแลระบบเท่านั้น (ต้องผ่าน requireAuth มาก่อนเพื่อให้มี req.user)
 const requireAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {
     return next(new ApiError(403, "ต้องเป็น admin เท่านั้น"));

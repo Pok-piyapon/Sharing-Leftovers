@@ -1,3 +1,5 @@
+// โมเดล Report: การรายงานประกาศไม่เหมาะสมของผู้ใช้ 1 ครั้ง ต่อประกาศ 1 รายการ
+// ดัชนีคู่ (listing, reporter) ป้องกันผู้ใช้คนเดียวรายงานประกาศเดียวกันซ้ำ
 const mongoose = require("mongoose");
 
 const reportSchema = new mongoose.Schema(

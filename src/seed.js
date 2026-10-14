@@ -15,6 +15,7 @@ const CATEGORIES = [
   { name: "อื่น ๆ", slug: "others", description: "ของที่ไม่เข้าหมวดหมู่อื่น", icon: "📦" }
 ];
 
+// หน้าที่: เชื่อมต่อฐานข้อมูลแล้ว upsert หมวดหมู่เริ่มต้นทั้ง 7 รายการ (ไม่ลบ/ไม่ซ้ำถ้ารันซ้ำ)
 const seed = async () => {
   await connectDatabase();
 

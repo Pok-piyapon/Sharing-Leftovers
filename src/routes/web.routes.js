@@ -14,41 +14,41 @@ const adminPageController = require("../controllers/web/admin-page.controller");
 const profilePageController = require("../controllers/web/profile-page.controller");
 const helpPageController = require("../controllers/web/help-page.controller");
 
-// Phase 4: หน้าแรก (hero/search/chips/recent listings)
+// หน้าแรก (hero/search/chips/recent listings)
 router.get("/", homeController.index);
 
-// Phase 1: /listings (ต้องขึ้นก่อน /listings/:id เสมอ ไม่งั้น "new" จะถูกตีความเป็น :id)
+// หน้ารวมประกาศ + ฟอร์มลงประกาศใหม่ (ต้องขึ้นก่อน /listings/:id เสมอ ไม่งั้น "new" จะถูกตีความเป็น :id)
 router.get("/listings", optionalAuth, listingPageController.index);
 router.get("/listings/new", requireWebAuth, listingFormController.newForm);
 
-// Phase 2: /listings/:id (ต้องอยู่หลัง /listings/new)
+// หน้ารายละเอียดประกาศ, ฟอร์มแก้ไข, และหน้าจัดการคำขอของประกาศนั้น (ต้องอยู่หลัง /listings/new)
 router.get("/listings/:id", optionalAuth, listingPageController.show);
 router.get("/listings/:id/edit", requireWebAuth, listingFormController.editForm);
 router.get("/listings/:id/reservations", requireWebAuth, listingReservationsPageController.index);
 
-// Phase 3: /auth (login/register ผ่าน ApiService ฝั่ง client) + logout (ฟอร์ม POST จริงเพื่อ redirect)
+// ฟอร์มเข้าสู่ระบบ/สมัครสมาชิก (login/register ผ่าน ApiService ฝั่ง client) + logout (ฟอร์ม POST จริงเพื่อ redirect)
 router.get("/auth", authPageController.form);
 router.post("/auth/logout", verifyCsrf, authPageController.logout);
 
-// Phase 5: /dashboard, /reservations/my
+// หน้าสรุปภาพรวมของผู้ใช้ และหน้าคำขอรับของของฉัน
 router.get("/dashboard", requireWebAuth, dashboardController.index);
 router.get("/reservations/my", requireWebAuth, reservationPageController.myReservations);
 
-// Phase 6: /users/me/listings
+// หน้ารวมประกาศของฉัน
 router.get("/users/me/listings", requireWebAuth, userListingsPageController.index);
 
-// Phase 8-9: /admin/*
+// หน้าหลังบ้านผู้ดูแลระบบ (เฉพาะ admin)
 router.get("/admin", requireWebAuth, requireAdmin, adminPageController.index);
 router.get("/admin/listings", requireWebAuth, requireAdmin, adminPageController.listings);
 router.get("/admin/reports", requireWebAuth, requireAdmin, adminPageController.reports);
 router.get("/admin/users", requireWebAuth, requireAdmin, adminPageController.users);
 router.get("/admin/categories", requireWebAuth, requireAdmin, adminPageController.categories);
 
-// Phase 7: /users/me, /auth/password
+// หน้าโปรไฟล์ของฉัน และฟอร์มเปลี่ยนรหัสผ่าน
 router.get("/users/me", requireWebAuth, profilePageController.me);
 router.get("/auth/password", requireWebAuth, profilePageController.passwordForm);
 
-// Phase 10: /help/how-it-works
+// หน้าอธิบายวิธีใช้งานระบบ
 router.get("/help/how-it-works", helpPageController.howItWorks);
 
 module.exports = router;

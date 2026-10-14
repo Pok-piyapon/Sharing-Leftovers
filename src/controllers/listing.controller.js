@@ -8,6 +8,7 @@ const listingService = require("../services/listing.service");
 
 const IMAGE_URL_RE = listingService.IMAGE_URL_RE;
 
+// หน้าที่: GET /listings — ค้นหา/แบ่งหน้ารายการประกาศ (หมวดหมู่ คำค้น ระยะทาง สถานะ) ผ่าน listingService
 exports.getListings = async (req, res) => {
   const { listings, total, page, limit, totalPages } = await listingService.searchListings(req.query, req.user);
   res.json({
@@ -17,12 +18,14 @@ exports.getListings = async (req, res) => {
   });
 };
 
+// หน้าที่: GET /listings/:id — ดูรายละเอียดประกาศเดียว (ข้อมูลติดต่อ/ที่อยู่ละเอียดถูกปกปิดใน listingService ถ้าไม่ใช่เจ้าของ/ผู้ขอที่อนุมัติแล้ว)
 exports.getListing = async (req, res) => {
   const listing = await listingService.getListingDetail(req.params.id, req.user);
   if (!listing) throw new ApiError(404, "ไม่พบประกาศนี้");
   res.json({ success: true, data: { listing } });
 };
 
+// หน้าที่: POST /listings — ตรวจสอบข้อมูลครบถ้วนแล้วสร้างประกาศใหม่ (ห้าม admin สร้างเพื่อกันผลประโยชน์ทับซ้อน)
 exports.createListing = async (req, res) => {
   if (req.user.role === "admin") {
     throw new ApiError(403, "Admin ไม่มีสิทธิ์สร้างประกาศ (ป้องกันผลประโยชน์ทับซ้อน)");
@@ -76,6 +79,7 @@ exports.createListing = async (req, res) => {
   res.status(201).json({ success: true, data: { listing } });
 };
 
+// หน้าที่: PATCH /listings/:id — แก้ไขประกาศ (เฉพาะเจ้าของ และเฉพาะตอนยังไม่มีคำขอรับเข้ามาเลย)
 exports.updateListing = async (req, res) => {
   const listing = await Listing.findById(req.params.id);
   if (!listing) throw new ApiError(404, "ไม่พบประกาศนี้");
@@ -117,6 +121,7 @@ exports.updateListing = async (req, res) => {
   res.json({ success: true, data: { listing } });
 };
 
+// หน้าที่: DELETE /listings/:id — ยกเลิกประกาศ (เจ้าของหรือ admin)
 // Soft delete: เปลี่ยนสถานะเป็น cancelled แทนการลบข้อมูลจริง + cascade cancel คำขอที่ค้างอยู่
 exports.deleteListing = async (req, res) => {
   const listing = await Listing.findById(req.params.id);

@@ -1,3 +1,5 @@
+// โมเดล Listing: ประกาศของแบ่งปัน 1 รายการ เก็บจำนวนคงเหลือ สถานะ และข้อมูลจุดนัดรับ
+// (pickup.address/location แสดงเฉพาะเจ้าของหรือผู้ขอที่ได้รับอนุมัติแล้ว ดู listing.service.js)
 const mongoose = require("mongoose");
 
 const listingSchema = new mongoose.Schema(
@@ -90,6 +92,7 @@ listingSchema.index({ "pickup.location": "2dsphere" });
 listingSchema.index({ category: 1, status: 1, createdAt: -1 });
 listingSchema.index({ owner: 1, createdAt: -1 });
 
+// หน้าที่: ตรวจสอบและเติม type "Point" ให้ pickup.location ก่อนบันทึก หรือล้างทิ้งถ้าพิกัดไม่ครบ
 // เหมือนกับ User: GeoJSON ต้องมี type + coordinates ครบ ไม่งั้น 2dsphere จะ error
 listingSchema.pre("validate", async function () {
   if (this.pickup && this.pickup.location) {

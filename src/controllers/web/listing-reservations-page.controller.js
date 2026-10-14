@@ -2,6 +2,7 @@ const Listing = require("../../models/Listing");
 const reservationService = require("../../services/reservation.service");
 const ApiError = require("../../middlewares/ApiError");
 
+// หน้าที่: GET /listings/:id/reservations — render หน้าจัดการคำขอของประกาศ (เจ้าของจัดการได้, admin ดูได้อย่างเดียว)
 exports.index = async (req, res, next) => {
   const listing = await Listing.findById(req.params.id).populate("category", "name icon");
   if (!listing) return next(new ApiError(404, "ไม่พบประกาศนี้"));

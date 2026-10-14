@@ -2,12 +2,14 @@ const User = require("../models/User");
 const Listing = require("../models/Listing");
 const ApiError = require("../middlewares/ApiError");
 
+// หน้าที่: GET /users/me — คืนข้อมูลโปรไฟล์ของผู้ใช้ปัจจุบัน
 exports.getMe = async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) throw new ApiError(404, "ไม่พบผู้ใช้งาน");
   res.json({ success: true, data: { user } });
 };
 
+// หน้าที่: PATCH /users/me — แก้ไขข้อมูลส่วนตัว (รับเฉพาะฟิลด์ใน allowed list)
 exports.updateMe = async (req, res) => {
   const allowed = ["name", "phone", "avatarUrl", "location", "address"];
   const updates = {};
@@ -28,7 +30,7 @@ exports.updateMe = async (req, res) => {
   res.json({ success: true, data: { user } });
 };
 
-// Soft delete: ปิดการใช้งานบัญชี ไม่ลบข้อมูลจริง
+// หน้าที่: DELETE /users/me — ปิดบัญชีตัวเอง (Soft Delete: ปิดการใช้งานบัญชี ไม่ลบข้อมูลจริง) แล้วทำลาย session
 exports.deleteMe = async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user.id,
@@ -43,6 +45,7 @@ exports.deleteMe = async (req, res) => {
   });
 };
 
+// หน้าที่: GET /users/me/listings — ประกาศทั้งหมดที่ผู้ใช้ปัจจุบันเป็นเจ้าของ พร้อมแบ่งหน้า
 exports.getMyListings = async (req, res) => {
   const page = Math.max(parseInt(req.query.page) || 1, 1);
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
@@ -65,6 +68,7 @@ exports.getMyListings = async (req, res) => {
 
 // ---------- Admin ----------
 
+// หน้าที่: GET /users — รายชื่อผู้ใช้ทั้งหมดพร้อมแบ่งหน้า (เฉพาะผู้ดูแลระบบ) กรองตาม isActive ได้
 exports.listUsers = async (req, res) => {
   const page = Math.max(parseInt(req.query.page) || 1, 1);
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
@@ -89,12 +93,14 @@ exports.listUsers = async (req, res) => {
   });
 };
 
+// หน้าที่: GET /users/:id — ดูข้อมูลผู้ใช้รายคน (เฉพาะผู้ดูแลระบบ)
 exports.getUser = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) throw new ApiError(404, "ไม่พบผู้ใช้งาน");
   res.json({ success: true, data: { user } });
 };
 
+// หน้าที่: PATCH /users/:id/status — เปิด/ปิดการใช้งานบัญชีผู้ใช้ (ระงับ/ยกเลิกระงับ) โดยผู้ดูแลระบบ
 // รับเฉพาะ isActive + reason เท่านั้น — ไม่อ่าน/ไม่ประมวลผลฟิลด์ role เด็ดขาด (ป้องกัน privilege escalation)
 // การกำหนดสิทธิ์ admin ทำได้เฉพาะระดับ database เท่านั้น
 exports.updateUserStatus = async (req, res) => {

@@ -2,11 +2,13 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const ApiError = require("../middlewares/ApiError");
 
+// หน้าที่: บันทึก userId/role ของผู้ใช้ลง session หลัง login/register สำเร็จ (ใช้ร่วมกันหลายฟังก์ชันในไฟล์นี้)
 const setSession = (req, user) => {
   req.session.userId = user._id.toString();
   req.session.role = user.role;
 };
 
+// หน้าที่: POST /auth/register — สมัครสมาชิกใหม่ เข้ารหัสรหัสผ่านด้วย bcrypt แล้ว login ให้ทันที
 exports.register = async (req, res) => {
   const { name, email, password, phone } = req.body;
 
@@ -30,6 +32,7 @@ exports.register = async (req, res) => {
   res.status(201).json({ success: true, data: { user } });
 };
 
+// หน้าที่: POST /auth/login — ตรวจอีเมล/รหัสผ่าน และสถานะบัญชี แล้วสร้าง session ให้ผู้ใช้
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -50,6 +53,7 @@ exports.login = async (req, res) => {
   res.json({ success: true, data: { user } });
 };
 
+// หน้าที่: GET /auth/me — คืนข้อมูลผู้ใช้ที่ล็อกอินอยู่ปัจจุบัน (ใช้ req.user จาก requireAuth)
 exports.me = async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) {
@@ -58,6 +62,7 @@ exports.me = async (req, res) => {
   res.json({ success: true, data: { user } });
 };
 
+// หน้าที่: POST /auth/logout (API) — ทำลาย session และล้าง cookie ฝั่ง client
 exports.logout = (req, res) => {
   req.session.destroy(() => {
     res.clearCookie(process.env.SESSION_NAME || "sid");
@@ -65,6 +70,7 @@ exports.logout = (req, res) => {
   });
 };
 
+// หน้าที่: PATCH /auth/password — ตรวจรหัสผ่านเดิม แล้วบันทึกรหัสผ่านใหม่ พร้อม regenerate session ใหม่เพื่อความปลอดภัย
 exports.changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
